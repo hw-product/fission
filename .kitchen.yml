@@ -5,6 +5,7 @@ platforms:
   - name: ubuntu-12.04
     roles_path: roles
     driver_config:
+      require_chef_omnibus: latest
       base_container: ubuntu-1204
       username: ubuntu
       password: ubuntu

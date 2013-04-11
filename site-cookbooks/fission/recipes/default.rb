@@ -7,13 +7,16 @@
 # All rights reserved - Do Not Redistribute
 #
 
-node.default['omnibus_updater']['version'] = nil
-node.default['omnibus_updater']['version_search'] = true
+# node.default['omnibus_updater']['version'] = nil
+# node.default['omnibus_updater']['version_search'] = true
 
-include_recipe "omnibus_updater"
-include_recipe "git"
+# include_recipe "omnibus_updater"
+
+
 include_recipe "ubuntu"
-include_recipe "apt"
+# include_recipe "apt"
+
+include_recipe "git"
 
 node.default['ruby_installer']['package_name'] = "ruby1.9.3"
 node.default['ruby_installer']['rubygem_package'] = false
