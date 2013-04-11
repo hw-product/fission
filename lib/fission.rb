@@ -2,15 +2,13 @@ require 'celluloid/autostart'
 
 module Fission
   class << self
-    attr_accessor :logger
-    
     def shutdown
       Celluloid.shutdown
     end
 
     def boot
       Celluloid.boot
-
+      puts logo 
       Fission::Supervisor.run!
     end
   end
@@ -19,6 +17,7 @@ end
 require 'reel'
 require 'multi_json'
 
+require 'fission/logo'
 require 'fission/version'
 require 'fission/config'
 require 'fission/api'
