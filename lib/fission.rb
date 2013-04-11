@@ -11,7 +11,7 @@ module Fission
     def boot
       Celluloid.boot
 
-      Fission::Supervisor.supervise_as :root_supervisor
+      Fission::Supervisor.run!
     end
   end
 end

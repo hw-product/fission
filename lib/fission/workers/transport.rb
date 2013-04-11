@@ -5,7 +5,7 @@ module Fission
 
     extend Forwardable
 
-    def_delegators :@mailbox, :<<, :receive, :enqueue, :dequeue
+    def_delegators :@mailbox, :<<, :receive
 
     attr_reader :mailbox
     

@@ -8,12 +8,12 @@ module Fission
     
     workers(
       webhook: {
-        actor_name: webhook,
+        actor_name: 'webhook',
         enabled: true,
         arguments: %w[0.0.0.0 8000]
       },
       transport: {
-        actor_name: transport,
+        actor_name: 'transport',
         enabled: true
       },
       github: {

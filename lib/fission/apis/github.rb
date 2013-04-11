@@ -3,7 +3,7 @@ require 'multi_json'
 
 api_endpoints do
   include Celluloid::Logger
-  
+
   post '/github-build' do |request, connection|
     begin
       payload = MultiJson.load(request.body)
@@ -11,14 +11,14 @@ api_endpoints do
       info "Error parsing request body: #{e}"
     end
 
-    if(payload)
-      Celluloid::Actor[:transport].enqueue(
+    if payload
+      Celluloid::Actor[:transport] << {
         origin: :github,
         repository_url: payload['repository']['url'],
         repository_owner: payload['repository']['owner'],
         target_commit: payload['after'],
         reference: payload['ref']
-      )
+      }
       connection.respond :ok, 'Payload received and added to queue'
     else
       connection.respond :bad_request, 'Bad Request: No JSON data detected'
