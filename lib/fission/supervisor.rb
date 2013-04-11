@@ -28,7 +28,7 @@ module Fission
       Fission::Config[:workers].each do |worker, options|
         next unless options[:enabled]
         info "Supervising worker #{worker}"
-        supervise_worker(worker, options) if options[:enabled]
+        supervise_worker(worker, options)
       end
     end
     
