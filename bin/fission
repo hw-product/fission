@@ -3,5 +3,5 @@ require 'rubygems'
 require 'bundler/setup'
 require 'fission'
 
-Fission.boot
+Fission.new.boot
 sleep

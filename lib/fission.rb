@@ -1,17 +1,15 @@
 require 'celluloid/autostart'
 
 module Fission
-  class << self
-    def shutdown
-      Celluloid.shutdown
-    end
-
-    def boot
-      Celluloid.boot
-      puts logo 
-      Fission::Supervisor.run!
-    end
+  def self.boot
+    puts logo if Fission::Config[:logo]
+    Fission::Supervisor.run!
   end
+
+  def self.shutdown
+    Celluloid.shutdown
+  end
+  
 end
 
 require 'reel'

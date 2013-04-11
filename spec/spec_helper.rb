@@ -4,9 +4,6 @@ require 'fission'
 require 'coveralls'
 Coveralls.wear!
 
-logfile = File.open(File.expand_path("../../log/test.log", __FILE__), 'a')
-Fission.logger = Logger.new(logfile)
-
 Dir['./spec/support/*.rb'].map {|f| require f }
 
 RSpec.configure do |config|
@@ -15,6 +12,9 @@ RSpec.configure do |config|
 
   config.before do |example|
     Fission.shutdown
+    Fission::Config[:logo] = false
+    Fission::Config[:workers] = {}
+    Fission::Config[:apis] = []
     Fission.boot
   end
 end
