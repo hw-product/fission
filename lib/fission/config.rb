@@ -4,8 +4,9 @@ module Fission
   class Config
     extend Mixlib::Config
 
+    logo true
+
     apis %w[github]
-    
     workers(
       webhook: {
         actor_name: 'webhook',
