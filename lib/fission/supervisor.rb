@@ -30,9 +30,6 @@ module Fission
         supervise_worker(worker, options) if options[:enabled]
       end
     end
-
-    def shutdown
-      root.terminate
-    end
+    
   end
 end
