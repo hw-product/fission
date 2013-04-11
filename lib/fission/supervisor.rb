@@ -1,44 +1,42 @@
 module Fission
   class Supervisor
     include Celluloid
-    include Logger
+    include Celluloid::Logger
+    include Mixin::ConvertToClassName
 
-    attr_accessor :workers
-
-    trap_exit :respawn
-
+    attr_reader :supervision_group
+    
     def initialize
-      @workers = {}
+      info 'Spinning up Fission Supervisor'
+      @supervision_group = Celluloid::SupervisionGroup.new
       initial_spawn
-    end
-
-    def create_worker(klass)
-      obj = klass.new
-      self.link obj
-      @workers[klass] ||= []
-      @workers[klass] << obj
-      info "New worker spawned: #{klass}"
-      true
-    end
-
-    def respawn(actor, reason)
-      warn "Dead actor detected: #{actor.inspect} - Reason: #{reason}"
-      @workers[klass].delete(obj)
-      create_worker(actor.class)
     end
 
     private
 
-    def initial_spawn
-      Config[:workers].each do |worker, count|
-        count = count.to_i
-        if(count > 0)
-          klass = Worker.const_get(worker)
-          count.times do
-            create_worker(worker)
-          end
-        end
+    def supervise worker, options = {}
+      klass = Fission::Worker.const_get(
+        convert_to_class_name(worker.to_s)
+      )
+      args = (options[:arguments] || Array.new)
+      actor_name = options[:actor_name]
+      if actor_name
+        supervision_group.supervise_as(actor_name, klass, *args)
+      else
+        supervision_group.supervise(klass, *args)
       end
+      
+    end
+
+    def initial_spawn
+      Fission::Config[:workers].select do |worker, options|
+        next unless options[:enabled]
+        supervise(worker, options) if options[:enabled]
+      end
+    end
+
+    def shutdown
+      root.terminate
     end
   end
 end

@@ -23,7 +23,12 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency 'mixlib-config'
   gem.add_runtime_dependency 'logger'
   gem.add_runtime_dependency 'celluloid', '>= 0.13.0'
+  gem.add_runtime_dependency 'celluloid-io', '>= 0.13.1'
   gem.add_runtime_dependency 'reel', '>= 0.3.0'
+  gem.add_runtime_dependency 'octarine', '>= 0.0.3'
+  gem.add_runtime_dependency 'rack', '>= 1.5.2'
+  gem.add_runtime_dependency 'multi_json'
+  gem.add_runtime_dependency 'blockenspiel'
 
   gem.add_development_dependency 'rake'
   gem.add_development_dependency 'rspec'

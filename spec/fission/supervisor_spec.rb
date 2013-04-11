@@ -13,14 +13,17 @@ describe Fission::Supervisor do
     end
   end
 
-  describe '#workers' do
-    it 'should be an empty hash at first' do
-      supervisor.workers.should be_a_kind_of(Hash)
-    end
+  describe '#generate_actor_name' do
   end
 
-  describe '#create_worker' do
+  describe '#klass_for_worker' do
+    let(:class_name) { "Web" }
   end
 
+  describe '#supervise' do
+  end
+
+  describe '#initial_spawn' do
+  end
 
 end
