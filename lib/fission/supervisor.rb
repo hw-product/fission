@@ -5,6 +5,7 @@ module Fission
     def initialize
       super
       info 'Supervisor started, adding workers'
+      core_services
       initial_spawn
     end
 
@@ -21,7 +22,11 @@ module Fission
       else
         supervise(klass, *args)
       end
-      
+    end
+
+    def core_services
+      debug 'Booting core services'
+      supervise_as(:transport, Transport)
     end
 
     def initial_spawn

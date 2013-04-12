@@ -7,4 +7,8 @@ group :integration do
   gem 'rb-inotify', '~> 0.9' if RUBY_PLATFORM =~ /linux/
 end
 
+gem 'celluloid', github: 'celluloid/celluloid', branch: 'master'
+gem 'celluloid-io', github: 'celluloid/celluloid-io', branch: 'master'
+gem 'reel', github: 'celluloid/reel', branch: 'master'
+
 gemspec

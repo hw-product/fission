@@ -22,23 +22,28 @@ module Fission
 
     def initialize options = {}
       @options = options
+      Actor[:transport].register :object_storage, current_actor
 
       info 'Object Storage router initialized: caches flushed'
-      debug(options: options)
 
       maybe_create_cache_dir
       start_cache
     end
 
+    def cache_payload_to_disk message
+      debug(payload_message_received: message)
+      @cache.store(Celluloid::UUID.generate, Marshal.dump(message))
+    end
+
     def start_cache
       info "Building Moneta cache"
-      
+
       uses = options[:use]
       adapters = options[:adapter]
 
       debug(cache_uses_proxies: uses)
       debug(cache_adapters: adapters)
-      
+
       @cache = Moneta.build do
         # Ah use are stink fullas bey
         uses.each do |proxy, options|
@@ -49,6 +54,7 @@ module Fission
           adapter adapter.to_sym, options
         end
       end
+
       debug(cache_created: @cache)
     end
 

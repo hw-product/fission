@@ -12,13 +12,13 @@ api_endpoints do
     end
 
     if payload
-      Celluloid::Actor[:transport] << {
+      Celluloid::Actor[:transport][:object_storage].cache_payload_to_disk(
         origin: :github,
         repository_url: payload['repository']['url'],
         repository_owner: payload['repository']['owner'],
         target_commit: payload['after'],
         reference: payload['ref']
-      }
+      )
       connection.respond :ok, 'Payload received and added to queue'
     else
       connection.respond :bad_request, 'Bad Request: No JSON data detected'
