@@ -4,7 +4,6 @@ module Fission
 
     def initialize(host, port)
       Actor[:transport].register(:webhook, current_actor)
-      @object_storage = Actor[:transport].fetch(:object_storage)
       info "Webhook server started on #{host}:#{port}"
       @api = Fission::Api.new
       super(host, port, &method(:on_connection))
