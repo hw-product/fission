@@ -29,6 +29,8 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency 'rack', '>= 1.5.2'
   gem.add_runtime_dependency 'multi_json'
   gem.add_runtime_dependency 'blockenspiel'
+  gem.add_runtime_dependency 'childprocess'
+  gem.add_runtime_dependency 'moneta'
 
   gem.add_development_dependency 'rake'
   gem.add_development_dependency 'rspec'

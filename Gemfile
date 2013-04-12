@@ -7,6 +7,4 @@ group :integration do
   gem 'rb-inotify', '~> 0.9' if RUBY_PLATFORM =~ /linux/
 end
 
-gem 'reel', path: File.expand_path("~/dev/reel")
-
 gemspec

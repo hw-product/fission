@@ -1,27 +1,20 @@
 require 'celluloid/autostart'
-
-module Fission
-  def self.boot
-    puts logo if Fission::Config[:logo]
-    Fission::Supervisor.run!
-  end
-
-  def self.shutdown
-    Celluloid.shutdown
-  end
-  
-end
-
 require 'reel'
 require 'multi_json'
+require 'moneta'
+require 'logger'
 
 require 'fission/logo'
 require 'fission/version'
 require 'fission/config'
+require 'fission/logger'
+require 'fission/application'
 require 'fission/api'
 require 'fission/api_builder'
 require 'fission/worker'
 require 'fission/workers/webhook'
 require 'fission/workers/transport'
+require 'fission/workers/object_storage'
+require 'fission/workers/package_builder'
 require 'fission/mixin/convert_to_class_name'
 require 'fission/supervisor'

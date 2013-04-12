@@ -4,7 +4,7 @@ module Fission
 
     def initialize
       super
-      info 'Supervisor starting up, spawning workers'
+      info 'Supervisor started, adding workers'
       initial_spawn
     end
 
@@ -27,7 +27,7 @@ module Fission
     def initial_spawn
       Fission::Config[:workers].each do |worker, options|
         next unless options[:enabled]
-        info "Supervising worker #{worker}"
+        info "Supervising worker: #{worker}"
         supervise_worker(worker, options)
       end
     end

@@ -6,6 +6,9 @@ module Fission
 
     logo true
 
+    log_location STDERR
+    log_level :info
+    
     apis %w[github]
     workers(
       webhook: {
@@ -17,16 +20,29 @@ module Fission
         actor_name: 'transport',
         enabled: true
       },
-      github: {
-        enabled: false
+      object_storage: {
+        actor_name: 'object_storage',
+        enabled: true,
+        arguments: [
+          adapter: {
+            :File => {
+              dir: "/srv/fission/object_storage/"
+            }
+          },
+          use: {
+            :Lock => {},
+            :Logger => {
+              logger: Celluloid.logger
+            },
+            :Expires => {},
+            :Transformer => {
+              value: :zlib
+            }
+          }
+        ],
       },
-      builder: {
-        enabled: false
-      },
-      collector: {
-        enabled: false
-      },
-      reporter: {
+      package_builder: {
+        actor_name: 'package_bulider',
         enabled: false
       }
     )
