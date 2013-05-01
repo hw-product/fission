@@ -5,7 +5,6 @@ require 'moneta'
 require 'logger'
 require 'git'
 require 'spoon'
-require 'zlib'
 require 'archive/tar/minitar'
 require 'pry'
 

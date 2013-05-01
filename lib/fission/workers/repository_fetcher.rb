@@ -48,13 +48,11 @@ module Fission
     def stage_tar repository_identifier, working_directory
 
       raw_string = StringIO.new("rw")
-      # TODO: Zlib::GzipWriter seems to be broken here.
-      # sgz = Zlib::GzipWriter.new(raw_string)
-      tgz = Minitar::Output.new(raw_string)
+      tar = Minitar::Output.new(raw_string)
 
       Dir.chdir(working_directory) do
         Find.find('.') do |entry|
-          Minitar.pack_file(entry, tgz)
+          Minitar.pack_file(entry, tar)
         end
       end
 
@@ -69,7 +67,7 @@ module Fission
 
       debug(stage_tar: 'complete')
     ensure
-      tgz.close
+      tar.close
     end
 
     def terminate
