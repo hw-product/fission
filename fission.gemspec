@@ -29,7 +29,7 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency 'multi_json'
   gem.add_runtime_dependency 'blockenspiel'
   gem.add_runtime_dependency 'childprocess'
-  gem.add_runtime_dependency 'moneta'
+  gem.add_runtime_dependency 'moneta', '= 0.7.15'
   gem.add_runtime_dependency 'git'
   gem.add_runtime_dependency 'spoon'
   gem.add_runtime_dependency 'minitar'
