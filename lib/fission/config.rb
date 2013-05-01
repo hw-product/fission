@@ -29,13 +29,7 @@ module Fission
           use: {
             :Lock => {},
             :Logger => {},
-            :Expires => {},
-            :Transformer => {
-              value: [
-                :marshal,
-                :zlib
-              ]
-            }
+            :Expires => {}
           }
         ],
       },
