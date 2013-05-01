@@ -7,6 +7,7 @@ require 'git'
 require 'spoon'
 require 'zlib'
 require 'archive/tar/minitar'
+require 'pry'
 
 require 'fission/logo'
 require 'fission/version'

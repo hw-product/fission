@@ -1,6 +1,8 @@
 module Fission
   class Worker::RepositoryFetcher < Worker
 
+    include Archive::Tar
+
     attr_reader :options, :repository
 
     def initialize options = {}
@@ -30,14 +32,12 @@ module Fission
         repo.checkout(ref)
         Dir.chdir(repo.dir.to_s) { FileUtils.rm_r '.git' }
 
-        tar_file = create_tar_from_repository working_directory
+        stage_tar(
+          repository_identifier,
+          repo.dir.to_s
+        )
 
         debug(export_complete: 'export complete')
-
-        stage_tar_to_object_storage(
-          repository_identifier,
-          tar_file
-        )
 
         Actor[:transport][:package_builder].clone_complete(
           repository_identifier
@@ -45,36 +45,30 @@ module Fission
       end
     end
 
-    def stage_tar_to_object_storage repository_identifier, tar_file
-      file = File.open(tar_file, 'r')
-      stat = file.stat
-      size = stat.size
+    def stage_tar repository_identifier, working_directory
 
-      debug(stage_tar_to_object_storage: "sending #{tar_file.path}")
-      debug(tar_file_size: size)
+      raw_string = StringIO.new("rw")
+      sgz = Zlib::GzipWriter.new(raw_string)
+      tgz = Minitar::Output.new(sgz)
+
+      Dir.chdir(working_directory) do
+        Find.find('.') do |entry|
+          Minitar.pack_file(entry, tgz)
+        end
+      end
+
+      debug(stage_tar: "sending to object_storage key #{repository_identifier}")
+
+      raw_string.rewind
 
       Actor[:transport][:object_storage].cache_payload_to_disk(
         repository_identifier,
-        file.read
+        raw_string.read
       )
 
-      debug(stage_tar_to_object_storage: 'complete')
-    end
-
-    def create_tar_from_repository working_directory
-      tar_path_name = File.join(
-        options[:working_dir],
-        Celluloid::UUID.generate + ".tgz"
-      )
-
-      file = File.open(tar_path_name, 'wb')
-      tgz = Zlib::GzipWriter.new(file)
-      Archive::Tar::Minitar.pack('.', tgz)
-
-      debug(tar_created: file.inspect)
-      debug(tar_file_stat: File.stat(file))
-
-      file
+      debug(stage_tar: 'complete')
+    ensure
+      tgz.close
     end
 
     def terminate
