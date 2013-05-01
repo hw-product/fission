@@ -31,7 +31,6 @@ module Fission
     end
 
     def cache_payload_to_disk key = Celluloid::UUID.generate, value
-      debug(payload_message_received: [key, value])
       @cache.store(key, value)
     end
 
@@ -59,7 +58,6 @@ module Fission
     end
 
     def terminate
-      @cache.do_something_crazy
     end
 
   end

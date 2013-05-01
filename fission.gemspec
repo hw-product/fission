@@ -32,6 +32,7 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency 'moneta'
   gem.add_runtime_dependency 'git'
   gem.add_runtime_dependency 'spoon'
+  gem.add_runtime_dependency 'minitar'
 
   gem.add_development_dependency 'rake'
   gem.add_development_dependency 'rspec'
