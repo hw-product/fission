@@ -30,9 +30,9 @@ module Fission
       start_cache
     end
 
-    def cache_payload_to_disk message
-      debug(payload_message_received: message)
-      @cache.store(Celluloid::UUID.generate, Marshal.dump(message))
+    def cache_payload_to_disk key = Celluloid::UUID.generate, value
+      debug(payload_message_received: [key, value])
+      @cache.store(key, value)
     end
 
     def start_cache

@@ -31,15 +31,29 @@ module Fission
             :Logger => {},
             :Expires => {},
             :Transformer => {
-              value: :zlib
+              value: [
+                :marshal,
+                :zlib
+              ]
             }
           }
         ],
       },
       package_builder: {
         actor_name: 'package_bulider',
-        enabled: false
-      }
+        enabled: true
+      },
+      repository_fetcher: {
+        actor_name: 'repository_fetcher',
+        enabled: true,
+        arguments: [
+          working_dir: "/srv/fission/repositories/"
+        ]
+      },
+      container_router: {
+        actor_name: 'container_router',
+        enabled: true
+      },
     )
   end
 end

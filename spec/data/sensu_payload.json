@@ -1,0 +1,19 @@
+{
+  "before": "a446e24516cfe2d2f2025986e99bd21f8d3197a6",
+  "repository": {
+    "url": "http://github.com/sensu/sensu",
+    "name": "sensu",
+    "description": "A monitoring framework that aims to be simple, malleable, and scalable.",
+    "watchers": 617,
+    "forks": 93,
+    "private": 0,
+    "owner": {
+      "email": "sensu@sensuapp.org",
+      "name": "sensu"
+    }
+  },
+  "commits": [
+  ],
+  "after": "ca26dafe5ec7919157c1de1e4f18f43d8be452eb",
+  "ref": "refs/heads/master"
+}

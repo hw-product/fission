@@ -12,10 +12,13 @@ api_endpoints do
     end
 
     if payload
-      Celluloid::Actor[:transport][:object_storage].cache_payload_to_disk(
+      Celluloid::Actor[:transport][:package_builder].route_package_payload(
         origin: :github,
         repository_url: payload['repository']['url'],
-        repository_owner: payload['repository']['owner'],
+        repository_name: payload['repository']['name'],
+        repository_owner_name: payload['repository']['owner']['name'],
+        repository_owner_email: payload['repository']['owner']['email'],
+        repository_private: payload['repository']['private'],
         target_commit: payload['after'],
         reference: payload['ref']
       )
