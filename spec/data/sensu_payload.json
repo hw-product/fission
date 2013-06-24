@@ -1,5 +1,5 @@
 {
-  "before": "a446e24516cfe2d2f2025986e99bd21f8d3197a6",
+  "before": "73a60ced25f4affef2376faca24a43c1dd4c7086",
   "repository": {
     "url": "http://github.com/sensu/sensu",
     "name": "sensu",
@@ -14,6 +14,6 @@
   },
   "commits": [
   ],
-  "after": "ca26dafe5ec7919157c1de1e4f18f43d8be452eb",
+  "after": "8440a782dd6cbe78b56222feaeac89c726d5b9b7",
   "ref": "refs/heads/master"
 }
