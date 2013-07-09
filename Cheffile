@@ -1,0 +1,8 @@
+# -*- mode: ruby -*-
+
+cookbook 'pkg-build'
+cookbook 'repository'
+cookbook 'fpm-tng'
+cookbook 'lxc'
+cookbook 'builder'
+cookbook 'gpg'
