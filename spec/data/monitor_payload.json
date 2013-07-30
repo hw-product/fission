@@ -1,0 +1,19 @@
+{
+  "before": "c6d3b2551d338065a4e4319af35a8cc6238cfd27",
+  "repository": {
+    "url": "http://github.com/portertech/chef-monitor",
+    "name": "chef-monitor",
+    "description": "An OpsCode Chef cookbook for monitoring services, wrapping the Sensu cookbook.",
+    "watchers": 8,
+    "forks": 25,
+    "private": 0,
+    "owner": {
+      "email": "portertech@gmail.com",
+      "name": "portertech"
+    }
+  },
+  "commits": [
+  ],
+  "after": "445a5f63fd4b9878cb7b4fe7223c6da68b7fb1d9",
+  "ref": "refs/heads/master"
+}
