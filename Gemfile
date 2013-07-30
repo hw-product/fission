@@ -1,14 +1,13 @@
 source "https://rubygems.org"
 
 group :integration do
-  gem 'test-kitchen', github: 'opscode/test-kitchen', branch: '1.0'
-  gem 'kitchen-lxc', github: 'portertech/kitchen-lxc'
-  gem 'rb-inotify', '~> 0.9' if RUBY_PLATFORM =~ /linux/
+  gem 'test-kitchen', '1.0.0.beta.2'
+  gem 'kitchen-docker', '0.5.0'
 end
 
-gem 'celluloid', github: 'celluloid/celluloid', branch: 'master'
-gem 'celluloid-io', github: 'celluloid/celluloid-io', branch: 'master'
-gem 'reel', github: 'celluloid/reel', branch: 'master'
+gem 'celluloid', '0.14.1'
+gem 'celluloid-io', '0.14.1'
+gem 'reel', '0.3.0'
 gem 'librarian-chef'
 
 gemspec
