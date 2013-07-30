@@ -1,8 +1,6 @@
-require 'kitchen/errors'
-require 'kitchen/logging'
-require 'kitchen/shell_out'
-require 'spoon'
 require 'shellwords'
+require 'kitchen'
+require 'spoon'
 
 module Kitchen
   module ShellOut

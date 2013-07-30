@@ -46,8 +46,11 @@ module Fission
       },
       test_kitchen: {
         actor_name: 'test_kitchen',
-        enabled: true
-      },
+        enabled: true,
+        arguments: [
+          working_dir: "/srv/fission/repositories/"
+        ]
+      }
     )
   end
 end
