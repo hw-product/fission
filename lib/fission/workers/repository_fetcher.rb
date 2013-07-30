@@ -39,7 +39,7 @@ module Fission
 
         debug(export_complete: 'export complete')
 
-        Actor[:transport][:package_builder].clone_complete(
+        Actor[:transport][:test_runner].clone_complete(
           repository_identifier
         )
       end

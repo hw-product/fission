@@ -4,7 +4,7 @@ require 'multi_json'
 api_endpoints do
   include Celluloid::Logger
 
-  post '/github-build' do |request, connection|
+  post '/github' do |request, connection|
     begin
       payload = MultiJson.load(request.body)
     rescue MultiJson::DecodeError => e
@@ -12,7 +12,7 @@ api_endpoints do
     end
 
     if payload
-      Celluloid::Actor[:transport][:package_builder].route_package_payload(
+      Celluloid::Actor[:transport][:test_runner].route_test_payload(
         origin: :github,
         repository_url: payload['repository']['url'],
         repository_name: payload['repository']['name'],
@@ -31,6 +31,6 @@ api_endpoints do
   get '/test' do |request, connection|
     puts request.body
     puts request.headers
-    connection.respond :ok
+    connection.respond :ok, request.body
   end
 end

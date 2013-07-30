@@ -33,8 +33,8 @@ module Fission
           }
         ],
       },
-      package_builder: {
-        actor_name: 'package_bulider',
+      test_runner: {
+        actor_name: 'test_runner',
         enabled: true
       },
       repository_fetcher: {
@@ -44,8 +44,8 @@ module Fission
           working_dir: "/srv/fission/repositories/"
         ]
       },
-      container_router: {
-        actor_name: 'container_router',
+      test_kitchen: {
+        actor_name: 'test_kitchen',
         enabled: true
       },
     )
