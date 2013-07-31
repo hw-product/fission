@@ -1,6 +1,6 @@
-require 'shellwords'
 require 'kitchen'
-require 'spoon'
+require 'childprocess'
+require 'shellwords'
 
 module Kitchen
   module ShellOut
@@ -12,39 +12,36 @@ module Kitchen
 
       info("#{subject} BEGIN (#{display_cmd(cmd)})") unless quiet
 
-      stdout_pipe, stderr_pipe = IO.pipe, IO.pipe
+      stdout_r, stdout_w = IO.pipe
+      stderr_r, stderr_w = IO.pipe
 
-      file_actions = Spoon::FileActions.new
+      process = ChildProcess.build(*cmd.shellsplit)
 
-      file_actions.dup2(1, stdout_pipe.last.to_i)
-      file_actions.dup2(2, stderr_pipe.last.to_i)
+      process.io.stdout = stdout_w
+      process.io.stderr = stderr_w
 
-      spawn_attr = Spoon::SpawnAttributes.new
+      process.start
 
-      args = cmd.shellsplit
-      pid = Spoon.posix_spawn(args[0], file_actions, spawn_attr, args)
+      process.wait
 
-      _, status = Process.wait2(pid)
+      stdout_w.close; stderr_w.close
 
-      if status.exitstatus != 0
-        raise ShellCommandFailed
+      stdout = stdout_r.read
+      stderr = stderr_r.read
+
+      stdout_r.close; stderr_r.close
+
+      if process.exit_code != 0
+        raise ShellCommandFailed, stderr
       end
 
-      stdout_pipe.last.close
-      stderr_pipe.last.close
-
-      stdout = stdout_pipe.first.read
-      stderr = stderr_pipe.first.read
-
-      stdout + stderr
+      stdout
     rescue Exception => error
       error.extend(Kitchen::Error)
-      raise
+      raise error
     ensure
-      [stdout_pipe, stderr_pipe].each do |pipe|
-        pipe.reverse.each do |io|
-          io.close unless io.closed?
-        end
+      [stdout_r, stdout_w, stderr_r, stderr_w].each do |io|
+        io.close unless io.closed?
       end
     end
   end
