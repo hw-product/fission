@@ -20,7 +20,14 @@ module Kitchen
       process.io.stdout = stdout_w
       process.io.stderr = stderr_w
 
+      process.duplex = true if options[:input]
+
       process.start
+
+      if options[:input]
+        process.io.stdin.write options[:input]
+        process.io.stdin.close
+      end
 
       process.wait
 
