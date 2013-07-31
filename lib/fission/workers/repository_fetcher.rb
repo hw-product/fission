@@ -39,11 +39,10 @@ module Fission
 
         debug(export_complete: 'export complete')
 
-      end
         Actor[:transport][:test_runner].clone_complete(
           repository_identifier
         )
-
+      end
     end
 
     def stage_tar repository_identifier, working_directory
