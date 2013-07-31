@@ -4,7 +4,7 @@ require 'shellwords'
 
 module Kitchen
   module ShellOut
-    def run_command(cmd, options = {})
+    def run_command cmd, options = {}
       use_sudo = options[:use_sudo].nil? ? false : options[:use_sudo]
       quiet = options[:quiet]
       cmd = "sudo -E #{cmd}" if use_sudo
