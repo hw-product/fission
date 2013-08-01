@@ -3,5 +3,7 @@ require 'rubygems'
 require 'bundler/setup'
 require 'fission'
 
+ENV['TMPDIR'] = '/tmp'
+
 Fission::Application.boot
 sleep

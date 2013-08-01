@@ -1,4 +1,49 @@
 module Fission
+  module Kitchen
+    class Loader
+      def initialize kitchen_root
+        @kitchen_file = File.join(
+          kitchen_root,
+          '.kitchen.yml'
+        )
+
+        @fission_file = File.join(
+          kitchen_root,
+          '.fission.yml'
+        )
+      end
+
+      def read
+        kitchen_config.rmerge(fission_config).rmerge(overrides)
+      end
+
+      private
+
+      def loader(file, options={})
+        ::Kitchen::Loader::YAML.new(file, options)
+      end
+
+      def kitchen_config
+        loader(@kitchen_file, process_erb: false).read
+      end
+
+      def fission_config
+        if File.exists?(@fission_file)
+          loader(@fission_file, process_erb: false).read
+        else
+          {}
+        end
+      end
+
+      def overrides
+        {
+          driver_plugin: 'docker'
+        }
+      end
+
+    end
+  end
+
   class Worker::TestKitchen < Worker
 
     attr_reader :options
@@ -9,27 +54,55 @@ module Fission
       info 'Test Kitchen initialized'
     end
 
+    def test_instance instance
+      result = {
+        name: instance.name,
+        log_file: File.join(instance.driver[:kitchen_root], '.kitchen', 'logs', instance.name)
+      }
+      begin
+        instance.test
+        result[:passed] = true
+      rescue ::Kitchen::InstanceFailure, ::Kitchen::ActionFailed => error
+        puts error.message
+        puts error.backtrace.join("\n")
+        result[:passed] = false
+      ensure
+        instance.destroy
+      end
+      result
+    end
+
     def test_from_repository repository_identifier
       kitchen_root = File.join(
         options[:working_dir],
         repository_identifier
       )
 
-      yaml_file = File.join(
-        kitchen_root,
-        '.kitchen.yml'
-      )
+      loader = Kitchen::Loader.new(kitchen_root)
+      config = loader.read
 
-      loader = Kitchen::Loader::YAML.new(yaml_file)
-
-      config = Kitchen::Config.new(
+      kitchen_config = ::Kitchen::Config.new(
         :loader => loader,
         :kitchen_root => kitchen_root,
         :test_base_path => File.join(kitchen_root, 'test/integration'),
         :supervised => false
       )
 
-      config.instances.map { |i| i.test }
+      results = kitchen_config.instances.map do |instance|
+        test_instance instance
+      end
+
+      unless results.all? { |result| result[:passed] }
+        if config[:irc]
+#          Actor[:transport][:test_notifier].notify_irc_channel(
+#            config[:irc],
+#            results
+#          )
+        end
+      end
+
+      puts results.inspect
+
     end
 
     def terminate
