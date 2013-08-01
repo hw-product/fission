@@ -30,7 +30,7 @@ module Fission
 
         repo = Git.clone(git_repo_url, working_directory, depth: 1)
         repo.checkout(ref)
-        Dir.chdir(repo.dir.to_s) { FileUtils.rm_r '.git' }
+        FileUtils.rm_r File.join(working_directory, '.git')
 
         stage_tar(
           repository_identifier,
@@ -50,10 +50,8 @@ module Fission
       raw_string = StringIO.new("rw")
       tar = Minitar::Output.new(raw_string)
 
-      Dir.chdir(working_directory) do
-        Find.find('.') do |entry|
-          Minitar.pack_file(entry, tar)
-        end
+      Find.find(working_directory) do |entry|
+        Minitar.pack_file(entry, tar)
       end
 
       debug(stage_tar: "sending to object_storage key #{repository_identifier}")
