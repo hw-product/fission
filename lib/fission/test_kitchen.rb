@@ -1,7 +1,3 @@
-require 'kitchen'
-require 'childprocess'
-require 'shellwords'
-
 module Kitchen
   module ShellOut
     def run_command cmd, options = {}
@@ -10,12 +6,12 @@ module Kitchen
       cmd = "sudo -E #{cmd}" if use_sudo
       subject = "[#{options[:log_subject] || "local"} command]"
 
-      info("#{subject} BEGIN (#{display_cmd(cmd)})") unless quiet
+      info "#{subject} BEGIN (#{display_cmd(cmd)})" unless quiet
 
       stdout_r, stdout_w = IO.pipe
       stderr_r, stderr_w = IO.pipe
 
-      process = ChildProcess.build(*cmd.shellsplit)
+      process = ChildProcess.build *cmd.shellsplit
 
       process.io.stdout = stdout_w
       process.io.stderr = stderr_w
@@ -44,7 +40,7 @@ module Kitchen
 
       stdout
     rescue Exception => error
-      error.extend(Kitchen::Error)
+      error.extend Kitchen::Error
       raise error
     ensure
       [stdout_r, stdout_w, stderr_r, stderr_w].each do |io|

@@ -1,24 +1,17 @@
-require 'librarian'
-require 'childprocess'
-
 module Librarian
   module Source
     class Git
       class Repository
 
-        class << self
-
-          def clone! environment, path, repository_url
-            path = Pathname.new(path)
-            git = new environment, path
-            git.clone! repository_url
-            git
-          end
-
+        def self.clone! environment, path, repository_url
+          path = Pathname.new path
+          git = new environment, path
+          git.clone! repository_url
+          git
         end
 
-        def clone!(repository_url)
-          ::Git.clone(repository_url, path)
+        def clone! repository_url
+          ::Git.clone repository_url, path
         end
 
         private
@@ -30,16 +23,16 @@ module Librarian
           }
 
           command = [bin]
-          command.concat(args)
+          command.concat args
 
-          run_command_internal(command, env: env)
+          run_command_internal command, env: env
         end
 
         def run_command_internal cmd, options = {}
           stdout_r, stdout_w = IO.pipe
           stderr_r, stderr_w = IO.pipe
 
-          process = ChildProcess.build(*cmd)
+          process = ChildProcess.build *cmd
 
           process.io.stdout = stdout_w
           process.io.stderr = stderr_w
