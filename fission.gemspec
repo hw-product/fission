@@ -34,6 +34,7 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency 'minitar'
   gem.add_runtime_dependency 'test-kitchen'
   gem.add_runtime_dependency 'kitchen-docker'
+  gem.add_runtime_dependency 'carrier-pigeon'
 
   gem.add_development_dependency 'rake'
   gem.add_development_dependency 'rspec'

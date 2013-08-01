@@ -37,7 +37,12 @@ module Fission
 
       def overrides
         {
-          driver_plugin: 'docker'
+          driver_plugin: 'docker',
+          irc: {
+            uri: 'irc://fission:heavywater@heavywater.irc.grove.io:6697/#HeavyWater',
+            nickserv_password: 'boosterjuice8',
+            ssl: true
+          }
         }
       end
 
@@ -92,16 +97,14 @@ module Fission
         test_instance instance
       end
 
-      unless results.all? { |result| result[:passed] }
-        if config[:irc]
-#          Actor[:transport][:test_notifier].notify_irc_channel(
-#            config[:irc],
-#            results
-#          )
-        end
+      if config[:irc]
+        Actor[:transport][:test_notifier].notify_irc_channel(
+          config[:irc],
+          results
+        )
       end
 
-      puts results.inspect
+      unless results.all? { |result| result[:passed] }; end
 
     end
 

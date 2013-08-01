@@ -50,6 +50,10 @@ module Fission
         arguments: [
           working_dir: "/srv/fission/repositories/"
         ]
+      },
+      test_notifier: {
+        actor_name: 'test_notifier',
+        enabled: true
       }
     )
   end
