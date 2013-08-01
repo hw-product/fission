@@ -5,7 +5,35 @@ module Librarian
   module Source
     class Git
       class Repository
+
+        class << self
+
+          def clone! environment, path, repository_url
+            path = Pathname.new(path)
+            git = new environment, path
+            git.clone! repository_url
+            git
+          end
+
+        end
+
+        def clone!(repository_url)
+          ::Git.clone(repository_url, path)
+        end
+
         private
+
+        def run! args, options = {}
+          env = {
+            GIT_DIR: File.join(path, '.git'),
+            GIT_WORK_TREE: path
+          }
+
+          command = [bin]
+          command.concat(args)
+
+          run_command_internal(command, env: env)
+        end
 
         def run_command_internal cmd, options = {}
           stdout_r, stdout_w = IO.pipe
@@ -16,8 +44,11 @@ module Librarian
           process.io.stdout = stdout_w
           process.io.stderr = stderr_w
 
-          process.cwd = options[:chdir] if options[:chdir]
-          process.environment = options[:env] if options[:env]
+          if options[:env]
+            options[:env].each do |k, v|
+              process.environment[k.to_s] = v
+            end
+          end
 
           process.start
           process.wait
