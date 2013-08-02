@@ -6,7 +6,10 @@ api_endpoints do
 
   post '/github' do |request, connection|
     begin
-      payload = MultiJson.load(request.body)
+      raw_body = request.body
+      raw_body.slice!(/\A[^{]+/)
+      raw_body.slice!(/[^}]+\z/)
+      payload = MultiJson.load(raw_body)
     rescue MultiJson::DecodeError => e
       info "Error parsing request body: #{e}"
     end
