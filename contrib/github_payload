@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -e
+[ -n "$DEBUG" ] && set -x
+
+payload="$1"
+if [ -z "$payload" ] ; then
+  payload="$(dirname $0)/../spec/data/monitor_payload.json"
+fi
+
+if [ -z "$FISSION_URL" ] ; then
+  FISSION_URL="http://127.0.0.1:8000/github"
+fi
+
+curl -i -d "payload=$(cat $payload)" $FISSION_URL
