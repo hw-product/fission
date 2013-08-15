@@ -1,5 +1,5 @@
 {
-  "before": "445a5f63fd4b9878cb7b4fe7223c6da68b7fb1d9",
+  "before": "b9f3a50e0814ef3ea9ad9aaced5dc23a269415db",
   "repository": {
     "url": "http://github.com/portertech/chef-monitor",
     "name": "chef-monitor",
@@ -14,6 +14,6 @@
   },
   "commits": [
   ],
-  "after": "faf8e7bc657ac1fa2143e13a306c70a16e83d630",
+  "after": "baa44f43a7123b7572ed1b3d2b4354740076acea",
   "ref": "refs/heads/tk"
 }
