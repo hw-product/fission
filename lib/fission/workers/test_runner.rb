@@ -11,12 +11,14 @@ module Fission
       repo_url = payload[:repository_url]
       repo_name = payload[:repository_name]
       owner_name = payload[:repository_owner_name]
+      reference = payload[:reference]
       target_commit = payload[:target_commit]
       repository_is_private = payload[:repository_private] == 1
       Actor[:transport][:repository_fetcher].clone_repository(
         repo_url,
         owner_name,
         repo_name,
+        reference,
         target_commit,
       ) unless repository_is_private
     end

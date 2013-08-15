@@ -11,15 +11,8 @@ module Fission
       info 'RepositoryFetcher initialized'
     end
 
-    def change_protocol_to_git url
-      uri = URI(url)
-      uri.scheme = 'git'
-      uri.to_s
-    end
-
-    def clone_repository repo_url, owner_name, repo_name, ref
-      git_repo_url = change_protocol_to_git repo_url
-      repository_identifier = "#{owner_name}/#{repo_name}@#{ref}"
+    def clone_repository repo_url, owner_name, repo_name, ref, sha
+      repository_identifier = "#{owner_name}/#{repo_name}@#{sha}"
       working_directory = File.join(
         options[:working_dir],
         repository_identifier
@@ -28,13 +21,13 @@ module Fission
       unless File.directory?(working_directory)
         debug(export_start: "starting export to #{working_directory}")
 
-        repo = Git.clone(git_repo_url, working_directory, depth: 1)
-        repo.checkout(ref)
+        Fission::Git.clone repo_url, working_directory, depth: 1, branch: ref.gsub(%r(^refs/heads/), '')
+        Fission::Git.checkout working_directory, sha
         FileUtils.rm_r File.join(working_directory, '.git')
 
         stage_tar(
           repository_identifier,
-          repo.dir.to_s
+          working_directory
         )
 
         debug(export_complete: 'export complete')

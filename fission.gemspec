@@ -30,7 +30,6 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency 'blockenspiel'
   gem.add_runtime_dependency 'childprocess'
   gem.add_runtime_dependency 'moneta', '= 0.7.15'
-  gem.add_runtime_dependency 'git'
   gem.add_runtime_dependency 'minitar'
   gem.add_runtime_dependency 'test-kitchen'
   gem.add_runtime_dependency 'kitchen-docker'

@@ -2,6 +2,7 @@ module Librarian
   module Source
     class Git
       class Repository
+        include Fission::Command
 
         def self.clone! environment, path, repository_url
           path = Pathname.new path
@@ -11,57 +12,22 @@ module Librarian
         end
 
         def clone! repository_url
-          ::Git.clone repository_url, path
+          Fission::Git.clone repository_url, path, quiet: true
         end
 
         private
 
-        def run! args, options = {}
-          env = {
+        def git_env
+          {
             GIT_DIR: File.join(path, '.git'),
             GIT_WORK_TREE: path
           }
-
-          command = [bin]
-          command.concat args
-
-          run_command_internal command, env: env
         end
 
-        def run_command_internal cmd, options = {}
-          stdout_r, stdout_w = IO.pipe
-          stderr_r, stderr_w = IO.pipe
-
-          process = ChildProcess.build *cmd
-
-          process.io.stdout = stdout_w
-          process.io.stderr = stderr_w
-
-          if options[:env]
-            options[:env].each do |k, v|
-              process.environment[k.to_s] = v
-            end
-          end
-
-          process.start
-          process.wait
-
-          stdout_w.close; stderr_w.close
-
-          stdout = stdout_r.read
-          stderr = stderr_r.read
-
-          stdout_r.close; stderr_r.close
-
-          if process.exit_code != 0
-            raise StandardError, stderr
-          end
-
-          stdout
-        ensure
-          [stdout_r, stdout_w, stderr_r, stderr_w].each do |io|
-            io.close unless io.closed?
-          end
+        def run! args, options = {}
+          command = [bin]
+          command.concat args
+          safe_run command.join(' '), env: git_env
         end
       end
     end
