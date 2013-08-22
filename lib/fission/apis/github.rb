@@ -14,13 +14,17 @@ api_endpoints do
     if payload
       Celluloid::Actor[:transport][:package_builder].route_package_payload(
         origin: :github,
+        fission: {
+          account: 'spox'
+        },
         repository_url: payload['repository']['url'],
         repository_name: payload['repository']['name'],
         repository_owner_name: payload['repository']['owner']['name'],
         repository_owner_email: payload['repository']['owner']['email'],
-        repository_private: payload['repository']['private'],
+        repository_private: payload['repository']['private'] == 1,
         target_commit: payload['after'],
-        reference: payload['ref']
+        reference: payload['ref'],
+        payload: payload
       )
       connection.respond :ok, 'Payload received and added to queue'
     else
@@ -28,9 +32,9 @@ api_endpoints do
     end
   end
 
-  get '/test' do |request, connection|
+  post '/test' do |request, connection|
     puts request.body
     puts request.headers
-    connection.respond :ok
+    connection.respond :ok, 'Thanks!'
   end
 end

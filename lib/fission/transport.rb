@@ -11,7 +11,7 @@ module Fission
     trap_exit :on_exit
 
     def deliver(name, meth, *args, &block)
-      @nodes.fetch(name).async(meth, *args, &block)
+      @nodes.fetch(name).send(meth, *args, &block)
     rescue
       abort $!
     end
@@ -40,7 +40,11 @@ module Fission
       end
 
       def method_missing(meth, *args, &block)
-        @router.async.deliver(@name, meth, *args, &block)
+        if(meth.to_s.end_with?('!'))
+          @router.async.deliver(@name, meth.to_s.sub('!', '').to_sym, *args, &block)
+        else
+          @router.deliver(@name, meth, *args, &block)
+        end
       end
     end
 

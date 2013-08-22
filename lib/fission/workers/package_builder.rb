@@ -1,34 +1,30 @@
 module Fission
   class Worker::PackageBuilder < Worker
-
+    
     def initialize
       info 'Package Builder initialized'
       Actor[:transport].register :package_builder, current_actor
     end
 
-    def route_package_payload message
-      debug(payload_message_received: message)
-      repo_url = message[:repository_url]
-      repo_name = message[:repository_name]
-      owner_name = message[:repository_owner_name]
-      target_commit = message[:target_commit]
-      repository_is_private = message[:repository_private] == 1
-      key = [owner_name, repo_name].join('/')
-
-      Actor[:transport][:repository_fetcher].clone_repository(
-        repo_url,
-        owner_name,
-        repo_name,
-        target_commit,
-        ) unless repository_is_private
-      # Actor[:transport][:object_storage].cache_payload_to_disk(key, message)
+    def route_package_payload(message)
+      debug(route_package_payload: message)
+      message[:uuid] = Celluloid::UUID.generate
+      debug(route_package_payload: "UUID Generated: #{message[:uuid]}")
+      Actor[:transport][:account_storage].store!(message[:fission][:account]) do
+        data[:jobs] << message
+        data[:status][message[:uuid]] = {:state => :pending}
+      end
+      unless(message[:repository_private])
+        info(route_package_payload: 'Sending repository clone request')
+        Actor[:transport][:repository_fetcher].clone_repository!(message)
+      else
+        error(route_package_payload: 'Private repository clone not implemented')
+      end
     end
-
-    def clone_complete repository_identifier
-      debug(package_builder_clone_completed: repository_identifier)
-      Actor[:transport][:container_router].package_from_repository(
-        repository_identifier
-      )
+    
+    def clone_complete(message)
+      debug(clone_complete: message)
+      Actor[:transport][:container_router].package_from_repository!(message)
     end
 
     def terminate

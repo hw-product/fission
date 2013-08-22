@@ -2,7 +2,7 @@ module Fission
   class Supervisor < Celluloid::SupervisionGroup
     include Mixin::ConvertToClassName
 
-    def initialize
+    def initialize(*args)
       super
       info 'Supervisor started, adding workers'
       core_services
@@ -11,13 +11,13 @@ module Fission
 
     private
 
-    def supervise_worker worker, options = {}
+    def supervise_worker(worker, options = {})
       klass = Fission::Worker.const_get(
-        convert_to_class_name(worker.to_s)
+        convert_to_class_name(worker)
       )
       args = (options[:arguments] || Array.new)
       actor_name = options[:actor_name]
-      if actor_name
+      if(actor_name)
         supervise_as(actor_name, klass, *args)
       else
         supervise(klass, *args)

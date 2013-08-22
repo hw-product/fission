@@ -1,8 +1,7 @@
 # -*- mode: ruby -*-
 
-cookbook 'pkg-build'
-cookbook 'repository'
-cookbook 'fpm-tng'
-cookbook 'lxc'
-cookbook 'builder'
-cookbook 'gpg'
+cookbook 'pkg-build', ref: 'develop'
+cookbook 'repository', ref: 'develop'
+cookbook 'fpm-tng', ref: 'develop'
+cookbook 'lxc', ref: 'develop'
+cookbook 'builder', ref: 'develop'

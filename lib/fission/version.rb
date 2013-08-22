@@ -1,4 +1,7 @@
 module Fission
-  VERSION = '0.0.1'.freeze
+  class Version < Gem::Version
+  end
+
+  VERSION = Version.new('0.0.1')
   def self.version; VERSION; end
 end
