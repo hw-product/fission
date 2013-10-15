@@ -1,6 +1,9 @@
 require 'carnivore'
 require 'carnivore/config'
+
+require 'fission'
 require 'fission/cli'
+require 'fission/callback'
 
 cli = Fission::Cli.new
 cli.parse_options
