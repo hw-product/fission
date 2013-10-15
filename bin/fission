@@ -1,0 +1,4 @@
+# -*- mode: ruby -*-
+# -*- encoding: utf-8 -*-
+
+require 'fission/runner'
