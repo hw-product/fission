@@ -19,14 +19,16 @@ module Fission
   class Transports
     class << self
       def build!
+        Array(Carnivore::Config.get(:fission, :loaders, :sources)).flatten.compact.each do |lib|
+          require lib
+        end
         sources = Carnivore::Config.get(:fission, :sources)
         if(sources)
           Carnivore.configure do
             sources.each do |name, opts|
-              require "carnivore-#{opts[:type]}"
               Carnivore::Source.build(
                 :type => opts[:type].to_sym,
-                :args => opts[:args]
+                :args => opts[:args].merge(:name => name.to_sym)
               )
             end
           end
