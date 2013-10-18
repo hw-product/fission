@@ -3,7 +3,9 @@
         "loaders": {
             "workers": [
                 "fission-validator",
-                "fission-rest-api"
+                "fission-rest-api",
+                "fission-package-builder",
+                "fission-code-fetcher"
             ],
             "sources": [
                 "carnivore-http"
@@ -22,11 +24,27 @@
                     "bind": "127.0.0.1",
                     "port": 9876
                 }
+            },
+            "fission_code_fetcher": {
+                "type": "http",
+                "args": {
+                    "bind": "127.0.0.1",
+                    "port": 3002
+                }
+            },
+            "fission_package_builder": {
+                "type": "http",
+                "args": {
+                    "bind": "127.0.0.1",
+                    "port": 3003
+                }
             }
         },
         "workers": {
             "fission_validator": 2,
-            "fission_rest_api": 0
+            "fission_rest_api": 0,
+            "fission_package_builder": 1,
+            "fission_code_fetcher": 1
         }
     }
 }
