@@ -6,17 +6,12 @@ module Fission
     module Transmission
 
       # Do the right thing!
-      def transmit(worker, payload)
+      def transmit(worker, *payload)
         src = Celluloid::Actor[worker.to_sym]
         unless(src)
           raise KeyError.new("Requested worker is not currently registered: #{worker}")
         end
-        case src
-        when Carnivore::Source::Http
-          src.transmit(payload)
-        else
-          src.transmit(payload)
-        end
+        src.async.transmit(*payload)
       end
 
     end
