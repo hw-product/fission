@@ -32,7 +32,6 @@ module Fission
       end
 
       def unpack(message)
-        puts "Message Body: #{message[:message][:body]}"
         if(message[:message])
           case determine_style(message)
           when :sqs
