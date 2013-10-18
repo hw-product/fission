@@ -13,8 +13,8 @@ module Fission
       def execute(message)
         info "#{message} is not validated. Forwarding to validator."
         payload = unpack(message)
-        Celluloid::Actor[:fission_validator].transmit(payload, message)
         message.confirm!
+        transmit(:fission_validator, payload)
       end
 
     end
