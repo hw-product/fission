@@ -1,0 +1,32 @@
+{
+    "fission": {
+        "loaders": {
+            "workers": [
+                "fission-validator",
+                "fission-rest-api"
+            ],
+            "sources": [
+                "carnivore-http"
+            ]
+        },
+        "sources": {
+            "fission_validator": {
+                "type": "http",
+                "args": {
+                    "port": 3001
+                }
+            },
+            "fission_rest_api": {
+                "type": "http",
+                "args": {
+                    "bind": "127.0.0.1",
+                    "port": 9876
+                }
+            }
+        },
+        "workers": {
+            "fission_validator": 2,
+            "fission_rest_api": 0
+        }
+    }
+}
