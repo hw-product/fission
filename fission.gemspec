@@ -14,6 +14,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'carnivore-http'
   s.add_dependency 'celluloid'
   s.add_dependency 'mixlib-cli'
+  s.add_dependency 'childprocess'
   s.executables << 'fission'
   s.files = Dir['**/*']
 end
