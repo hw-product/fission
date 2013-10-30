@@ -1,5 +1,10 @@
 {
     "fission": {
+        "utils": {
+            "process": {
+                "max_processes": 5
+            }
+        },
         "loaders": {
             "workers": [
                 "fission-validator",
