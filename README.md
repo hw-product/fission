@@ -1,8 +1,12 @@
 # Fission
 
-Does "stuff"
+Fission provides a set of base utilities and subclasses to drive the platform.
 
-## Usage
+## About
+
+## Getting Started
+
+## Usage examples
 
 ```
 $ bundle update
