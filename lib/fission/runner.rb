@@ -5,6 +5,7 @@ require 'fission'
 require 'fission/cli'
 require 'fission/setup'
 require 'fission/callback'
+require 'fission/exceptions'
 
 cli = Fission::Cli.new
 cli.parse_options
