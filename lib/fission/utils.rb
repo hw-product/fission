@@ -9,7 +9,7 @@ module Fission
       def transmit(worker, *payload)
         src = Celluloid::Actor[worker.to_sym]
         unless(src)
-          raise KeyError.new("Requested worker is not currently registered: #{worker}")
+          abort KeyError.new("Requested worker is not currently registered: #{worker}")
         end
         src.async.transmit(*payload)
       end
