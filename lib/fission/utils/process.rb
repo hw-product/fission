@@ -11,6 +11,7 @@ module Fission
         @registry = {}
         @locker = {}
         @lock_wait = Celluloid::Condition.new
+        @max_processes = Carnivore::Config.get(:fission, :utils, :max_processes)
       end
 
       # identifier:: ID to reference the process
@@ -22,6 +23,7 @@ module Fission
         if(@registry.has_key?(identifier) && command)
           abort KeyError.new("Provided identifier already in use (#{identifier.inspect})")
         end
+        check_process_limit!
         if(command)
           _proc = ChildProcess.build(*(Array(command).flatten.compact))
           @registry[identifier] = _proc
@@ -111,6 +113,23 @@ module Fission
       # Return if process is currently locked
       def locked?(identifier)
         !!@locker[identifier]
+      end
+
+      # Raises `Error::ThresholdExceeded` if max process limit has
+      # been met or exceeded
+      def check_process_limit!
+        if(@max_processes)
+          not_complete = @registry.values.find_all do |c_proc|
+            begin
+              !c_proc.exited?
+            rescue ChildProcess::Error => e
+              e.message == 'process not started'
+            end
+          end
+          if(not_complete.size >= @max_processes)
+            abort Error::ThresholdExceeded.new("Max process threshold reached (#{@max_processes} processes)")
+          end
+        end
       end
 
     end
