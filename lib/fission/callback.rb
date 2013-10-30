@@ -13,7 +13,7 @@ module Fission
           transmit("fission_#{payload[:job]}".to_sym, payload)
         end
       else
-        raise ArgumentError.new('No job type provided in payload!')
+        abort ArgumentError.new('No job type provided in payload!')
       end
     end
 
