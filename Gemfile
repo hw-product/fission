@@ -1,8 +1,8 @@
 source 'https://rubygems.org'
 
-gem 'carnivore', git: 'git@github.com:heavywater/carnivore.git', branch: 'develop'
-gem 'carnivore-http', git: 'git@github.com:heavywater/carnivore-http.git', branch: 'develop'
-gem 'carnivore-sqs', git: 'git@github.com:heavywater/carnivore-sqs.git'
+gem 'carnivore', git: 'git@github.com:carnivore/carnivore.git', branch: 'develop'
+gem 'carnivore-http', git: 'git@github.com:carnivore/carnivore-http.git', branch: 'develop'
+gem 'carnivore-sqs', git: 'git@github.com:carnivore/carnivore-sqs.git'
 
 
 gem 'fission-rest-api', git: 'git@github.com:heavywater/fission-rest-api.git', branch: 'develop'
