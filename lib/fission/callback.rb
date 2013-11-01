@@ -17,5 +17,9 @@ module Fission
       end
     end
 
+    def process_manager
+      Celluloid::Actor[:process_manager] || abort(NameError.new('No process manager found!'))
+    end
+
   end
 end
