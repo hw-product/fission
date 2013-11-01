@@ -24,6 +24,11 @@ module Fission
           end
         end
       end
+
+      # Setup process manager if needed
+      if(Carnivore::Config.get(:fission, :utils, :process, :max_processes).to_i > 0)
+        Process.supervise_as :process_manager
+      end
     end
   end
 end
