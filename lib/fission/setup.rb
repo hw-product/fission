@@ -27,10 +27,11 @@ module Fission
 
       # Setup process manager if needed
       if(Carnivore::Config.get(:fission, :utils, :process, :max_processes).to_i > 0)
+        require 'fission/utils/process'
         if(Carnivore::Config.get(:fission, :utils, :process, :spawn))
           ChildProcess.posix_spawn = true
         end
-        Process.supervise_as :process_manager
+        Utils::Process.supervise_as :process_manager
       end
     end
   end
