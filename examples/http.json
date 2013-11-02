@@ -4,6 +4,7 @@
             "working_directory": "/tmp/repositories"
         },
         "package_builder": {
+            "chef_solo_path": "/opt/chef/bin/chef-solo",
             "working_directory": "/tmp/packages"
         },
         "utils": {
