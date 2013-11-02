@@ -1,8 +1,15 @@
 {
     "fission": {
+        "code_fetcher": {
+            "working_directory": "/tmp/repositories"
+        },
+        "package_builder": {
+            "working_directory": "/tmp/packages"
+        },
         "utils": {
             "process": {
-                "max_processes": 5
+                "max_processes": 5,
+                "enable_spawn": true
             }
         },
         "loaders": {
