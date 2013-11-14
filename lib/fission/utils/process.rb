@@ -12,24 +12,24 @@ module Fission
         @locker = {}
         @lock_wait = Celluloid::Condition.new
         @max_processes = Carnivore::Config.get(:fission, :utils, :max_processes)
+        every(5.0){ check_running_procs }
       end
 
       # identifier:: ID to reference the process
+      # source:: `Carnivore::Source` to report completion
       # command:: Array - command to run
       # Registers provided command. Yields process to block if
       # provided
       # Returns - true
-      def process(identifier, command=nil)
+      def process(identifier, source, *command)
         if(@registry.has_key?(identifier) && command)
           abort KeyError.new("Provided identifier already in use (#{identifier.inspect})")
         end
         check_process_limit!
-        if(command)
-          _proc = ChildProcess.build(*(Array(command).flatten.compact))
-          @registry[identifier] = _proc
-        end
+        _proc = ChildProcess.build(*(Array(command).flatten.compact))
+        @registry[identifier] = {:process => _proc, :source => source}
         if(block_given?)
-          yield @registry[identifier]
+          yield @registry[identifier][:process]
         else
           true
         end
@@ -38,10 +38,10 @@ module Fission
       # identifier:: ID reference to process
       # Stops process if alive and unregisters it
       def delete(identifier)
-        if(@registry[identifier])
+        if(@registry[identifier][:process])
           locked = lock(identifier, false)
           if(locked)
-            _proc = @registry[identifier]
+            _proc = @registry[identifier][:process]
             if(_proc)
               if(_proc.alive?)
                 _proc.stop
@@ -61,7 +61,7 @@ module Fission
       # wait:: Wait until lock is obtained
       # Lock the process for exclusive usage
       def lock(identifier, wait=true)
-        if(@registry[identifier])
+        if(@registry[identifier][:process])
           if(locked?(identifier))
             if(wait)
               unlocked = nil
@@ -86,7 +86,7 @@ module Fission
           else
             @locker[identifier] = Celluloid.uuid
             {
-              :process => @registry[identifier],
+              :process => @registry[identifier][:process],
               :lock_id => @locker[identifier]
             }
           end
@@ -119,7 +119,8 @@ module Fission
       # been met or exceeded
       def check_process_limit!
         if(@max_processes)
-          not_complete = @registry.values.find_all do |c_proc|
+          not_complete = @registry.values.find_all do |_proc|
+            c_proc = _proc[:process]
             begin
               !c_proc.exited?
             rescue ChildProcess::Error => e
@@ -128,6 +129,19 @@ module Fission
           end
           if(not_complete.size >= @max_processes)
             abort Error::ThresholdExceeded.new("Max process threshold reached (#{@max_processes} processes)")
+          end
+        end
+      end
+
+      private
+
+      # Checks currently registered processes for completion and sends
+      # notifications if done
+      def check_running_procs
+        @registry.each do |identifier, _proc|
+          if(!locked?(identifier) && !_proc[:notified] && _proc[:source] && !_proc[:process].alive?)
+            _proc[:source].transmit({:process_notification => identifier}, nil)
+            _proc[:notified] = true
           end
         end
       end
