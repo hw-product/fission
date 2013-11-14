@@ -18,7 +18,8 @@
                 "fission-validator",
                 "fission-rest-api",
                 "fission-package-builder",
-                "fission-code-fetcher"
+                "fission-code-fetcher",
+                "fission-nellie"
             ],
             "sources": [
                 "carnivore-http"
@@ -51,13 +52,21 @@
                     "bind": "127.0.0.1",
                     "port": 3003
                 }
+            },
+            "fission_nellie": {
+                "type": "http",
+                "args": {
+                    "bind": "127.0.0.1",
+                    "port": 3004
+                }
             }
         },
         "workers": {
             "fission_validator": 2,
             "fission_rest_api": 0,
             "fission_package_builder": 1,
-            "fission_code_fetcher": 1
+            "fission_code_fetcher": 1,
+            "fission_nellie": 1
         }
     }
 }
