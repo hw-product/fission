@@ -1,4 +1,7 @@
 require 'celluloid'
+require 'shellwords'
+require 'fileutils'
+require 'tempfile'
 
 module Fission
   module Utils
@@ -12,26 +15,57 @@ module Fission
         @locker = {}
         @lock_wait = Celluloid::Condition.new
         @max_processes = Carnivore::Config.get(:fission, :utils, :max_processes)
-        every(5.0){ check_running_procs }
+        @storage_directory = Carnivore::Config.get(:fission, :utils, :process_manager, :storage) ||
+          '/tmp/fission/process_manager'
+        FileUtils.mkdir_p(@storage_directory)
+
+        every(5.0){ check_running_procs } # TODO: Make interval
+        # configurable (also conditional - start stop based on active
+        # non-notified processes in registry)
       end
 
       # identifier:: ID to reference the process
-      # source:: `Carnivore::Source` to report completion
-      # command:: Array - command to run
+      # command:: Splat of additional arguments
+      #   - String/Array argument -> used for command
+      #   - Hash argument -> Merged into registry with `:process`
+      #     - Provide :source for completion notification
+      #     - Provide :payload for notification to be merged into payload
       # Registers provided command. Yields process to block if
       # provided
-      # Returns - true
-      def process(identifier, source, *command)
-        if(@registry.has_key?(identifier) && command)
-          abort KeyError.new("Provided identifier already in use (#{identifier.inspect})")
-        end
-        check_process_limit!
-        _proc = ChildProcess.build(*(Array(command).flatten.compact))
-        @registry[identifier] = {:process => _proc, :source => source}
-        if(block_given?)
-          yield @registry[identifier][:process]
+      # Returns - boolean or abortions
+      def process(identifier, *command)
+        opts = command.detect{|i| i.is_a?(Hash)} || {}
+        command.delete(opts)
+        if(command.empty?)
+          if(@registry.has_key?(identifier))
+            p_lock = lock(identifier, false)
+            if(p_lock)
+              yield p_lock[:process]
+              unlock(p_lock)
+              true
+            else
+              abort Locked.new("Requested process is currently locked (#{identifier})")
+            end
+          else
+            abort KeyError.new("Provided identifer is not currently registered (#{identifier})")
+          end
         else
-          true
+          if(@registry.has_key?(identifier))
+            abort KeyError.new("Provided identifier already in use (#{identifier.inspect})")
+          else
+            check_process_limit!
+            if(command.size == 1)
+              command = Shellwords.shellsplit(command.first)
+            end
+            _proc = ChildProcess.build(*command)
+            @registry[identifier] = opts.merge(:process => _proc)
+            if(block_given?)
+              p_lock = lock(identifier)
+              yield p_lock[:process]
+              unlock(p_lock)
+              true
+            end
+          end
         end
       end
 
@@ -133,14 +167,26 @@ module Fission
         end
       end
 
+      def create_io_tmp(*args)
+        path = File.join(@storage_directory, args.join('-'))
+        FileUtils.mkdir_p(File.dirname(path))
+        Tempfile.new(path)
+      end
+
       private
+
+      def lock_wrapped(identifier)
+        lock(identifer)
+      end
 
       # Checks currently registered processes for completion and sends
       # notifications if done
       def check_running_procs
         @registry.each do |identifier, _proc|
           if(!locked?(identifier) && !_proc[:notified] && _proc[:source] && !_proc[:process].alive?)
-            _proc[:source].transmit({:process_notification => identifier}, nil)
+            payload = _proc[:payload] || {}
+            payload.merge!(:process_notification => identifier)
+            _proc[:source].transmit(payload, nil)
             _proc[:notified] = true
           end
         end
