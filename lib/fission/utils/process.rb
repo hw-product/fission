@@ -170,7 +170,9 @@ module Fission
       def create_io_tmp(*args)
         path = File.join(@storage_directory, args.join('-'))
         FileUtils.mkdir_p(File.dirname(path))
-        Tempfile.new(path)
+        t_file = Tempfile.new(path)
+        t_file.sync
+        t_file
       end
 
       private
