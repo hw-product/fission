@@ -25,6 +25,11 @@
                 "carnivore-http"
             ]
         },
+        "rest_api": {
+            "github_commit": {
+                "job_name": "nellie"
+            }
+        },
         "sources": {
             "validator": {
                 "type": "http",
