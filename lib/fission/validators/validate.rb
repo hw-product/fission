@@ -1,4 +1,4 @@
-require 'fission'
+require 'fission/callback'
 
 module Fission
   module Validators
@@ -7,7 +7,9 @@ module Fission
       include Fission::Utils::MessageUnpack
 
       def valid?(message)
-        !unpack(message).has_key?(:user)
+        super do |payload|
+          !payload[:data] || !payload[:data][:user]
+        end
       end
 
       def execute(message)
