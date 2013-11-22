@@ -62,6 +62,10 @@
             }
         },
         "workers": {
+            "nellie": {
+                "validators": 1,
+                "banks": 3
+            }
             "fission_validator": 2,
             "fission_rest_api": 0,
             "fission_package_builder": 1,
