@@ -26,34 +26,34 @@
             ]
         },
         "sources": {
-            "fission_validator": {
+            "validator": {
                 "type": "http",
                 "args": {
                     "port": 3001
                 }
             },
-            "fission_rest_api": {
+            "rest_api": {
                 "type": "http",
                 "args": {
                     "bind": "127.0.0.1",
                     "port": 9876
                 }
             },
-            "fission_code_fetcher": {
+            "code_fetcher": {
                 "type": "http",
                 "args": {
                     "bind": "127.0.0.1",
                     "port": 3002
                 }
             },
-            "fission_package_builder": {
+            "package_builder": {
                 "type": "http",
                 "args": {
                     "bind": "127.0.0.1",
                     "port": 3003
                 }
             },
-            "fission_nellie": {
+            "nellie": {
                 "type": "http",
                 "args": {
                     "bind": "127.0.0.1",
@@ -65,12 +65,14 @@
             "nellie": {
                 "validators": 1,
                 "banks": 3
-            }
-            "fission_validator": 2,
-            "fission_rest_api": 0,
-            "fission_package_builder": 1,
-            "fission_code_fetcher": 1,
-            "fission_nellie": 1
+            },
+            "validator": {
+                "github": 2
+            },
+            "rest_api": 0,
+            "package_builder": 1,
+            "code_fetcher": 1,
+            "nellie": 1
         }
     }
 }
