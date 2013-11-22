@@ -1,5 +1,4 @@
 require 'carnivore'
-require 'carnivore-sqs'
 
 =begin
 {
