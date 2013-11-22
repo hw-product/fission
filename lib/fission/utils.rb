@@ -7,7 +7,9 @@ module Fission
 
       # Do the right thing!
       def transmit(worker, *payload)
-        src = Celluloid::Actor[worker.to_sym]
+        src = [worker.to_sym, "fission_#{worker}".to_sym].detect do |key|
+          Celluloid::Actor[key]
+        end
         unless(src)
           abort KeyError.new("Requested worker is not currently registered: #{worker}")
         end
