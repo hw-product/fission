@@ -6,6 +6,7 @@ module Fission
 
     include Fission::Utils::Transmission
     include Fission::Utils::MessageUnpack
+    include Fission::Utils::Payload
 
     def valid?(message)
       m = unpack(message)
@@ -32,27 +33,6 @@ module Fission
       payload[:complete].push(name).uniq!
       message.confirm! if message
       forward(payload)
-    end
-
-    def new_payload(job, payload, *args)
-      if(payload.is_a?(String))
-        begin
-          payload = MultiJson.load(payload)
-        rescue MultiJson::DecodeError
-          if(args.include?(:json_required))
-            raise
-          else
-            warn 'Failed to convert payload from string to class. Setting as string value'
-            debug "Un-JSONable string: #{payload.inspect}"
-          end
-        end
-      end
-      {
-        :job => job,
-        :message_id => Celluloid.uuid,
-        :data => payload,
-        :complete => []
-      }
     end
 
   end
