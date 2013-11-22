@@ -14,7 +14,7 @@ module Fission
         info "#{message} is not validated. Forwarding to validator."
         payload = unpack(message)
         message.confirm!
-        transmit(:fission_validator, payload)
+        transmit(:validator, payload)
       end
 
     end
