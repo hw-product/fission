@@ -10,8 +10,6 @@ Gem::Specification.new do |s|
   s.description = 'Fission Core'
   s.require_path = 'lib'
   s.add_dependency 'carnivore'
-#  s.add_dependency 'carnivore-sqs'
-#  s.add_dependency 'carnivore-http'
   s.add_dependency 'celluloid'
   s.add_dependency 'mixlib-cli'
   s.add_dependency 'childprocess'
