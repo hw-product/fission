@@ -58,7 +58,7 @@ module Fission
               command = Shellwords.shellsplit(command.first)
             end
             _proc = ChildProcess.build(*command)
-            @registry[identifier] = opts.merge(:process => _proc)
+            @registry = @registry.dup.merge(identifier => opts.merge(:process => _proc))
             if(block_given?)
               p_lock = lock(identifier)
               yield p_lock[:process]
@@ -187,7 +187,8 @@ module Fission
         @registry.each do |identifier, _proc|
           if(!locked?(identifier) && !_proc[:notified] && _proc[:source] && !_proc[:process].alive?)
             payload = _proc[:payload] || {}
-            payload.merge!(:process_notification => identifier)
+            payload[:data] ||= {}
+            payload[:data].merge!(:process_notification => identifier)
             _proc[:source].transmit(payload, nil)
             _proc[:notified] = true
           end
