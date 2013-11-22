@@ -7,9 +7,9 @@ module Fission
 
       # Do the right thing!
       def transmit(worker, *payload)
-        src = [worker.to_sym, "fission_#{worker}".to_sym].detect do |key|
+        src = [worker.to_sym, "fission_#{worker}".to_sym].map do |key|
           Celluloid::Actor[key]
-        end
+        end.compact.first
         unless(src)
           abort KeyError.new("Requested worker is not currently registered: #{worker}")
         end
@@ -19,6 +19,33 @@ module Fission
     end
 
     extend Transmission
+
+    module Payload
+
+      def new_payload(job, payload, *args)
+        if(payload.is_a?(String))
+          begin
+            payload = MultiJson.load(payload)
+          rescue MultiJson::DecodeError
+            if(args.include?(:json_required))
+              raise
+            else
+              warn 'Failed to convert payload from string to class. Setting as string value'
+              debug "Un-JSONable string: #{payload.inspect}"
+            end
+          end
+        end
+        {
+          :job => job,
+          :message_id => Celluloid.uuid,
+          :data => payload,
+          :complete => []
+        }
+      end
+
+    end
+
+    extend Payload
 
     module MessageUnpack
 
