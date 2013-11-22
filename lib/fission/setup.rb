@@ -5,7 +5,7 @@ module Fission
       key = args[0, args.size - 1].join('.')
       @registration ||= {}
       @registration[key] ||= []
-      @registration[key].push(klass).uniq!
+      @registration[key].push(args.last).uniq!
     end
 
     def registration
@@ -15,8 +15,18 @@ module Fission
     def setup!
       Fission.registration.each do |key, klasses|
         klasses.each do |klass|
-          klass.workers = Carnivore::Config.get(:fission, :workers, *key.split('.'))
-          src = Carnivore::Source.source(key)
+          args = [:fission, :workers, *key.split('.')]
+          num = nil
+          until(args.empty? || num)
+            num = Carnivore::Config.get(*args)
+            unless(num.is_a?(Fixnum))
+              num = nil
+              args.pop
+            end
+          end
+          klass.workers = num
+          src_key = key.split('.').first
+          src = Carnivore::Source.source(src_key)
           if(src)
             name = klass.to_s.split('::').last
             src.add_callback(name, klass)
