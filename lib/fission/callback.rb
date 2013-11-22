@@ -10,7 +10,11 @@ module Fission
 
     def valid?(message)
       m = unpack(message)
-      !m[:complete].include?(name)
+      if(block_given?)
+        !m[:complete].include?(name) && yield(m)
+      else
+        !m[:complete].include?(name)
+      end
     end
 
     def forward(payload)
@@ -32,6 +36,7 @@ module Fission
     def completed(payload, message=nil)
       payload[:complete].push(name).uniq!
       message.confirm! if message
+      debug "This callback has reached completed state on payload: #{payload}"
       forward(payload)
     end
 
