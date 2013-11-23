@@ -8,6 +8,8 @@ module Fission
     include Fission::Utils::MessageUnpack
     include Fission::Utils::Payload
 
+    # message:: Carnivore::Message
+    # Return if message is valid for this callback
     def valid?(message)
       m = unpack(message)
       if(block_given?)
@@ -17,6 +19,8 @@ module Fission
       end
     end
 
+    # payload:: Hash - message payload
+    # Forwards to appropriate worker based on `:job` entry
     def forward(payload)
       if(payload[:job])
         if(payload[:complete].include?(payload[:job]))
@@ -35,15 +39,32 @@ module Fission
       end
     end
 
+    # Returns `ProcessManager` actor if available. Otherwise aborts
+    # TODO: Needs proper linking to allow supervision
     def process_manager
       Celluloid::Actor[:process_manager] || abort(NameError.new('No process manager found!'))
     end
 
-    def completed(payload, message=nil)
+    # payload:: Hash payload
+    # message:: Carnivore::Message instance
+    # Set completed for callback
+    def completed(payload, message)
       payload[:complete].push(name).uniq!
       message.confirm! if message
       debug "This callback has reached completed state on payload: #{payload}"
       forward(payload)
+    end
+
+    # name:: Name of job completed
+    # payload:: Hash payload
+    # message:: Carnivore::Message instance
+    # Set the job name as completed. This will prevent further
+    # delivery to the source and invoke the finalizer. Will also push
+    # through `#completed` to do callback completion tracking and
+    # message confirmation
+    def job_completed(name, payload, message)
+      payload[:complete].push(name.to_s).uniq!
+      completed(payload, message)
     end
 
   end
