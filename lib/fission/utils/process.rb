@@ -9,6 +9,7 @@ module Fission
 
       include Celluloid
 
+      # Creates new Process actor
       def initialize
         require 'childprocess'
         @registry = {}
@@ -167,6 +168,7 @@ module Fission
         end
       end
 
+      # Create temporary IO for logging and return IO instance
       def create_io_tmp(*args)
         path = File.join(@storage_directory, args.join('-'))
         FileUtils.mkdir_p(File.dirname(path))
@@ -177,6 +179,7 @@ module Fission
 
       private
 
+      # Lock the identifier
       def lock_wrapped(identifier)
         lock(identifer)
       end

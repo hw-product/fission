@@ -5,7 +5,9 @@ module Fission
 
     module Transmission
 
-      # Do the right thing!
+      # worker:: worker name
+      # payload:: items to `#transmit` on the Carnivore::Source
+      # Transmit provided payload and optional arguments to worker
       def transmit(worker, *payload)
         src = [worker.to_sym, "fission_#{worker}".to_sym].map do |key|
           Celluloid::Actor[key]
@@ -22,6 +24,11 @@ module Fission
 
     module Payload
 
+      # job:: name of job
+      # payload:: Hash or String payload (will attempt JSON loading)
+      # args:: optional flags
+      # Creates a new payload Hash nesting the original payload within
+      # `:data` and setting the `:job` and `:message_id`
       def new_payload(job, payload, *args)
         if(payload.is_a?(String))
           begin
@@ -55,6 +62,9 @@ module Fission
         end
       end
 
+      # message:: Carnivore::Message
+      # Unpack the actual payload from the given message regardless of
+      # the origin Carnivore::Source
       def unpack(message)
         if(message[:message])
           case determine_style(message)
@@ -78,6 +88,8 @@ module Fission
         end
       end
 
+      # m:: Carnivore::Message
+      # Returns "style" of the message based on the structure
       def determine_style(m)
         begin
           if(m[:message][:request] && m[:message][:body])

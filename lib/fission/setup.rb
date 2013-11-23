@@ -1,6 +1,9 @@
 module Fission
 
   class << self
+    # source:: name of the source to attach
+    # *args:: keying for source
+    # last arg:: Class to register
     def register(*args)
       key = args[0, args.size - 1].join('.')
       @registration ||= {}
@@ -8,10 +11,12 @@ module Fission
       @registration[key].push(args.last).uniq!
     end
 
+    # Returns current registration
     def registration
       @registration || {}
     end
 
+    # Load all callbacks into defined sources
     def setup!
       Fission.registration.each do |key, klasses|
         klasses.each do |klass|

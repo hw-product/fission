@@ -16,11 +16,14 @@ Carnivore::Config.auto_symbolize(true)
 
 begin
   require 'fission/transports'
+  # Build all registered transports (sources)
   Fission::Transports.build!
+  # Load all configured workers and setup
   Array(Carnivore::Config.get(:fission, :loaders, :workers)).flatten.compact.each do |lib|
     require lib
   end
   Fission.setup!
+  # Start the daemon
   Carnivore.start!
 rescue => e
   $stderr.puts "FAILED!"
