@@ -2,6 +2,8 @@ require 'fission/callback'
 
 module Fission
   module Validators
+
+    # Redirects payload to validator to validate payload and set user information
     class Validate < Fission::Callback
 
       include Fission::Utils::MessageUnpack

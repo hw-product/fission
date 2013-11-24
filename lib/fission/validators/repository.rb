@@ -2,6 +2,8 @@ require 'carnivore/callback'
 
 module Fission
   module Validators
+
+    # Redirects payload to code fetcher to provide repository
     class Repository < Fission::Callback
 
       def valid?(message)

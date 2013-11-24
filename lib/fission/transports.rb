@@ -17,6 +17,8 @@ require 'carnivore'
 module Fission
   class Transports
     class << self
+
+      # Build all registered Carnivore::Source transports
       def build!
         Array(Carnivore::Config.get(:fission, :loaders, :sources)).flatten.compact.each do |lib|
           require lib
@@ -35,6 +37,7 @@ module Fission
           raise ArgumentError.new('Failed to retreive source information from configuration')
         end
       end
+
     end
   end
 end
