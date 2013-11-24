@@ -3,6 +3,7 @@ module Fission
 
     class ThresholdExceeded < Error; end
     class Locked < Error; end
+    class NotImplemented < Error; end
 
   end
 end
