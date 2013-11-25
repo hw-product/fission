@@ -14,11 +14,20 @@
                 "enable_spawn": true
             }
         },
+        "router": {
+            "behavior": "config",
+            "route": ["nellie"]
+        },
+        "rest_api": {
+            "github_commit": {
+                "job_name": "router"
+            }
+        },
         "loaders": {
             "workers": [
+                "fission-router",
                 "fission-validator",
                 "fission-rest-api",
-                "fission-package-builder",
                 "fission-code-fetcher",
                 "fission-nellie"
             ],
@@ -64,6 +73,13 @@
                 "args": {
                     "bind": "127.0.0.1",
                     "port": 3004
+                }
+            },
+            "router": {
+                "type": "http",
+                "args": {
+                    "bind": "127.0.0.1",
+                    "port": 3005
                 }
             }
         },
