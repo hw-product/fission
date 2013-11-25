@@ -29,7 +29,7 @@ module Fission
             sources.each do |name, opts|
               Carnivore::Source.build(
                 :type => opts[:type].to_sym,
-                :args => opts[:args].merge(:name => name.to_sym)
+                :args => opts.fetch(:args, {}).merge(:name => name.to_sym)
               )
             end
           end
