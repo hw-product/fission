@@ -14,5 +14,6 @@ Gem::Specification.new do |s|
   s.add_dependency 'mixlib-cli'
   s.add_dependency 'childprocess'
   s.executables << 'fission'
+  s.executables << 'fission-test'
   s.files = Dir['**/*']
 end
