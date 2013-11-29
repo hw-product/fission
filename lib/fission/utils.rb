@@ -81,7 +81,7 @@ module Fission
               message[:message][:body]
             end
           else
-            message
+            message[:message]
           end
         else
           message
@@ -92,12 +92,11 @@ module Fission
       # Returns "style" of the message based on the structure
       def determine_style(m)
         begin
-          if(m[:message][:request] && m[:message][:body])
+          case m[:source].to_s
+          when 'Carnivore::Source::Http', 'Carnivore::Source::HttpEndpoint'
             :http
-          elsif(m[:message][:body].is_a?(Hash) && m[:message][:body][:message])
-            :sqs
           else
-            :unknown
+            m[:source].class.to_s.split('::').downcase.to_sym
           end
         rescue
           :unknown
