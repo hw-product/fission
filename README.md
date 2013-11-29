@@ -16,5 +16,5 @@ $ bundle exec fission -c examples/http.json
 Send it something:
 
 ```
-$ curl --data @examples/data/sample_payload.github.json http://localhost:9876/github-commit/
+$ curl --data @examples/payloads/github.json http://localhost:9876/github-commit/
 ```
