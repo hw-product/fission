@@ -7,11 +7,13 @@ require 'fission/setup'
 require 'fission/callback'
 require 'fission/exceptions'
 
-cli = Fission::Cli.new
-cli.parse_options
-cli.config[:config_path] ||= '/etc/fission/config.json'
+unless(ENV['FISSION_TESTING_MODE'])
+  cli = Fission::Cli.new
+  cli.parse_options
+  cli.config[:config_path] ||= '/etc/fission/config.json'
+  Carnivore::Config.configure(cli.config)
+end
 
-Carnivore::Config.configure(cli.config)
 Carnivore::Config.auto_symbolize(true)
 
 begin
@@ -26,7 +28,7 @@ begin
   # Start the daemon
   Carnivore.start!
 rescue => e
-  $stderr.puts "FAILED!"
+  $stderr.puts 'Fission run failure. Exception encountered.'
   $stderr.puts "#{e.class}: #{e}\n#{e.backtrace.join("\n")}"
-  exit 1
+  exit -1
 end
