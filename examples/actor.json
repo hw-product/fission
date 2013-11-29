@@ -1,6 +1,7 @@
 {
     "fission": {
         "finalizer": null,
+        "error_handler": null,
         "code_fetcher": {
             "working_directory": "/tmp/repositories"
         },
