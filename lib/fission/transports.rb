@@ -34,7 +34,7 @@ module Fission
             end
           end
         else
-          raise ArgumentError.new('Failed to retreive source information from configuration')
+          raise ArgumentError.new('Failed to retrieve source information from configuration')
         end
       end
 

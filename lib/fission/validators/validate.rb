@@ -10,7 +10,7 @@ module Fission
 
       def valid?(message)
         super do |payload|
-          retreive(payload, :data, :account)
+          retrieve(payload, :data, :account)
         end
       end
 
