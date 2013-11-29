@@ -50,7 +50,7 @@ module Fission
     # Set completed for callback
     def completed(payload, message)
       payload[:complete].push(name).uniq!
-      message.confirm! if message
+      message.confirm!
       debug "This callback has reached completed state on payload: #{payload}"
       forward(payload)
     end
@@ -65,6 +65,22 @@ module Fission
     def job_completed(name, payload, message)
       payload[:complete].push(name.to_s).uniq!
       completed(payload, message)
+    end
+
+    # payload:: Hash payload
+    # message:: Carnivore::Message instance
+    # Send payload to error handler
+    def error(payload, message, reason='No message provided')
+      payload[:error] ||= {}
+      payload[:error][:callback] = name
+      payload[:error][:reason] = reason
+      endpoint = Carnivore::Config.get(:fission, :error_handler) ||
+        Carnivore::Config.get(:fission, :finalizer)
+      if(endpoint)
+        Celluloid::Actor[endpoint.to_sym].transmit(payload)
+      else
+        error "Payload of #{message} resulted in error state. No handler defined: #{payload.inspect}"
+      end
     end
 
   end
