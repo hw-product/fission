@@ -70,7 +70,7 @@ module Fission
     # payload:: Hash payload
     # message:: Carnivore::Message instance
     # Send payload to error handler
-    def error(payload, message, reason='No message provided')
+    def failed(payload, message, reason='No message provided')
       payload[:error] ||= {}
       payload[:error][:callback] = name
       payload[:error][:reason] = reason
