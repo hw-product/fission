@@ -24,7 +24,7 @@ module Fission
     def forward(payload)
       if(payload[:job])
         if(payload[:complete].include?(payload[:job]))
-          final_worker = Carnivore::Config.get(:fission, :finalizer)
+          final_worker = Carnivore::Config.get(:fission, :handlers, :complete)
           if(final_worker)
             debug "Finalizing payload! Finalizer worker: #{final_worker} - payload: #{payload.inspect}"
             transmit(final_worker, payload)
@@ -74,8 +74,8 @@ module Fission
       payload[:error] ||= {}
       payload[:error][:callback] = name
       payload[:error][:reason] = reason
-      endpoint = Carnivore::Config.get(:fission, :error_handler) ||
-        Carnivore::Config.get(:fission, :finalizer)
+      endpoint = Carnivore::Config.get(:fission, :handlers, :error) ||
+        Carnivore::Config.get(:fission, :handlers, :complete)
       if(endpoint)
         Celluloid::Actor[endpoint.to_sym].transmit(payload)
       else
