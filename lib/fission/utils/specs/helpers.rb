@@ -1,6 +1,10 @@
 require 'multi_json'
 require 'carnivore/spec_helper'
 
+if(ENV['FISSION_SOURCE_WAIT'])
+  ENV['CARNIVORE_SOURCE_WAIT'] = ENV['FISSION_SOURCE_WAIT']
+end
+
 def payload_for(style, args={})
   dir = File.join(File.dirname(__FILE__), '../../../../examples/payloads')
   path = File.join(dir, "#{style}.json")
