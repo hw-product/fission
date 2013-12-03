@@ -19,7 +19,7 @@
         },
         "router": {
             "behavior": "config",
-            "route": ["nellie"]
+            "route": ["package_builder"]
         },
         "rest_api": {
             "github_commit": {
@@ -28,58 +28,66 @@
         },
         "loaders": {
             "workers": [
-                "fission-router",
-                "fission-validator",
-                "fission-rest-api",
+                "fission-app-jobs",
+                "fission-callbacks",
                 "fission-code-fetcher",
-                "fission-nellie"
+                "fission-finalizers",
+                "fission-github-release",
+                "fission-nellie",
+                "fission-package-builder",
+                "fission-rest-api",
+                "fission-router",
+                "fission-validator"
             ],
             "sources": [
                 "carnivore-http",
                 "carnivore-actor"
             ]
         },
-        "rest_api": {
-            "github_commit": {
-                "job_name": "nellie"
-            }
-        },
         "sources": {
-            "validator": {
+            "app_jobs": {
                 "type": "actor"
             },
-            "rest_api": {
-                "type": "http",
-                "args": {
-                    "bind": "127.0.0.1",
-                    "port": 9876
-                }
+            "callbacks": {
+                "type": "actor"
             },
             "code_fetcher": {
+                "type": "actor"
+            },
+            "finalizers": {
+                "type": "actor"
+            },
+            "github_release": {
+                "type": "actor"
+            },
+            "nellie": {
                 "type": "actor"
             },
             "package_builder": {
                 "type": "actor"
             },
-            "nellie": {
+            "router": {
                 "type": "actor"
             },
-            "router": {
+            "validator": {
                 "type": "actor"
             }
         },
         "workers": {
+            "app_jobs": 0,
+            "callbacks": 0,
+            "code_fetcher": 1,
+            "finalizers": 0,
+            "github_release": 1,
             "nellie": {
                 "validators": 1,
                 "banks": 3
             },
+            "package_builder": 1,
+            "router": 1,
             "validator": {
                 "github": 2
-            },
-            "rest_api": 0,
-            "package_builder": 1,
-            "code_fetcher": 1,
-            "nellie": 1
+            }
         }
     }
 }
