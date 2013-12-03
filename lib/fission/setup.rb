@@ -29,7 +29,7 @@ module Fission
               args.pop
             end
           end
-          klass.workers = num
+          klass.workers = num.is_a?(Fixnum) ? num : 0
           src_key = key.split('.').first
           src = Carnivore::Source.source(src_key)
           if(src)
