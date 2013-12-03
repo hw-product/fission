@@ -6,21 +6,16 @@ gem 'carnivore-sqs', git: 'git@github.com:carnivore-rb/carnivore-sqs.git'
 gem 'carnivore-actor', git: 'git@github.com:carnivore-rb/carnivore-actor.git', branch: 'develop'
 gem 'elecksee', git: 'git://github.com/chrisroberts/elecksee.git', branch: 'develop'
 
-gem 'fission-rest-api', git: 'git@github.com:heavywater/fission-rest-api.git', branch: 'develop'
-gem 'fission-code-fetcher', git: 'git@github.com:heavywater/fission-code-fetcher.git', branch: 'develop'
-gem 'fission-package-builder', git: 'git@github.com:heavywater/fission-package-builder.git', branch: 'develop'
-gem 'fission-validator', git: 'git@github.com:heavywater/fission-validator.git', branch: 'develop'
-gem 'fission-nellie', git: 'git@github.com:heavywater/fission-nellie.git', branch: 'develop'
-gem 'fission-router', git: 'git@github.com:heavywater/fission-router.git', branch: 'develop'
-
-#gem 'fission-repository-generator', git: 'git@github.com:heavywater/fission-repository-generator.git', branch: 'develop'
-
-=begin
-gem 'fission-rest-api', path: '../fission-rest-api'
-gem 'fission-code-fetcher', path: '../fission-code-fetcher'
-gem 'fission-package-builder', path: '../fission-package-builder'
-gem 'fission-validator', path: '../fission-validator'
-#gem 'fission-repository-generator', path: '../fission-repository-generator'
-=end
+%w(
+  app-jobs assets callbacks code-fetcher data
+  finalizers github-release nellie package-builder
+  rest-api router validator
+).each do |fission_library|
+  if(ENV['FISSION_LOCALS'] == 'true')
+    gem "fission-#{fission_library}", path: "../fission-#{fission_library}"
+  else
+    gem "fission-#{fission_library}", git: "git@github.com:heavywater/fission-#{fission_library}.git", branch: 'develop'
+  end
+end
 
 gemspec
