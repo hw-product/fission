@@ -8,7 +8,7 @@ module Fission
 
       def valid?(message)
         super do |m|
-          m[:data][:user] && !m[:data][:repository]
+          retrieve(m, :data, :account) && !retrieve(m, :data, :repository)
         end
       end
 
