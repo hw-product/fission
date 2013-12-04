@@ -19,7 +19,7 @@
         },
         "router": {
             "behavior": "config",
-            "route": ["package_builder"]
+            "route": ["package_builder", "github_release"]
         },
         "rest_api": {
             "github_commit": {
