@@ -36,6 +36,7 @@
                 "fission-nellie",
                 "fission-package-builder",
                 "fission-rest-api",
+                "fission-rest-api/api/github",
                 "fission-router",
                 "fission-validator"
             ],

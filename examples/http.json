@@ -31,6 +31,7 @@
                 "fission-router",
                 "fission-validator",
                 "fission-rest-api",
+                "fission-rest-api/api/github",
                 "fission-code-fetcher",
                 "fission-nellie"
             ],
