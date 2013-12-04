@@ -1,5 +1,5 @@
 {
-   "after":"711d56804db7fe28443b9536cb41eeed6056ea01",
+   "after":"40fa9ec15aa477a05e95ed914e079435c6d9e167",
    "before":"ac725abc90871578dad1ba6445e9ea71e2a33d4a",
    "commits":[
       {
@@ -132,13 +132,13 @@
       "open_issues":2,
       "owner":{
          "email":"lolwut@noway.biz",
-         "name":"octokitty"
+         "name":"heavywater"
       },
-      "private":false,
+      "private":true,
       "pushed_at":1363295520,
       "size":2156,
       "stargazers":1,
-      "url":"https://github.com/chrisroberts/elecksee",
+      "url":"git://github.com/heavywater/redis-tester.git",
       "watchers":1
    }
 }
