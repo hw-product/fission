@@ -70,18 +70,18 @@ module Fission
           case determine_style(message)
           when :sqs
             begin
-              symbolize_hash(MultiJson.load(message[:message][:body][:message]))
+              Carnivore::Utils.symbolize_hash(MultiJson.load(message[:message][:body][:message]))
             rescue MultiJson::DecodeError
               message[:message][:body]
             end
           when :http
             begin
-              symbolize_hash(MultiJson.load(message[:message][:body]))
+              Carnivore::Utils.symbolize_hash(MultiJson.load(message[:message][:body]))
             rescue MultiJson::DecodeError
               message[:message][:body]
             end
           else
-            message[:message]
+            Carnivore::Utils.symbolize_hash(message[:message])
           end
         else
           message
