@@ -10,7 +10,7 @@ module Fission
       # Transmit provided payload and optional arguments to worker
       def transmit(worker, *payload)
         src = [worker.to_sym, "fission_#{worker}".to_sym].map do |key|
-          Celluloid::Actor[key]
+          Carnivore::Supervisor.supervisor[key]
         end.compact.first
         unless(src)
           abort KeyError.new("Requested worker is not currently registered: #{worker}")
