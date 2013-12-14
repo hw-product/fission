@@ -69,10 +69,10 @@ module Fission
         if(message[:message])
           case determine_style(message)
           when :sqs
-            begin
-              Carnivore::Utils.symbolize_hash(MultiJson.load(message[:message][:body][:message]))
-            rescue MultiJson::DecodeError
-              message[:message][:body]
+            if(message[:message]['Body'])
+              Carnivore::Utils.symbolize_hash(message[:message]['Body'])
+            else
+              message[:message]
             end
           when :http
             begin
@@ -96,7 +96,7 @@ module Fission
           when 'Carnivore::Source::Http', 'Carnivore::Source::HttpEndpoint'
             :http
           else
-            m[:source].class.to_s.split('::').downcase.to_sym
+            m[:source].class.to_s.split('::').last.downcase.to_sym
           end
         rescue
           :unknown
