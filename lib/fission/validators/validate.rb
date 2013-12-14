@@ -15,10 +15,16 @@ module Fission
       end
 
       def execute(message)
-        info "#{message} is not validated. Forwarding to validator."
         payload = unpack(message)
         message.confirm!
-        transmit(:validator, payload)
+        if(disabled?(:data))
+          info 'Currently configured to mock validation. Stubbing with dummy data'
+          payload[:data][:account] = {}
+          forward(payload)
+        else
+          info "#{message} is not validated. Forwarding to validator."
+          transmit(:validator, payload)
+        end
       end
 
     end
