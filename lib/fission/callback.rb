@@ -83,5 +83,19 @@ module Fission
       end
     end
 
+    # thing:: String or symbol of feature
+    # Returns true if `thing` is enabled
+    def enabled?(thing)
+      check = thing.to_s
+      to_check = [Carnivore::Config.get(:fission, :core, :enable)].flatten.compact
+      to_check.include?(check)
+    end
+
+    # thing:: String or symbol of feature
+    # Returns true if `thing` is disabled
+    def disabled?(thing)
+      !enabled?(thing)
+    end
+
   end
 end
