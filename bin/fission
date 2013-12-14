@@ -2,4 +2,6 @@
 # -*- mode: ruby -*-
 # -*- encoding: utf-8 -*-
 
+$VERBOSE=nil
+
 require 'fission/runner'
