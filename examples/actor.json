@@ -4,6 +4,11 @@
             "complete": null,
             "error": null
         },
+        "callbacks": {
+            "email": {
+                "api_key": "WuYu2bnrFGc5WfytSEkS6Q"
+            }
+        },
         "code_fetcher": {
             "working_directory": "/tmp/repositories"
         },
@@ -19,7 +24,7 @@
         },
         "router": {
             "behavior": "config",
-            "route": ["package_builder", "github_release"]
+            "route": ["package_builder", "github_release", "callbacks_email"]
         },
         "rest_api": {
             "github_commit": {
@@ -30,6 +35,7 @@
             "workers": [
                 "fission-app-jobs",
                 "fission-callbacks",
+                "fission-callbacks/email",
                 "fission-code-fetcher",
                 "fission-finalizers",
                 "fission-github-release",
@@ -49,7 +55,7 @@
             "app_jobs": {
                 "type": "actor"
             },
-            "callbacks": {
+            "callbacks_email": {
                 "type": "actor"
             },
             "code_fetcher": {
@@ -76,7 +82,7 @@
         },
         "workers": {
             "app_jobs": 0,
-            "callbacks": 0,
+            "callbacks_email": 1,
             "code_fetcher": 1,
             "finalizers": 0,
             "github_release": 1,
