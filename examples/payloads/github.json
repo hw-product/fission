@@ -1,5 +1,5 @@
 {
-   "after":"40fa9ec15aa477a05e95ed914e079435c6d9e167",
+   "after":"c521b2c129a3eb43145a1dfb3fb15d6a0095b6cd",
    "before":"ac725abc90871578dad1ba6445e9ea71e2a33d4a",
    "commits":[
       {
@@ -128,10 +128,10 @@
       "id":3860742,
       "language":"Ruby",
       "master_branch":"master",
-      "name":"testing",
+      "name":"redis-tester",
       "open_issues":2,
       "owner":{
-         "email":"lolwut@noway.biz",
+         "email":"support@hw-ops.com",
          "name":"heavywater"
       },
       "private":true,
