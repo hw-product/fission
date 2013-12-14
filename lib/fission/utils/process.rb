@@ -96,35 +96,39 @@ module Fission
       # wait:: Wait until lock is obtained
       # Lock the process for exclusive usage
       def lock(identifier, wait=true)
-        if(@registry[identifier][:process])
-          if(locked?(identifier))
-            if(wait)
-              unlocked = nil
-              waited = 0.0
-              if(wait.is_a?(Numeric))
-                after(wait){ @lock_wait.signal(:__timeout) }
-              end
-              until(unlocked == identifier)
-                started = Time.now
-                unlocked = @lock_wait.wait
-                waited += (Time.now - started).to_f
-                return nil if unlocked == :__timeout
-              end
-              if(wait.is_a?(Numeric))
-                lock(identifier, wait - waited)
+        if(@registry[identifier])
+          if(@registry[identifier][:process])
+            if(locked?(identifier))
+              if(wait)
+                unlocked = nil
+                waited = 0.0
+                if(wait.is_a?(Numeric))
+                  after(wait){ @lock_wait.signal(:__timeout) }
+                end
+                until(unlocked == identifier)
+                  started = Time.now
+                  unlocked = @lock_wait.wait
+                  waited += (Time.now - started).to_f
+                  return nil if unlocked == :__timeout
+                end
+                if(wait.is_a?(Numeric))
+                  lock(identifier, wait - waited)
+                else
+                  lock(identifier, wait)
+                end
               else
-                lock(identifier, wait)
+                nil
               end
             else
-              nil
+              @locker[identifier] = Celluloid.uuid
+              {
+                :process => @registry[identifier][:process],
+                :lock_id => @locker[identifier]
+              }
             end
-          else
-            @locker[identifier] = Celluloid.uuid
-            {
-              :process => @registry[identifier][:process],
-              :lock_id => @locker[identifier]
-            }
           end
+        else
+          abort KeyError.new("Requested process not found (identifier: #{identifier})")
         end
       end
 
