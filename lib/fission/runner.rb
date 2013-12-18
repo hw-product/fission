@@ -1,3 +1,5 @@
+$VERBOSE=nil
+
 require 'carnivore'
 require 'carnivore/config'
 
