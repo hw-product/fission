@@ -7,6 +7,8 @@ module Fission
   module Utils
     class Process
 
+      BLACKLISTED_ENV = ['GIT_DIR']
+
       include Celluloid
 
       # Creates new Process actor
@@ -15,7 +17,7 @@ module Fission
         @registry = {}
         @locker = {}
         @lock_wait = Celluloid::Condition.new
-        @max_processes = Carnivore::Config.get(:fission, :utils, :max_processes)
+        @max_processes = Carnivore::Config.get(:fission, :utils, :process_manger, :max_processes) || 5
         @storage_directory = Carnivore::Config.get(:fission, :utils, :process_manager, :storage) ||
           '/tmp/fission/process_manager'
         FileUtils.mkdir_p(@storage_directory)
@@ -58,7 +60,12 @@ module Fission
             if(command.size == 1)
               command = Shellwords.shellsplit(command.first)
             end
-            _proc = ChildProcess.build(*command)
+            if(defined?(Bundler))
+              _proc = Bundler.with_clean_env{ ChildProcess.build(*command) }
+            else
+              _proc = ChildProcess.build(*command)
+            end
+            clean_env!(_proc)
             @registry = @registry.dup.merge(identifier => opts.merge(:process => _proc))
             if(block_given?)
               p_lock = lock(identifier)
@@ -199,6 +206,14 @@ module Fission
             _proc[:source].transmit(payload, nil)
             _proc[:notified] = true
           end
+        end
+      end
+
+      # process:: ChildProcess instance
+      # Remove environment variables that are known should _NOT_ be set
+      def clean_env!(process)
+        [BLACKLISTED_ENV, Carnviore::Config.get(:fission, :utils, :process_manager, :blacklisted_env)].flatten.compact.each do |key|
+          process.environment.delete(key)
         end
       end
 
