@@ -64,6 +64,7 @@ module Fission
     # message confirmation
     def job_completed(name, payload, message)
       payload[:complete].push(name.to_s).uniq!
+      async.store_payload(payload)
       completed(payload, message)
     end
 
@@ -121,6 +122,18 @@ module Fission
       Fission.constants.map do |const|
         const.to_s.downcase.to_sym
       end.include?(thing.to_s.downcase.to_sym)
+    end
+
+    # payload:: message payload
+    # If data is enabled, store payload
+    def store_payload(payload)
+      if(enabled?(:data))
+        job = Job.find_by_message_id(payload[:message_id])
+        if(job)
+          job.payload = payload
+          job.save
+        end
+      end
     end
 
   end
