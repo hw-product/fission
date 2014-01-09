@@ -87,7 +87,7 @@ module Fission
     # thing:: String or symbol of feature
     # Returns true if `thing` is enabled
     def enabled?(thing)
-      config_disabled(thing) && (config_enabled(thing) || constant_enabled(thing))
+      !config_disabled(thing) && (config_enabled(thing) || constant_enabled(thing))
     end
 
     # thing:: String or symbol of feature
@@ -128,7 +128,7 @@ module Fission
     # If data is enabled, store payload
     def store_payload(payload)
       if(enabled?(:data))
-        job = Job.find_by_message_id(payload[:message_id])
+        job = Fission::Data::Job.find_by_message_id(payload[:message_id])
         if(job)
           job.payload = payload
           job.save
