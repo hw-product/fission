@@ -5,7 +5,7 @@ gem 'carnivore-http', git: 'git@github.com:carnivore-rb/carnivore-http.git', bra
 gem 'carnivore-sqs', git: 'git@github.com:carnivore-rb/carnivore-sqs.git', branch: 'develop'
 gem 'carnivore-actor', git: 'git@github.com:carnivore-rb/carnivore-actor.git', branch: 'develop'
 gem 'octokit'
-gem 'elecksee', git: 'git://github.com/chrisroberts/elecksee.git', branch: 'develop'
+gem 'elecksee', '~> 1.0.20'
 gem 'risky', git: 'git://github.com/chrisroberts/risky.git', branch: 'updates'
 
 if(RUBY_PLATFORM == 'java')
