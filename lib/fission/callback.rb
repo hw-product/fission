@@ -136,5 +136,19 @@ module Fission
       end
     end
 
+    # message:: Original message
+    # Executes block and catches unexpected exceptions if encountered
+    def failure_wrap(message)
+      abort 'Failure wrap requires block for execution' unless block_given?
+      begin
+        payload = unpack(message)
+        yield payload
+      rescue => e
+        error "!!! Unexpected failure encountered -> #{e.class}: #{e}"
+        debug "#{e.class}: #{e}\n#{e.backtrace.join("\n")}"
+        failed(payload, message, e.message)
+      end
+    end
+
   end
 end
