@@ -65,7 +65,6 @@ module Fission
             else
               _proc = ChildProcess.build(*command)
             end
-            clean_env!(_proc)
             @registry = @registry.dup.merge(identifier => opts.merge(:process => _proc))
             if(block_given?)
               p_lock = lock(identifier)
