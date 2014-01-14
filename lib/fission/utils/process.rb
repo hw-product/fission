@@ -69,7 +69,7 @@ module Fission
             @registry = @registry.dup.merge(identifier => opts.merge(:process => _proc))
             if(block_given?)
               p_lock = lock(identifier)
-              yield p_lock[:process]
+              clean_env!{ yield p_lock[:process] }
               unlock(p_lock)
               true
             end
@@ -211,9 +211,14 @@ module Fission
 
       # process:: ChildProcess instance
       # Remove environment variables that are known should _NOT_ be set
-      def clean_env!(process)
+      def clean_env!
         [BLACKLISTED_ENV, Carnivore::Config.get(:fission, :utils, :process_manager, :blacklisted_env)].flatten.compact.each do |key|
-          process.environment.delete(key)
+          ENV.delete(key)
+        end
+        if(defined?(Bundler))
+          Bundler.with_clean_env{ yield }
+        else
+          yield
         end
       end
 
