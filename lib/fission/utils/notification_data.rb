@@ -18,7 +18,7 @@ module Fission
         payload[:data][:github_status] = {
           :state => state.to_s,
           :description => opts.fetch(:description, "#{Carnivore::Config.get(:fission, :branding, :name) || 'heavywater'} job summary"),
-          :target_url => opts.fetch(:target_url, job_url)
+          :target_url => opts.fetch(:target_url, job_url(payload))
         }
       end
 
@@ -35,7 +35,7 @@ module Fission
       # Return origin data for notifications
       def origin
         DEFAULT_ORIGIN.merge(
-          Carnivore::Config.get(:fission, :package_builder, :notifications, :origin)
+          Carnivore::Config.get(:fission, :branding)
         )
       end
 
