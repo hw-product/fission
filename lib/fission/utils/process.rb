@@ -60,11 +60,7 @@ module Fission
             if(command.size == 1)
               command = Shellwords.shellsplit(command.first)
             end
-            if(defined?(Bundler))
-              _proc = Bundler.with_clean_env{ ChildProcess.build(*command) }
-            else
-              _proc = ChildProcess.build(*command)
-            end
+            _proc = clean_env!{ ChildProcess.build(*command) }
             @registry = @registry.dup.merge(identifier => opts.merge(:process => _proc))
             if(block_given?)
               p_lock = lock(identifier)
