@@ -1,5 +1,6 @@
 require 'carnivore/callback'
 require 'fission/utils'
+require 'fission/utils/notification_data'
 
 module Fission
   class Callback < Carnivore::Callback
@@ -7,6 +8,7 @@ module Fission
     include Fission::Utils::Transmission
     include Fission::Utils::MessageUnpack
     include Fission::Utils::Payload
+    include Fission::Utils::NotificationData
 
     # message:: Carnivore::Message
     # Return if message is valid for this callback
