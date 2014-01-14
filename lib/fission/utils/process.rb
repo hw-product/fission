@@ -61,6 +61,7 @@ module Fission
               command = Shellwords.shellsplit(command.first)
             end
             _proc = clean_env!{ ChildProcess.build(*command) }
+            scrub_env(_proc.environment)
             @registry = @registry.dup.merge(identifier => opts.merge(:process => _proc))
             if(block_given?)
               p_lock = lock(identifier)
@@ -207,13 +208,19 @@ module Fission
       # process:: ChildProcess instance
       # Remove environment variables that are known should _NOT_ be set
       def clean_env!
-        [BLACKLISTED_ENV, Carnivore::Config.get(:fission, :utils, :process_manager, :blacklisted_env)].flatten.compact.each do |key|
-          ENV.delete(key)
-        end
+        scrub_env(ENV)
         if(defined?(Bundler))
           Bundler.with_clean_env{ yield }
         else
           yield
+        end
+      end
+
+      # env:: Hash type thing
+      # Scrubs configured keys from hash
+      def scrub_env(env)
+        [BLACKLISTED_ENV, Carnivore::Config.get(:fission, :utils, :process_manager, :blacklisted_env)].flatten.compact.each do |key|
+          env.delete(key)
         end
       end
 
