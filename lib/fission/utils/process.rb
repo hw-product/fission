@@ -212,7 +212,7 @@ module Fission
       # process:: ChildProcess instance
       # Remove environment variables that are known should _NOT_ be set
       def clean_env!(process)
-        [BLACKLISTED_ENV, Carnviore::Config.get(:fission, :utils, :process_manager, :blacklisted_env)].flatten.compact.each do |key|
+        [BLACKLISTED_ENV, Carnivore::Config.get(:fission, :utils, :process_manager, :blacklisted_env)].flatten.compact.each do |key|
           process.environment.delete(key)
         end
       end
