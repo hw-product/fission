@@ -86,6 +86,15 @@ module Fission
       end
     end
 
+    # job:: name of job/component to check
+    # payload:: Payload
+    # Check if given job has been completed
+    def completed?(job, payload)
+      payload.map do |item|
+        item.downcase.gsub(':', '_')
+      end.include?(job.to_s.downcase.gsub(':', '_'))
+    end
+
     # thing:: String or symbol of feature
     # Returns true if `thing` is enabled
     def enabled?(thing)
