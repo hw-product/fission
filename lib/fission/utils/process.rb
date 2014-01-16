@@ -22,7 +22,7 @@ module Fission
           '/tmp/fission/process_manager'
         FileUtils.mkdir_p(@storage_directory)
 
-        every(5.0){ check_running_procs } # TODO: Make interval
+        every((Carnivore::Config.get(:fission, :utils, :process_manager, :poll) || 2.0).to_f){ check_running_procs }
         # configurable (also conditional - start stop based on active
         # non-notified processes in registry)
       end
@@ -62,7 +62,7 @@ module Fission
             end
             _proc = clean_env!{ ChildProcess.build(*command) }
             scrub_env(_proc.environment)
-            @registry = @registry.dup.merge(identifier => opts.merge(:process => _proc))
+            @registry = @registry.dup.merge(identifier => opts.merge(:process => _proc, :command => command.join(' ')))
             if(block_given?)
               p_lock = lock(identifier)
               clean_env!{ yield p_lock[:process] }
