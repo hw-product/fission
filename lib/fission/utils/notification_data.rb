@@ -6,6 +6,7 @@ module Fission
         :name => 'd2o',
         :dns => 'd2o.hw-ops.com',
         :email => 'd2o@hw-ops.com',
+        :application => 'heavywater',
         :http => 'http://www.hw-ops.com',
         :https => 'https://www.hw-ops.com'
       }
