@@ -4,6 +4,9 @@
             "complete": null,
             "error": null
         },
+        "stripe": {
+            "secret_key": "sk_test_GleaJrgPFnD25GLsTvDdhApI"
+        },
         "callbacks": {
             "mandrill": {
                 "api_key": "WuYu2bnrFGc5WfytSEkS6Q"
@@ -24,7 +27,11 @@
         },
         "router": {
             "behavior": "config",
-            "route": ["package_builder", "github_release", "callbacks_mandrill"]
+            "route": ["package_builder", "github_release", "callbacks_mandrill"],
+            "routes": {
+                "packager": ["package_builder", "github_release", "callbacks_mandrill"],
+                "nellie": []
+            }
         },
         "rest_api": {
             "github_commit": {
