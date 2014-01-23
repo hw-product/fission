@@ -35,9 +35,13 @@ module Fission
 
       # Return origin data for notifications
       def origin
-        DEFAULT_ORIGIN.merge(
-          Carnivore::Config.get(:fission, :branding)
-        )
+        if(branding = Carnivore::Config.get(:fission, :branding))
+          DEFAULT_ORIGIN.merge(
+            Hash[*branding.map{|k,v| [k.to_sym, v]}.flatten]
+          )
+        else
+          DEFAULT_ORIGIN
+        end
       end
 
     end
