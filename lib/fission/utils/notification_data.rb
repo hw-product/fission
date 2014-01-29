@@ -29,7 +29,12 @@ module Fission
       def job_url(payload, opts={})
         if(enabled?(:data))
           site = opts.fetch(:base_url, Carnivore::Config.get(:fission, :branding, :https)) || 'http://labs.hw-ops.com'
-          File.join(site, 'jobs', Fission::Data::Job.find_by_message_id(payload[:message_id]).id)
+          begin
+            File.join(site, 'jobs', Fission::Data::Job.find_by_message_id(payload[:message_id]).id)
+          rescue => e
+            debug "Failed to build job URL #{e.class}: #{e}"
+            nil
+          end
         end
       end
 
