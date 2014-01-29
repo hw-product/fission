@@ -9,6 +9,7 @@ module Fission
     include Fission::Utils::MessageUnpack
     include Fission::Utils::Payload
     include Fission::Utils::NotificationData
+    include Fission::Utils::Github
 
     # message:: Carnivore::Message
     # Return if message is valid for this callback
@@ -68,6 +69,16 @@ module Fission
       payload[:complete].push(name.to_s).uniq!
       async.store_payload(payload)
       completed(payload, message)
+      if(name.to_s == payload[:job])
+        finalizers = Carnivore::Config.get(:fission, :handlers, :complete)
+        if(finalizers)
+          [finalizers].flatten.compact.each do |endpoint|
+            Celluloid::Actor[endpoint.to_sym].transmit(payload)
+          end
+        else
+          warn "Payload of #{message} reached completed state. No handler defined: #{payload.inspect}"
+        end
+      end
     end
 
     # payload:: Hash payload
@@ -77,10 +88,12 @@ module Fission
       payload[:error] ||= {}
       payload[:error][:callback] = name
       payload[:error][:reason] = reason
-      endpoint = Carnivore::Config.get(:fission, :handlers, :error) ||
+      finalizers = Carnivore::Config.get(:fission, :handlers, :error) ||
         Carnivore::Config.get(:fission, :handlers, :complete)
-      if(endpoint)
-        Celluloid::Actor[endpoint.to_sym].transmit(payload)
+      if(finalizers)
+        [finalizers].flatten.compact.each do |endpoint|
+          Celluloid::Actor[endpoint.to_sym].transmit(payload)
+        end
       else
         error "Payload of #{message} resulted in error state. No handler defined: #{payload.inspect}"
       end
