@@ -1,8 +1,15 @@
-require 'fission/version'
-require 'fission/runner'
+require 'fission/setup'
 
-require 'fission/callback'
+module Fission
+  autoload :Version, 'fission/version'
+  autoload :Callback, 'fission/callback'
+  autoload :Cli, 'fission/cli'
+  autoload :Error, 'fission/exceptions'
+  autoload :Utils, 'fission/utils'
+  autoload :Transports, 'fission/transports'
 
-Dir.glob(File.join(File.dirname(__FILE__), 'fission/validators/*.rb')).each do |path|
-  require "fission/validators/#{File.basename(path).sub('.rb', '')}"
+  module Validators
+    autoload :Repository, 'fission/validators/repository'
+    autoload :Validate, 'fission/validators/validate'
+  end
 end

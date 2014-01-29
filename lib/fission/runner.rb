@@ -1,13 +1,7 @@
 $VERBOSE=nil
 
 require 'carnivore'
-require 'carnivore/config'
-
 require 'fission'
-require 'fission/cli'
-require 'fission/setup'
-require 'fission/callback'
-require 'fission/exceptions'
 
 unless(ENV['FISSION_TESTING_MODE'])
   cli = Fission::Cli.new

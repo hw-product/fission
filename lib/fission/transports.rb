@@ -1,4 +1,5 @@
 require 'carnivore'
+require 'fission'
 
 =begin
 {

@@ -1,7 +1,11 @@
-require 'carnivore/utils'
+require 'carnivore'
 
 module Fission
   module Utils
+
+    autoload :Github, 'fission/utils/github'
+    autoload :NotificationData, 'fission/utils/notification_data'
+    autoload :Process, 'fission/utils/process'
 
     module Transmission
 

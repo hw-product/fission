@@ -1,6 +1,4 @@
-require 'carnivore/callback'
-require 'fission/utils'
-require 'fission/utils/notification_data'
+require 'fission'
 
 module Fission
   class Callback < Carnivore::Callback
