@@ -68,14 +68,31 @@ module Fission
       async.store_payload(payload)
       completed(payload, message)
       if(name.to_s == payload[:job])
-        finalizers = Carnivore::Config.get(:fission, :handlers, :complete)
-        if(finalizers)
-          [finalizers].flatten.compact.each do |endpoint|
-            Celluloid::Actor[endpoint.to_sym].transmit(payload)
+        call_finalizers(payload)
+      end
+    end
+
+    # payload:: Hash payload
+    # state:: Final state (:complete / :error)
+    # Transmit payload to any configured finalizers
+    # NOTE: At this point the payload will be modified and transmitted
+    # async to all finalizers
+    def call_finalizers(payload, state=:complete)
+      finalizers = Carnivore::Config.get(:fission, :handlers, state)
+      if(finalizers)
+        [finalizers].flatten.compact.each do |endpoint|
+          payload[:complete].delete_if do |component|
+            component.start_with?(endpoint)
           end
-        else
-          warn "Payload of #{message} reached completed state. No handler defined: #{payload.inspect}"
+          payload[:job] = endpoint
+          begin
+            transmit(endpoint, payload)
+          rescue => e
+            error "Completed transmission failed to endpoint: #{endpoint} - #{e.class}: #{e}"
+          end
         end
+      else
+        warn "Payload of #{message} reached completed state. No handler defined: #{payload.inspect}"
       end
     end
 
@@ -86,15 +103,7 @@ module Fission
       payload[:error] ||= {}
       payload[:error][:callback] = name
       payload[:error][:reason] = reason
-      finalizers = Carnivore::Config.get(:fission, :handlers, :error) ||
-        Carnivore::Config.get(:fission, :handlers, :complete)
-      if(finalizers)
-        [finalizers].flatten.compact.each do |endpoint|
-          Celluloid::Actor[endpoint.to_sym].transmit(payload)
-        end
-      else
-        error "Payload of #{message} resulted in error state. No handler defined: #{payload.inspect}"
-      end
+      call_finalizers(payload, :error)
     end
 
     # job:: name of job/component to check
