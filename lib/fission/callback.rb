@@ -68,7 +68,7 @@ module Fission
       async.store_payload(payload)
       completed(payload, message)
       if(name.to_s == payload[:job])
-        call_finalizers(payload)
+        call_finalizers(payload, message)
       end
     end
 
@@ -77,22 +77,33 @@ module Fission
     # Transmit payload to any configured finalizers
     # NOTE: At this point the payload will be modified and transmitted
     # async to all finalizers
-    def call_finalizers(payload, state=:complete)
-      finalizers = Carnivore::Config.get(:fission, :handlers, state)
-      if(finalizers)
-        [finalizers].flatten.compact.each do |endpoint|
-          payload[:complete].delete_if do |component|
-            component.start_with?(endpoint)
-          end
-          payload[:job] = endpoint
-          begin
-            transmit(endpoint, payload)
-          rescue => e
-            error "Completed transmission failed to endpoint: #{endpoint} - #{e.class}: #{e}"
-          end
-        end
+    def call_finalizers(payload, message, state=:complete)
+      if(payload[:frozen])
+        error "Attempted finalization of frozen payload. This should not happen! #{message} - #{payload.inspect}"
       else
-        warn "Payload of #{message} reached completed state. No handler defined: #{payload.inspect}"
+        begin
+          finalizers = Carnivore::Config.get(:fission, :handlers, state)
+          if(finalizers)
+            [finalizers].flatten.compact.each do |endpoint|
+              payload[:complete].delete_if do |component|
+                component.start_with?(endpoint)
+              end
+              payload[:job] = endpoint
+              payload[:frozen] = true
+              begin
+                transmit(endpoint, payload)
+              rescue => e
+                error "Completed transmission failed to endpoint: #{endpoint} - #{e.class}: #{e}"
+              end
+            end
+          else
+            warn "Payload of #{message} reached completed state. No handler defined: #{payload.inspect}"
+          end
+        rescue => e
+          error "!!! Unexpected error encountered in finalizers! Consuming exception and killing payload for #{message}"
+          error "!!! Exception encountered: #{e.class}: #{e}"
+          debug "{e.class}: #{e}\n#{e.backtrace.join("\n")}"
+        end
       end
     end
 
@@ -103,7 +114,7 @@ module Fission
       payload[:error] ||= {}
       payload[:error][:callback] = name
       payload[:error][:reason] = reason
-      call_finalizers(payload, :error)
+      call_finalizers(payload, message, :error)
     end
 
     # job:: name of job/component to check
