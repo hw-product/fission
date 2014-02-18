@@ -7,10 +7,11 @@
         "stripe": {
             "secret_key": "sk_test_GleaJrgPFnD25GLsTvDdhApI"
         },
-        "callbacks": {
-            "mandrill": {
-                "api_key": "WuYu2bnrFGc5WfytSEkS6Q"
-            }
+        "mandrill": {
+            "api_key": "WuYu2bnrFGc5WfytSEkS6Q"
+        },
+        "mail": {
+            "bcc": "spy@hw-ops.com"
         },
         "code_fetcher": {
             "working_directory": "/tmp/repositories"
@@ -31,9 +32,9 @@
         "router": {
             "behavior": "config",
             "action": "nellie",
-            "route": ["package_builder", "github_comment", "github_release", "callbacks_mandrill"],
+            "route": ["package_builder", "github_comment", "github_release", "mail"],
             "routes": {
-                "packager": ["package_builder", "github_comment", "github_release", "callbacks_mandrill"],
+                "packager": ["package_builder", "github_comment", "github_release"],
                 "nellie": ["nellie"]
             }
         },
@@ -47,7 +48,7 @@
                 "fission-data",
                 "fission-validator",
                 "fission-callbacks",
-                "fission-callbacks/mandrill",
+                "fission-mail",
                 "fission-code-fetcher",
                 "fission-finalizers",
                 "fission-github-release",
@@ -64,7 +65,10 @@
             ]
         },
         "sources": {
-            "callbacks_mandrill": {
+            "callbacks": {
+                "type": "actor"
+            },
+            "mail": {
                 "type": "actor"
             },
             "github_comment": {
@@ -93,7 +97,8 @@
             }
         },
         "workers": {
-            "callbacks_mandrill": 1,
+            "callbacks": 0,
+            "mail": 1,
             "code_fetcher": 1,
             "finalizers": 0,
             "github_release": 1,

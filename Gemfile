@@ -15,7 +15,7 @@ end
 %w(
   app-jobs assets callbacks code-fetcher data
   finalizers github-release nellie package-builder
-  rest-api router validator
+  rest-api router validator mail
 ).each do |fission_library|
   if(ENV['FISSION_LOCALS'] == 'true')
     gem "fission-#{fission_library}", path: "../fission-#{fission_library}"
