@@ -48,7 +48,7 @@
                 "fission-data",
                 "fission-validator",
                 "fission-callbacks",
-                "fission-mail",
+                "fission-mail/mandrill",
                 "fission-code-fetcher",
                 "fission-finalizers",
                 "fission-github-release",
