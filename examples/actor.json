@@ -2,7 +2,7 @@
     "fission": {
         "handlers": {
             "complete": null,
-            "error": null
+            "error": ["github_comment"]
         },
         "stripe": {
             "secret_key": "sk_test_GleaJrgPFnD25GLsTvDdhApI"
@@ -25,12 +25,16 @@
                 "enable_spawn": false
             }
         },
+        "github": {
+            "access_token": "9f41cdcc38d0e4d8e8271eecaaa7f18fe7d9e9fa"
+        },
         "router": {
             "behavior": "config",
-            "route": ["package_builder", "github_release", "callbacks_mandrill"],
+            "action": "nellie",
+            "route": ["package_builder", "github_comment", "github_release", "callbacks_mandrill"],
             "routes": {
-                "packager": ["package_builder", "github_release", "callbacks_mandrill"],
-                "nellie": []
+                "packager": ["package_builder", "github_comment", "github_release", "callbacks_mandrill"],
+                "nellie": ["nellie"]
             }
         },
         "rest_api": {
@@ -41,7 +45,7 @@
         "loaders": {
             "workers": [
                 "fission-data",
-                "fission-app-jobs",
+                "fission-validator",
                 "fission-callbacks",
                 "fission-callbacks/mandrill",
                 "fission-code-fetcher",
@@ -52,7 +56,7 @@
                 "fission-rest-api",
                 "fission-rest-api/api/github",
                 "fission-router",
-                "fission-validator"
+                "fission-github-comment"
             ],
             "sources": [
                 "carnivore-http",
@@ -60,10 +64,10 @@
             ]
         },
         "sources": {
-            "app_jobs": {
+            "callbacks_mandrill": {
                 "type": "actor"
             },
-            "callbacks_mandrill": {
+            "github_comment": {
                 "type": "actor"
             },
             "code_fetcher": {
@@ -89,21 +93,18 @@
             }
         },
         "workers": {
-            "app_jobs": 0,
             "callbacks_mandrill": 1,
             "code_fetcher": 1,
             "finalizers": 0,
             "github_release": 1,
-            "nellie": {
-                "validators": 1,
-                "banks": 3
-            },
+            "nellie": 1,
             "package_builder": 1,
             "router": 1,
             "validator": {
                 "github": 2
             },
-            "github_commit": 1
+            "github_commit": 1,
+            "github_comment": 1
         }
     }
 }
