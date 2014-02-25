@@ -16,7 +16,7 @@ module Fission
         require 'childprocess'
         @registry = {}
         @locker = {}
-        @base_env = ENV.dup
+        @base_env = ENV.to_hash
         @lock_wait = Celluloid::Condition.new
         @max_processes = Carnivore::Config.get(:fission, :utils, :process_manger, :max_processes) || 5
         @storage_directory = Carnivore::Config.get(:fission, :utils, :process_manager, :storage) ||
@@ -209,7 +209,7 @@ module Fission
       # process:: ChildProcess instance
       # Remove environment variables that are known should _NOT_ be set
       def clean_env!
-        ENV.replace(@base_env)
+        ENV.replace(@base_env.dup)
         scrub_env(ENV)
         if(defined?(Bundler))
           Bundler.with_clean_env{ yield }
