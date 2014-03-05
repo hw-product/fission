@@ -7,6 +7,7 @@ module Fission
     autoload :NotificationData, 'fission/utils/notification_data'
     autoload :Process, 'fission/utils/process'
     autoload :Inspector, 'fission/utils/inspector'
+    autoload :Constants, 'fission/utils/constants'
 
     module Transmission
 
