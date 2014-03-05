@@ -8,6 +8,8 @@ gem 'octokit'
 gem 'elecksee', '~> 1.0.20'
 gem 'risky', git: 'git://github.com/chrisroberts/risky.git', branch: 'updates'
 
+gem 'reaper', git: 'git@github.com:heavywater/reaper.git'
+
 if(RUBY_PLATFORM == 'java')
   gem 'jruby_sandbox'
 end
@@ -15,7 +17,8 @@ end
 %w(
   app-jobs assets callbacks code-fetcher data
   finalizers github-release nellie package-builder
-  rest-api router validator mail
+  rest-api router validator mail repository-generator
+  repository-publisher
 ).each do |fission_library|
   if(ENV['FISSION_LOCALS'] == 'true')
     gem "fission-#{fission_library}", path: "../fission-#{fission_library}"
