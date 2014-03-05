@@ -2,7 +2,7 @@
     "fission": {
         "handlers": {
             "complete": null,
-            "error": ["github_comment"]
+            "error": []
         },
         "stripe": {
             "secret_key": "sk_test_GleaJrgPFnD25GLsTvDdhApI"
@@ -31,16 +31,26 @@
         },
         "router": {
             "behavior": "config",
-            "action": "nellie",
+            "action": "packager",
             "route": ["package_builder", "github_comment", "github_release", "mail"],
             "routes": {
-                "packager": ["package_builder", "github_comment", "github_release"],
+                "packager": ["package_builder", "repository_generator", "repository_publisher"],
                 "nellie": ["nellie"]
             }
         },
         "rest_api": {
             "github_commit": {
                 "job_name": "router"
+            }
+        },
+        "repository_publisher": {
+            "target": "s3",
+            "domain": "pkgd.io",
+            "credentials": {
+                "provider": "aws",
+                "aws_access_key_id": "KEY_HERE",
+                "aws_secret_access_key": "SECRET_HERE",
+                "region": "us-west-2"
             }
         },
         "loaders": {
@@ -57,7 +67,9 @@
                 "fission-rest-api",
                 "fission-rest-api/api/github",
                 "fission-router",
-                "fission-github-comment"
+                "fission-github-comment",
+                "fission-repository-generator",
+                "fission-repository-publisher"
             ],
             "sources": [
                 "carnivore-http",
@@ -69,6 +81,12 @@
                 "type": "actor"
             },
             "mail": {
+                "type": "actor"
+            },
+            "repository_generator": {
+                "type": "actor"
+            },
+            "repository_publisher": {
                 "type": "actor"
             },
             "github_comment": {
@@ -109,7 +127,9 @@
                 "github": 2
             },
             "github_commit": 1,
-            "github_comment": 1
+            "github_comment": 1,
+            "repository_generator": 1,
+            "repository_publisher": 1
         }
     }
 }
