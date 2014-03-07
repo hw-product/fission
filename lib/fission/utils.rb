@@ -4,6 +4,7 @@ module Fission
   module Utils
 
     autoload :Github, 'fission/utils/github'
+    autoload :Dns, 'fission/utils/dns'
     autoload :NotificationData, 'fission/utils/notification_data'
     autoload :Process, 'fission/utils/process'
     autoload :Inspector, 'fission/utils/inspector'
