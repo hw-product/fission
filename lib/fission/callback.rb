@@ -84,7 +84,8 @@ module Fission
       else
         begin
           finalizers = Carnivore::Config.get(:fission, :handlers, state)
-          if(finalizers)
+          finalizers = [finalizers].flatten.compact
+          unless(finalizers.empty?)
             [finalizers].flatten.compact.each do |endpoint|
               payload[:complete].delete_if do |component|
                 component.start_with?(endpoint)
