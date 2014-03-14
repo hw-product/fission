@@ -16,6 +16,7 @@ module Fission
       # payload:: items to `#transmit` on the Carnivore::Source
       # Transmit provided payload and optional arguments to worker
       def transmit(worker, *payload)
+        Celluloid::Logger.info "<#{self}> Transmitting payload to worker -> #{worker}"
         src = [worker.to_sym, "fission_#{worker}".to_sym].map do |key|
           Carnivore::Supervisor.supervisor[key]
         end.compact.first
@@ -86,6 +87,12 @@ module Fission
               Carnivore::Utils.symbolize_hash(MultiJson.load(message[:message][:body]))
             rescue MultiJson::DecodeError
               message[:message][:body]
+            end
+          when :nsq
+            begin
+              Carnivore::Utils.symbolize_hash(MultiJson.load(message[:message].message))
+            rescue MultiJson::DecodeError
+              message[:message].message
             end
           else
             Carnivore::Utils.symbolize_hash(message[:message])
