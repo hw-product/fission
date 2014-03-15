@@ -149,7 +149,7 @@ module Fission
         yield payload
       rescue => e
         error "!!! Unexpected failure encountered -> #{e.class}: #{e}"
-        debug "#{e.class}: #{e}\n#{e.backtrace.join("\n")}"
+        debug "#{e.class}: #{e}\n#{(e.backtrace || []).join("\n")}"
         failed(payload, message, e.message)
       end
     end
