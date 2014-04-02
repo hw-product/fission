@@ -28,6 +28,10 @@ module Fission
         if(sources)
           Carnivore.configure do
             sources.each do |name, opts|
+              unless name.is_a? String && opts.is_a? Hash
+                raise TypeError.new "Expected a source build to have a name and hash. " <<
+                  "name: #{name.inspect}, opts: #{opts.inspect}"
+              end
               Carnivore::Source.build(
                 :type => opts[:type].to_sym,
                 :args => opts.fetch(:args, {}).merge(:name => name.to_sym)
