@@ -13,3 +13,5 @@ module Fission
     autoload :Validate, 'fission/validators/validate'
   end
 end
+
+autoload :Smash, 'fission/utils/smash'

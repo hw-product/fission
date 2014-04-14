@@ -9,6 +9,7 @@ module Fission
     autoload :Process, 'fission/utils/process'
     autoload :Inspector, 'fission/utils/inspector'
     autoload :Constants, 'fission/utils/constants'
+    autoload :Smash, 'fission/utils/smash'
 
     module Transmission
 
@@ -50,12 +51,12 @@ module Fission
             end
           end
         end
-        {
+        Smash.new(
           :job => job,
           :message_id => Celluloid.uuid,
           :data => payload,
           :complete => []
-        }
+        )
       end
 
     end
@@ -78,24 +79,24 @@ module Fission
           case determine_style(message)
           when :sqs
             if(message[:message]['Body'])
-              Carnivore::Utils.symbolize_hash(message[:message]['Body'])
+              Smash.new(message[:message]['Body'])
             else
               message[:message]
             end
           when :http
             begin
-              Carnivore::Utils.symbolize_hash(MultiJson.load(message[:message][:body]))
+              Smash.new(MultiJson.load(message[:message][:body]))
             rescue MultiJson::DecodeError
               message[:message][:body]
             end
           when :nsq
             begin
-              Carnivore::Utils.symbolize_hash(MultiJson.load(message[:message].message))
+              Smash.new(MultiJson.load(message[:message].message))
             rescue MultiJson::DecodeError
               message[:message].message
             end
           else
-            Carnivore::Utils.symbolize_hash(message[:message])
+            Smash.new(message[:message])
           end
         else
           message
