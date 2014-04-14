@@ -13,6 +13,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'celluloid'
   s.add_dependency 'mixlib-cli'
   s.add_dependency 'childprocess'
+  s.add_dependency 'hashie'
   s.executables << 'fission'
   s.executables << 'fission-test'
   s.files = Dir['**/*']
