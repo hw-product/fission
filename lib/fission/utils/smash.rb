@@ -54,12 +54,14 @@ module Fission
     end
   end
 
-  class Hash
-    def to_smash
-      Fission::Smash.new.replace(self)
-    end
-    alias_method :hulk_smash, :to_smash
+end
+
+# Hook helper into toplevel `Hash`
+class Hash
+  def to_smash
+    Fission::Smash.new.replace(self)
   end
+  alias_method :hulk_smash, :to_smash
 end
 
 Smash = Fission::Utils::Smash
