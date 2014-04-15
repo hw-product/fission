@@ -29,6 +29,7 @@ module Fission
           end
         end
       end
+      alias_method :get, :retrieve
 
       def fetch(*args)
         default_value = args.pop
@@ -47,7 +48,7 @@ module Fission
           end
           memo[key]
         end
-        leaf[key] = value
+        leaf[set_key] = value
         value
       end
 
@@ -59,7 +60,7 @@ end
 # Hook helper into toplevel `Hash`
 class Hash
   def to_smash
-    Fission::Smash.new.replace(self)
+    ::Smash.new.replace(self)
   end
   alias_method :hulk_smash, :to_smash
 end
