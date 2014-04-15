@@ -44,6 +44,7 @@ module Fission
       }
 
       extend Fission::Utils::Github
+      extend Fission::Utils::Inspector
 
       def initialize(*args)
         super
