@@ -18,7 +18,7 @@ module Fission
           DEFAULT_WEB_ENDPOINT
         token = Carnivore::Config.get(:fission, :github, :access_token)
         if(token.nil? && enabled?(:data))
-          account_id = retrieve(payload, :data, :account, :id)
+          account_id = payload.get(:data, :account, :id)
           if(account_id)
             account = Fission::Data::Account[account_id]
             token = account.github_token
