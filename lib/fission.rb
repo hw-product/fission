@@ -7,6 +7,7 @@ module Fission
   autoload :Error, 'fission/exceptions'
   autoload :Utils, 'fission/utils'
   autoload :Transports, 'fission/transports'
+  autoload :Formatter, 'fission/formatter'
 
   module Validators
     autoload :Repository, 'fission/validators/repository'
