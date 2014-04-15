@@ -14,6 +14,7 @@ module Fission
           :owner_email => [:data, :github, :repository, :owner, :email],
           :url => [:data, :github, :repository, :url],
           :ref => [:data, :github, :ref],
+          :private => [:data, :github, :repository, :private],
           :tag => lambda{|data| data.get(:data, :github, :ref).split('/')[1] == 'tag' }
         },
         :create => {
@@ -39,6 +40,7 @@ module Fission
           },
           :url => [:data, :github, :repository, :clone_url],
           :ref => [:data, :github, :ref],
+          :private => [:data, :github, :repository, :private],
           :tag => lambda{|data| data.get(:data, :github, :ref_type) == 'tag' }
         }
       }
