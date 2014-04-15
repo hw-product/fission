@@ -17,7 +17,7 @@ module Fission
         Octokit.web_endpoint = Carnivore::Config.get(:fission, :github, :web_endpoint) ||
           DEFAULT_WEB_ENDPOINT
         token = Carnivore::Config.get(:fission, :github, :access_token)
-        if(token.nil? && enabled?(:data))
+        if(token.nil? && payload && enabled?(:data))
           account_id = payload.get(:data, :account, :id)
           if(account_id)
             account = Fission::Data::Account[account_id]

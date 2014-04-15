@@ -19,7 +19,7 @@ module Fission
         :create => {
           :commit_sha => lambda{|data|
             ref = data.get(:data, :github, :ref)
-            info = github_client.tags(data.get(:data, :github, :repository, :full_name)).detect do |tag_details|
+            info = github_client(data).tags(data.get(:data, :github, :repository, :full_name)).detect do |tag_details|
               tag_details[:name] == ref
             end
             if(info)
@@ -29,12 +29,12 @@ module Fission
           :name => [:data, :github, :repository, :name],
           :user_name => [:data, :github, :sender, :login],
           :user_email => lambda{|data|
-            user = github_client.user(data.get(:data, :github, :sender, :login))
+            user = github_client(data).user(data.get(:data, :github, :sender, :login))
             user[:email] if user
           },
           :owner_name => [:data, :github, :repository, :owner, :login],
           :owner_email => lambda{|data|
-            org = github_client.org(data.get(:data, :github, :repository, :owner, :login))
+            org = github_client(data).org(data.get(:data, :github, :repository, :owner, :login))
             org[:email] if org
           },
           :url => [:data, :github, :repository, :clone_url],
