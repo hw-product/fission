@@ -6,14 +6,15 @@ module Fission
     # last arg:: Class to register
     def register(*args)
       key = args[0, args.size - 1].join('.')
-      @registration ||= {}
-      @registration[key] ||= []
-      @registration[key].push(args.last).uniq!
+      registration.set(key, registration.fetch(key, []).push(args.last).uniq)
     end
 
     # Returns current registration
     def registration
-      @registration || {}
+      unless(Thread.current[:fission_setup_registration])
+        Thread.current[:fission_setup_registration] = Smash.new
+      end
+      Thread.current[:fission_setup_registration]
     end
 
     # Load all callbacks into defined sources
