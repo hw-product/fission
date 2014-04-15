@@ -15,9 +15,13 @@ ENV.each do |key, value|
 end
 
 def payload_for(style, args={})
-  dir = File.join(File.dirname(__FILE__), '../../../../examples/payloads')
-  path = File.join(dir, "#{style}.json")
-  if(File.exists?(path))
+  file = "#{style}.json"
+  path = [File.join(Dir.pwd, 'test/specs/payloads'), File.join(File.dirname(__FILE__), 'payloads')].map do |dir|
+    if(File.exists?(full_path = File.join(dir, file)))
+      full_path
+    end
+  end.compact.first
+  if(path)
     if(args[:raw])
       MultiJson.load(File.read(path))
     else
