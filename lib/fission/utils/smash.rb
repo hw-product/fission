@@ -33,7 +33,7 @@ module Fission
 
       def fetch(*args)
         default_value = args.pop
-        retrieve || default_value
+        retrieve(*args) || default_value
       end
 
       def set(*args)
