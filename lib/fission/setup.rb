@@ -11,10 +11,7 @@ module Fission
 
     # Returns current registration
     def registration
-      unless(Thread.current[:fission_setup_registration])
-        Thread.current[:fission_setup_registration] = Smash.new
-      end
-      Thread.current[:fission_setup_registration]
+      @registration ||= Smash.new
     end
 
     # Load all callbacks into defined sources
