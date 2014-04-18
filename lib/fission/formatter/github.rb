@@ -15,7 +15,7 @@ module Fission
           :url => [:data, :github, :repository, :url],
           :ref => [:data, :github, :ref],
           :private => [:data, :github, :repository, :private],
-          :tag => lambda{|data| data.get(:data, :github, :ref).split('/')[1] == 'tag' }
+          :tag => lambda{|data| data.get(:data, :github, :ref).to_s.split('/')[1] == 'tag' }
         },
         :create => {
           :commit_sha => lambda{|data|
@@ -50,8 +50,12 @@ module Fission
 
       def initialize(*args)
         super
-        if(type == :default && event_type = data.get(:data, :github, :github_event))
-          @type = event_type.to_sym
+        if(type == :default)
+          if(event_type = data.get(:data, :github, :github_event))
+            @type = event_type.to_sym
+          else
+            @type = :push
+          end
         end
       end
 
