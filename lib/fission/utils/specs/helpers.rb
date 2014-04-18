@@ -1,6 +1,8 @@
 require 'multi_json'
 require 'carnivore/spec_helper'
 
+Celluloid.logger.level = 0 if ENV['DEBUG']
+
 # Default source setup higher than base carivore default
 unless(ENV['CARNIVORE_SOURCE_SETUP'])
   ENV['CARNIVORE_SOURCE_SETUP'] = '0.5'
