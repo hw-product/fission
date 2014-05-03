@@ -34,6 +34,7 @@ module Fission
       #   - Hash argument -> Merged into registry with `:process`
       #     - Provide :source for completion notification
       #     - Provide :payload for notification to be merged into payload
+      #     - Provide :pending => {:interval => n_seconds, :source => dest, :reference => UUID}
       # Registers provided command. Yields process to block if
       # provided
       # Returns - boolean or abortions
@@ -63,15 +64,52 @@ module Fission
             end
             _proc = clean_env!{ ChildProcess.build(*command) }
             scrub_env(_proc.environment)
-            @registry = @registry.dup.merge(identifier => opts.merge(:process => _proc, :command => command.join(' ')))
+            @registry = @registry.dup.merge(
+              identifier => opts.merge(
+                :process => _proc,
+                :command => command.join(' '),
+                :start_time => Time.now.to_i
+              )
+            )
             if(block_given?)
               p_lock = lock(identifier)
               clean_env!{ yield p_lock[:process] }
               unlock(p_lock)
               true
             end
+            if(opts[:pending])
+              start_pending_notifier(
+                identifier, opts[:pending][:source], opts[:pending][:interval]
+              )
+            end
           end
         end
+        true
+      end
+
+      def generate_process_status(identifier, registry_entry)
+        Smash.new(
+          :process_manager => {
+            :state => {
+              :running => registry_entry[:process].alive?,
+              :failed => registry_entry[:process].crashed? rescue false,
+              :process_identifier => identifier,
+              :reference_identifier => registry_entry[:reference],
+              :elapsed_time => Time.now.to_i - registry_entry[:start_time]
+            }
+          }
+        )
+      end
+
+      def start_pending_notifier(identifier, source, interval)
+        timer = every(interval) do
+          p_lock = lock(identifier)
+          payload = Fission::Utils.new_payload(source,
+            generate_process_status(identifier, p_lock[:registry_entry])
+          )
+          Fission::Utils.transmit(source, payload)
+        end
+        @registry[identifier][:pending_notifier] = timer
       end
 
       # identifier:: ID reference to process
@@ -80,11 +118,13 @@ module Fission
         if(@registry[identifier][:process])
           locked = lock(identifier, false)
           if(locked)
-            _proc = @registry[identifier][:process]
-            if(_proc)
+            if(_proc = @registry[identifier][:process])
               if(_proc.alive?)
                 _proc.stop
               end
+            end
+            if(_timer = @registry[identifier][:pending_notifier])
+              _timer.cancel
             end
             [@registry, @locker].each{|hsh| hsh.delete(identifier) }
             true
@@ -126,6 +166,7 @@ module Fission
             else
               @locker[identifier] = Celluloid.uuid
               {
+                :registry_entry => @registry[identifier],
                 :process => @registry[identifier][:process],
                 :lock_id => @locker[identifier]
               }
@@ -199,9 +240,12 @@ module Fission
           if(!locked?(identifier) && !_proc[:notified] && _proc[:source] && !_proc[:process].alive?)
             payload = _proc[:payload] || {}
             payload[:data] ||= {}
-            payload[:data].merge!(:process_notification => identifier)
+            payload[:data].merge!(
+              :process_notification => identifier
+            ).merge!(generate_process_status(identifier, @registry[identifier]))
             _proc[:source].transmit(payload, nil)
             _proc[:notified] = true
+            delete(identifier)
           end
         end
       end
