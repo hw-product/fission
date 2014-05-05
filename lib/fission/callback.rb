@@ -14,10 +14,14 @@ module Fission
     # Return if message is valid for this callback
     def valid?(message)
       m = unpack(message)
-      if(block_given?)
-        !m[:complete].include?(name) && yield(m)
+      if(m[:complete])
+        if(block_given?)
+          !m[:complete].include?(name) && yield(m)
+        else
+          !m[:complete].include?(name)
+        end
       else
-        !m[:complete].include?(name)
+        block_given? ? yield(m) : true
       end
     end
 
