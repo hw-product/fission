@@ -242,7 +242,10 @@ module Fission
             payload[:data] ||= {}
             payload[:data].merge!(
               :process_notification => identifier
-            ).merge!(generate_process_status(identifier, @registry[identifier]))
+            )
+            payload[:data].merge!(
+              generate_process_status(identifier, @registry[identifier])
+            )
             _proc[:source].transmit(payload, nil)
             _proc[:notified] = true
             delete(identifier)
