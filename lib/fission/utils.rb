@@ -11,6 +11,7 @@ module Fission
     autoload :Constants, 'fission/utils/constants'
     autoload :Smash, 'fission/utils/smash'
     autoload :Payload, 'fission/utils/payload'
+    autoload :Specs, 'fission/utils/specs'
 
     module Transmission
 
