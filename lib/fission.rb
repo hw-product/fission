@@ -1,3 +1,4 @@
+require 'carnivore'
 require 'fission/setup'
 
 module Fission
