@@ -2,20 +2,29 @@ require 'celluloid'
 require 'shellwords'
 require 'fileutils'
 require 'tempfile'
+require 'childprocess'
 
 module Fission
   module Utils
+    # Helper class for running processes on the system
     class Process
 
+      # Environment variables that should be removed from process environment
       BLACKLISTED_ENV = ['GIT_DIR']
 
       include Celluloid
+      include Carnivore::Utils::Logging
+
+      # @return [Mutex] single file please
+      attr_reader :guard
+      # @return [Celluloid::Condition] line forms here
+      attr_reader :lock_wait
 
       # Creates new Process actor
       def initialize
-        require 'childprocess'
         @registry = {}
         @locker = {}
+        @guard = Mutex.new
         @base_env = ENV.to_hash
         @lock_wait = Celluloid::Condition.new
         @max_processes = Carnivore::Config.get(:fission, :utils, :process_manger, :max_processes) || 5
@@ -28,16 +37,18 @@ module Fission
         # non-notified processes in registry)
       end
 
-      # identifier:: ID to reference the process
-      # command:: Splat of additional arguments
-      #   - String/Array argument -> used for command
-      #   - Hash argument -> Merged into registry with `:process`
-      #     - Provide :source for completion notification
-      #     - Provide :payload for notification to be merged into payload
-      #     - Provide :pending => {:interval => n_seconds, :source => dest, :reference => UUID}
-      # Registers provided command. Yields process to block if
-      # provided
-      # Returns - boolean or abortions
+      # Registers provided command.
+      #
+      # @param identifier [String] unique identifier
+      # @param command [String] command string or array and optional hash
+      # @option command :source [Symbol] source location send completion notification
+      # @option command :payload [Hash] payload for notification (merged with result)
+      # @option command :pending [Hash] interval pending notifications
+      # @option :pending :interval [Numeric] seconds between notifications
+      # @option :pending :source [Symbol] source location to transmit
+      # @option :pending :reference [String] unique identifier
+      # @yield process instance provided to block
+      # @return [TrueClass]
       def process(identifier, *command)
         opts = command.detect{|i| i.is_a?(Hash)} || {}
         command.delete(opts)
@@ -87,12 +98,18 @@ module Fission
         true
       end
 
+      # Generate status report for process
+      #
+      # @param identifier [String] process identifier
+      # @param registry_entry [Hash]
+      # @return [Hash]
       def generate_process_status(identifier, registry_entry)
+        crashed = registry_entry[:process].crashed? rescue false
         Smash.new(
           :process_manager => {
             :state => {
               :running => registry_entry[:process].alive?,
-              :failed => registry_entry[:process].crashed? rescue false,
+              :failed => crashed,
               :process_identifier => identifier,
               :reference_identifier => registry_entry[:reference],
               :elapsed_time => Time.now.to_i - registry_entry[:start_time]
@@ -101,6 +118,12 @@ module Fission
         )
       end
 
+      # Start recurring notifier for process
+      #
+      # @param identifier [String] process identifier
+      # @param source [String, Symbol] source to tramsit to
+      # @param interval [Numeric] interval in seconds
+      # @return [Timer]
       def start_pending_notifier(identifier, source, interval)
         timer = every(interval) do
           p_lock = lock(identifier)
@@ -112,8 +135,10 @@ module Fission
         @registry[identifier][:pending_notifier] = timer
       end
 
-      # identifier:: ID reference to process
-      # Stops process if alive and unregisters it
+      # Stop process if alive and deregister
+      #
+      # @param identifier [String] process identifier
+      # @return [TrueClass]
       def delete(identifier)
         if(@registry[identifier][:process])
           locked = lock(identifier, false)
@@ -136,71 +161,79 @@ module Fission
         end
       end
 
-      # identifer:: ID reference to process
-      # wait:: Wait until lock is obtained
-      # Lock the process for exclusive usage
+      # Lock the process for "exclusive" usage
+      #
+      # @param identifier [String] process identifier
+      # @param wait [TrueClass, FalseClass] wait for lock
+      # @return [Hash]
+      # @todo re-add optional wait since it's gone now :|
       def lock(identifier, wait=true)
-        if(@registry[identifier])
-          if(@registry[identifier][:process])
-            if(locked?(identifier))
-              if(wait)
-                unlocked = nil
-                waited = 0.0
-                if(wait.is_a?(Numeric))
-                  after(wait){ @lock_wait.signal(:__timeout) }
-                end
-                until(unlocked == identifier)
-                  started = Time.now
-                  unlocked = @lock_wait.wait
-                  waited += (Time.now - started).to_f
-                  return nil if unlocked == :__timeout
-                end
-                if(wait.is_a?(Numeric))
-                  lock(identifier, wait - waited)
-                else
-                  lock(identifier, wait)
-                end
-              else
-                nil
+        result = nil
+        until(result)
+          if(guard.try_lock)
+            if(@registry[identifier])
+              unless(@locker[identifier])
+                @locker[identifier] = Celluloid.uuid
+                result = Smash.new(
+                  :registry_entry => @registry[identifier],
+                  :process => @registry[identifier][:process],
+                  :lock_id => @locker[identifier]
+                )
               end
             else
-              @locker[identifier] = Celluloid.uuid
-              {
-                :registry_entry => @registry[identifier],
-                :process => @registry[identifier][:process],
-                :lock_id => @locker[identifier]
-              }
+              abort KeyError.new("Requested process not found (identifier: #{identifier}) -- #{@registry.keys.sort.inspect}")
             end
+            guard.unlock
+            lock_wait.signal(:free_bird)
+          else
+            warn "Failed lock attempt on #{identifier}"
           end
-        else
-          abort KeyError.new("Requested process not found (identifier: #{identifier})")
+          lock_wait.wait(:free_bird)
         end
+        result
       end
 
-      # process_or_ident:: Process instance or identifier
-      # Unlock the process
+      # Unlock a locked process
+      #
+      # @param lock_id [String]
+      # @return [TrueClass]
       def unlock(lock_id)
         if(lock_id.is_a?(Hash))
           lock_id = lock_id[:lock_id]
         end
-        key = @locker.key(lock_id)
-        if(key)
-          @locker.delete(key)
-          @lock_wait.signal(key)
-          true
-        else
-          abort KeyError.new("Provided lock id is not in use (#{lock_id})")
+        result = false
+        until(result)
+          if(guard.try_lock)
+            begin
+              key = @locker.key(lock_id)
+              if(key)
+                @locker.delete(key)
+                result = true
+              else
+                abort KeyError.new("Provided lock id is not in use (#{lock_id})")
+              end
+            ensure
+              guard.unlock
+              lock_wait.signal(:free_bird)
+            end
+          else
+            warn "Failed unlock for lock id: #{lock_id}"
+          end
+          lock_wait.wait(:free_bird)
         end
       end
 
-      # identifier:: ID reference to process
-      # Return if process is currently locked
+      # Process with given identifier is locked
+      #
+      # @param identifier [String]
+      # @return [TrueClass, FalseClass]
       def locked?(identifier)
         !!@locker[identifier]
       end
 
-      # Raises `Error::ThresholdExceeded` if max process limit has
-      # been met or exceeded
+      # Check if max process limit has been met or exceeded
+      #
+      # @raises [Error::ThresholdExceeded]
       def check_process_limit!
         if(@max_processes)
           not_complete = @registry.values.find_all do |_proc|
@@ -217,7 +250,10 @@ module Fission
         end
       end
 
-      # Create temporary IO for logging and return IO instance
+      # Temporary IO for logging
+      #
+      # @param args [String] argument list joined for filename
+      # @return [IO]
       def create_io_tmp(*args)
         path = File.join(@storage_directory, args.join('-'))
         FileUtils.mkdir_p(File.dirname(path))
@@ -229,12 +265,14 @@ module Fission
       private
 
       # Lock the identifier
+      #
+      # @param identifier [String, Symbol] process identifier
+      # @return [Hash]
       def lock_wrapped(identifier)
         lock(identifer)
       end
 
-      # Checks currently registered processes for completion and sends
-      # notifications if done
+      # Watchdog for registered processes
       def check_running_procs
         @registry.each do |identifier, _proc|
           if(!locked?(identifier) && !_proc[:notified] && _proc[:source] && !_proc[:process].alive?)
@@ -248,13 +286,13 @@ module Fission
             )
             _proc[:source].transmit(payload, nil)
             _proc[:notified] = true
-            delete(identifier)
           end
         end
       end
 
-      # process:: ChildProcess instance
       # Remove environment variables that are known should _NOT_ be set
+      #
+      # @yield execute block within scrubbed environment
       def clean_env!
         ENV.replace(@base_env.dup)
         scrub_env(ENV)
@@ -265,8 +303,10 @@ module Fission
         end
       end
 
-      # env:: Hash type thing
       # Scrubs configured keys from hash
+      #
+      # @param env [Hash] hash to scrub
+      # @return [TrueClass]
       def scrub_env(env)
         [
           BLACKLISTED_ENV,
@@ -276,6 +316,7 @@ module Fission
         ].flatten.compact.each do |key|
           env.delete(key)
         end
+        true
       end
 
     end
