@@ -1,5 +1,6 @@
 source 'https://rubygems.org'
 
+
 gem 'carnivore', git: 'git@github.com:carnivore-rb/carnivore.git', branch: 'develop'
 gem 'carnivore-http', git: 'git@github.com:carnivore-rb/carnivore-http.git', branch: 'develop'
 gem 'carnivore-sqs', git: 'git@github.com:carnivore-rb/carnivore-sqs.git', branch: 'develop'
@@ -18,7 +19,7 @@ end
   app-jobs assets callbacks code-fetcher data
   finalizers github-release nellie package-builder
   rest-api router validator mail repository-generator
-  repository-publisher
+  repository-publisher github-comment nellie-webhook
 ).each do |fission_library|
   if(ENV['FISSION_LOCALS'] == 'true')
     gem "fission-#{fission_library}", path: "../fission-#{fission_library}"
