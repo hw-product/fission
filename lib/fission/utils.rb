@@ -1,6 +1,8 @@
 require 'carnivore'
 
 module Fission
+
+  # Utility modules
   module Utils
 
     autoload :Github, 'fission/utils/github'
@@ -13,11 +15,13 @@ module Fission
     autoload :Payload, 'fission/utils/payload'
     autoload :Specs, 'fission/utils/specs'
 
+    # Payload transmission helpers
     module Transmission
 
-      # worker:: worker name
-      # payload:: items to `#transmit` on the Carnivore::Source
       # Transmit provided payload and optional arguments to worker
+      #
+      # @param worker [String, Symbol] source name to send payload to
+      # @param payload [Hash, Object] argument list splatted to transmit
       def transmit(worker, *payload)
         Celluloid::Logger.info "<#{self}> Transmitting payload to worker -> #{worker}"
         src = [worker.to_sym, "fission_#{worker}".to_sym].map do |key|
@@ -37,48 +41,53 @@ module Fission
     # we still want to extend here for method access
     extend Payload
 
+    # Unpacking helper for Carnivore::Message items
     module MessageUnpack
 
       class << self
+        # Inject params utility when module is included
         def included(klass)
           klass.send(:include, Carnivore::Utils::Params)
         end
       end
 
-      # message:: Carnivore::Message
-      # Unpack the actual payload from the given message regardless of
-      # the origin Carnivore::Source
+      # Unpack payload from message
+      #
+      # @param message [Carnivore::Message]
+      # @return [Hash]
       def unpack(message)
         if(message[:message])
           case determine_style(message)
           when :sqs
             if(message[:message]['Body'])
-              Smash.new(message[:message]['Body'])
+              message[:message]['Body'].to_smash
             else
               message[:message]
             end
           when :http
             begin
-              Smash.new(MultiJson.load(message[:message][:body]))
+              MultiJson.load(message[:message][:body]).to_smash
             rescue MultiJson::DecodeError
               message[:message][:body]
             end
           when :nsq
             begin
-              Smash.new(MultiJson.load(message[:message].message))
+              MultiJson.load(message[:message].message).to_smash
             rescue MultiJson::DecodeError
               message[:message].message
             end
           else
-            Smash.new(message[:message])
+            message[:message].to_smash
           end
         else
           message
         end
       end
 
-      # m:: Carnivore::Message
-      # Returns "style" of the message based on the structure
+      # Detect message style based on structure
+      #
+      # @param m [Carnivore::Message]
+      # @return [Symbol]
       def determine_style(m)
         begin
           case m[:source].to_s

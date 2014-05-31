@@ -1,15 +1,19 @@
 module Fission
 
   class << self
-    # source:: name of the source to attach
-    # *args:: keying for source
-    # last arg:: Class to register
+
+    # Register class into fission registry
+    #
+    # @param args [Object] argument list
+    # @return [Class] set class
+    # @note first param is source name. last param is class to
+    # register. other params are used for keying
     def register(*args)
       key = args[0, args.size - 1].join('.')
       registration.set(key, registration.fetch(key, []).push(args.last).uniq)
     end
 
-    # Returns current registration
+    # @return [Hash] registration
     def registration
       @registration ||= Smash.new
     end

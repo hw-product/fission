@@ -1,5 +1,6 @@
 module Fission
   module Utils
+    # Reusable constants for components to share
     module Constants
 
       # define substrings to signal prerelease

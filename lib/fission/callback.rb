@@ -1,6 +1,7 @@
 require 'fission'
 
 module Fission
+  # Customized callback for fission
   class Callback < Carnivore::Callback
 
     include Fission::Utils::Transmission
@@ -10,8 +11,10 @@ module Fission
     include Fission::Utils::Github
     include Fission::Utils::Inspector
 
-    # message:: Carnivore::Message
-    # Return if message is valid for this callback
+    # Validity of message
+    #
+    # @param message [Carnivore::Message]
+    # @return [Truthy, Falsey]
     def valid?(message)
       m = unpack(message)
       if(m[:complete])
@@ -25,8 +28,9 @@ module Fission
       end
     end
 
-    # payload:: Hash - message payload
-    # Forwards to appropriate worker based on `:job` entry
+    # Forward payload to worker defined by :job
+    #
+    # @param payload [Hash]
     def forward(payload)
       if(payload[:job])
         if(payload[:complete].include?(payload[:job]))
@@ -45,15 +49,18 @@ module Fission
       end
     end
 
-    # Returns `ProcessManager` actor if available. Otherwise aborts
-    # TODO: Needs proper linking to allow supervision
+    # Process manager
+    #
+    # @return [Fission::Utils::Process]
+    # @raise [NameError]
     def process_manager
       Celluloid::Actor[:process_manager] || abort(NameError.new('No process manager found!'))
     end
 
-    # payload:: Hash payload
-    # message:: Carnivore::Message instance
-    # Set completed for callback
+    # Set payload as completed for this callback
+    #
+    # @param payload [Hash]
+    # @param message [Carnivore::Message]
     def completed(payload, message)
       payload[:complete].push(name).uniq!
       message.confirm!
@@ -61,13 +68,12 @@ module Fission
       forward(payload)
     end
 
-    # name:: Name of job completed
-    # payload:: Hash payload
-    # message:: Carnivore::Message instance
-    # Set the job name as completed. This will prevent further
-    # delivery to the source and invoke the finalizer. Will also push
-    # through `#completed` to do callback completion tracking and
-    # message confirmation
+    # Set job as completed. Prevents further processing on attached
+    # source and invokes the finalizer.
+    #
+    # @param name [String, Symbol] name of completed (source/callback)
+    # @param payload [Hash]
+    # @param message [Carnivore::Message]
     def job_completed(name, payload, message)
       payload[:complete].push(name.to_s).uniq!
       async.store_payload(payload)
@@ -77,11 +83,12 @@ module Fission
       end
     end
 
-    # payload:: Hash payload
-    # state:: Final state (:complete / :error)
-    # Transmit payload to any configured finalizers
-    # NOTE: At this point the payload will be modified and transmitted
-    # async to all finalizers
+    # Transmit payload to finalizers
+    #
+    # @param payload [Hash]
+    # @param message [Carnivore::Message]
+    # @param state [Symbol]
+    # @note payload will be set as frozen and sent async to finalizers
     def call_finalizers(payload, message, state=:complete)
       if(payload[:frozen])
         error "Attempted finalization of frozen payload. This should not happen! #{message} - #{payload.inspect}"
@@ -113,9 +120,10 @@ module Fission
       end
     end
 
-    # payload:: Hash payload
-    # message:: Carnivore::Message instance
-    # Send payload to error handler
+    # Set message as failed and initiate finalizers
+    #
+    # @param payload [Hash]
+    # @param message [Carnivore::Message]
     def failed(payload, message, reason='No message provided')
       message.confirm!
       payload[:error] ||= {}
@@ -124,29 +132,37 @@ module Fission
       call_finalizers(payload, message, :error)
     end
 
-    # job:: name of job/component to check
-    # payload:: Payload
-    # Check if given job has been completed
+    # Job has been completed on payload
+    #
+    # @param job [String, Symbol]
+    # @param payload [Hash]
+    # @return [TrueClass, FalseClass]
     def completed?(job, payload)
       payload.map do |item|
         item.downcase.gsub(':', '_')
       end.include?(job.to_s.downcase.gsub(':', '_'))
     end
 
-    # payload:: message payload
-    # If data is enabled, store payload
+    # Store payload in persistent data store if available
+    #
+    # @param payload [Hash]
+    # @return [TrueClass, NilClass] true if saved
     def store_payload(payload)
       if(enabled?(:data))
         job = Fission::Data::Job.find_by_message_id(payload[:message_id])
         if(job)
           job.payload = payload
           job.save
+          true
         end
       end
     end
 
-    # message:: Original message
-    # Executes block and catches unexpected exceptions if encountered
+    # Execute block and handle unexpected errors
+    #
+    # @param message [Carnivore::Message]
+    # @yield block to execute
+    # @yieldparam payload [Hash] unpacked payload
     def failure_wrap(message)
       abort 'Failure wrap requires block for execution' unless block_given?
       begin

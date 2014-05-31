@@ -1,7 +1,15 @@
 module Fission
   module Utils
+
+    # DNS helper methods
     module Dns
 
+      # Provides DNS API if possible
+      #
+      # @return [Fog::DNS]
+      # @raise [ArgumentError]
+      # @note fog credentials are required.
+      # @config fission.dns.credentials fog arguments
       def dns
         if(creds = Carnivore::Config.get(:fission, :dns, :credentials))
           require 'fog'
@@ -11,7 +19,8 @@ module Fission
             abort e
           end
         else
-          abort ArgumentError.new('No DNS credentials found!')
+          abort MissingConfiguration.new('No DNS credentials found!')
+            .path(:fission, :dns, :credentials)
         end
       end
 

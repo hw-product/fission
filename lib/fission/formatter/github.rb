@@ -2,8 +2,10 @@ require 'fission'
 
 module Fission
   class Formatter
+    # Github data formatter
     class Github < Formatter
 
+      # Mapping data for repository information
       REPOSITORY_MAPS = {
         :push => {
           :commit_sha => [:data, :github, :head_commit, :id],
@@ -48,6 +50,10 @@ module Fission
       extend Fission::Utils::Github
       extend Fission::Utils::Inspector
 
+      # Create new instance
+      #
+      # @param payload [Hash]
+      # @param type [String, Symbol] type of data format
       def initialize(*args)
         super
         if(type == :default)
@@ -59,6 +65,10 @@ module Fission
         end
       end
 
+      # Generate new data structure
+      #
+      # @param key [String, Symbol] what to translate
+      # @return [Hash]
       def data_for(key)
         case key.to_sym
         when :repository
@@ -68,27 +78,30 @@ module Fission
         end
       end
 
+      # Build new data structure for repository
+      #
+      # @return [Hash]
       def repository_extract
         begin
-        unless(REPOSITORY_MAPS[type])
-          raise KeyError.new "Unknown repository mapping type received (#{type})"
-        end
-        repo_info = Smash.new.tap do |info|
-          REPOSITORY_MAPS[type].each do |key, args|
-            if(args.is_a?(Array))
-              info[key] = data.get(*args)
-            elsif(args.respond_to?(:call))
-              info[key] = args.call(data)
-            else
-              raise TypeError.new "Expected type `Array` or `Proc` but got `#{args.class}`"
+          unless(REPOSITORY_MAPS[type])
+            raise KeyError.new "Unknown repository mapping type received (#{type})"
+          end
+          repo_info = Smash.new.tap do |info|
+            REPOSITORY_MAPS[type].each do |key, args|
+              if(args.is_a?(Array))
+                info[key] = data.get(*args)
+              elsif(args.respond_to?(:call))
+                info[key] = args.call(data)
+              else
+                raise TypeError.new "Expected type `Array` or `Proc` but got `#{args.class}`"
+              end
             end
           end
-        end
-        data.set(:data, :format, :repository, repo_info)
+          data.set(:data, :format, :repository, repo_info)
           repo_info
         rescue => e
-          puts "#{e.class}: #{e}\n#{e.backtrace.join("\n")}"
-          raise
+          exception_log(e)
+          raise TranslationFailed.new(e.message)
         end
       end
 

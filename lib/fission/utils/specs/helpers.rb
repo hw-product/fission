@@ -16,6 +16,16 @@ ENV.each do |key, value|
   end
 end
 
+# Fetch test payload and create new fission payload
+#
+# @param style [String, Symbol] name of payload
+# @param args [Hash]
+# @option args [TrueClass, FalseClass] :raw return loaded payload only
+# @option args [String, Symbol] :nest place loaded payload within key namespace in hash
+# @return [Hash] new payload
+# @note `style` is name of test payload without .json extension. Will
+# search 'test/specs/payload' from CWD first, then fallback to
+# 'payloads' directory within the directory of this file
 def payload_for(style, args={})
   file = "#{style}.json"
   path = [File.join(Dir.pwd, 'test/specs/payloads'), File.join(File.dirname(__FILE__), 'payloads')].map do |dir|

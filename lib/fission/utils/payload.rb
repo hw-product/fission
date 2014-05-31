@@ -1,13 +1,17 @@
 module Fission
   module Utils
 
+    # Payload helper methods
     module Payload
 
-      # job:: name of job
-      # payload:: Hash or String payload (will attempt JSON loading)
-      # args:: optional flags
-      # Creates a new payload Hash nesting the original payload within
-      # `:data` and setting the `:job` and `:message_id`
+      # Create a new payload. Sets provided payload into :data and
+      # populates the :job and :message_id items.
+      #
+      # @param job [String, Symbol] name of job
+      # @param payload [Hash, String] will attempt JSON load of string
+      # @param args [Symbol] argument list options
+      # @option args [Symbol] :json_required fail if String provided and is not JSON
+      # @return [Hash]
       def new_payload(job, payload, *args)
         if(payload.is_a?(String))
           begin
@@ -21,18 +25,21 @@ module Fission
             end
           end
         end
-        Smash.new(
+        {
           :job => job,
           :message_id => Celluloid.uuid,
           :data => payload,
           :complete => []
-        )
+        ).to_smash
       end
 
-      # payload:: data payload
-      # key:: Format request key
-      # source:: Source of payload
       # Extract generic information from payload
+      #
+      # @param payload [Hash]
+      # @param key [String, Symbol] format type
+      # @param source [String, Symbol] source of data
+      # @return [Hash]
+      # @see Formatter
       def format_payload(payload, key, source=nil)
         begin
           source = payload[:source] unless source

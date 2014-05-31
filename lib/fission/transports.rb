@@ -2,6 +2,8 @@ require 'carnivore'
 require 'fission'
 
 =begin
+Example structure of sources:
+
 {
   :fission => {
     :sources => {
@@ -16,6 +18,7 @@ require 'fission'
 =end
 
 module Fission
+  # Fission style setup of Carnivore sources
   class Transports
     class << self
 

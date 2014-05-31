@@ -1,6 +1,7 @@
 require 'carnivore'
 require 'fission/setup'
 
+# Hash processor framework
 module Fission
   autoload :Version, 'fission/version'
   autoload :Callback, 'fission/callback'

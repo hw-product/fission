@@ -1,6 +1,7 @@
 require 'mixlib/cli'
 
 module Fission
+  # CLI interface
   class Cli
     include Mixlib::CLI
 
