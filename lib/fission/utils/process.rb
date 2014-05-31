@@ -75,7 +75,7 @@ module Fission
             end
             _proc = clean_env!{ ChildProcess.build(*command) }
             scrub_env(_proc.environment)
-            @registry.merge(
+            @registry.merge!(
               Smash.new(
                 identifier => opts.to_smash.merge(
                   :process => _proc,
@@ -184,7 +184,7 @@ module Fission
                   )
                 end
               else
-                abort KeyError.new("Requested process not found (identifier: #{identifier})")
+                abort KeyError.new("Requested process not found (identifier: #{identifier}) -- current: #{@registry.keys.sort}")
               end
             ensure
               guard.unlock
