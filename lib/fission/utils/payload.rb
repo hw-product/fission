@@ -30,7 +30,7 @@ module Fission
           :message_id => Celluloid.uuid,
           :data => payload,
           :complete => []
-        ).to_smash
+        }.to_smash
       end
 
       # Extract generic information from payload
