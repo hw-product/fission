@@ -22,8 +22,8 @@ module Fission
 
       # Creates new Process actor
       def initialize
-        @registry = {}
-        @locker = {}
+        @registry = Smash.new
+        @locker = Smash.new
         @guard = Mutex.new
         @base_env = ENV.to_hash
         @lock_wait = Celluloid::Condition.new
@@ -75,11 +75,13 @@ module Fission
             end
             _proc = clean_env!{ ChildProcess.build(*command) }
             scrub_env(_proc.environment)
-            @registry = @registry.dup.merge(
-              identifier => opts.merge(
-                :process => _proc,
-                :command => command.join(' '),
-                :start_time => Time.now.to_i
+            @registry.merge(
+              Smash.new(
+                identifier => opts.to_smash.merge(
+                  :process => _proc,
+                  :command => command.join(' '),
+                  :start_time => Time.now.to_f
+                )
               )
             )
             if(block_given?)
@@ -106,15 +108,15 @@ module Fission
       def generate_process_status(identifier, registry_entry)
         crashed = registry_entry[:process].crashed? rescue false
         Smash.new(
-          :process_manager => {
-            :state => {
+          :process_manager => Smash.new(
+            :state => Smash.new(
               :running => registry_entry[:process].alive?,
               :failed => crashed,
               :process_identifier => identifier,
               :reference_identifier => registry_entry[:reference],
               :elapsed_time => Time.now.to_i - registry_entry[:start_time]
-            }
-          }
+            )
+          )
         )
       end
 
@@ -182,7 +184,7 @@ module Fission
                   )
                 end
               else
-                abort KeyError.new("Requested process not found (identifier: #{identifier}) -- #{@registry.keys.sort.inspect}")
+                abort KeyError.new("Requested process not found (identifier: #{identifier})")
               end
             ensure
               guard.unlock
@@ -260,7 +262,7 @@ module Fission
       def create_io_tmp(*args)
         path = File.join(@storage_directory, args.join('-'))
         FileUtils.mkdir_p(File.dirname(path))
-        t_file = Tempfile.new(path)
+        t_file = File.open(path, 'w+')
         t_file.sync
         t_file
       end
