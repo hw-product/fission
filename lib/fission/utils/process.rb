@@ -171,24 +171,27 @@ module Fission
         result = nil
         until(result)
           if(guard.try_lock)
-            if(@registry[identifier])
-              unless(@locker[identifier])
-                @locker[identifier] = Celluloid.uuid
-                result = Smash.new(
-                  :registry_entry => @registry[identifier],
-                  :process => @registry[identifier][:process],
-                  :lock_id => @locker[identifier]
-                )
+            begin
+              if(@registry[identifier])
+                unless(@locker[identifier])
+                  @locker[identifier] = Celluloid.uuid
+                  result = Smash.new(
+                    :registry_entry => @registry[identifier],
+                    :process => @registry[identifier][:process],
+                    :lock_id => @locker[identifier]
+                  )
+                end
+              else
+                abort KeyError.new("Requested process not found (identifier: #{identifier}) -- #{@registry.keys.sort.inspect}")
               end
-            else
-              abort KeyError.new("Requested process not found (identifier: #{identifier}) -- #{@registry.keys.sort.inspect}")
+            ensure
+              guard.unlock
+              lock_wait.broadcast(:free_bird)
             end
-            guard.unlock
-            lock_wait.signal(:free_bird)
           else
             warn "Failed lock attempt on #{identifier}"
+            lock_wait.wait
           end
-          lock_wait.wait(:free_bird)
         end
         result
       end
@@ -214,12 +217,12 @@ module Fission
               end
             ensure
               guard.unlock
-              lock_wait.signal(:free_bird)
+              lock_wait.broadcast(:free_bird)
             end
           else
             warn "Failed unlock for lock id: #{lock_id}"
+            lock_wait.wait
           end
-          lock_wait.wait(:free_bird)
         end
       end
 
