@@ -4,6 +4,7 @@ module Fission
   # Customized callback for fission
   class Callback < Carnivore::Callback
 
+    include Fission::Utils::ObjectCounts
     include Fission::Utils::Transmission
     include Fission::Utils::MessageUnpack
     include Fission::Utils::Payload
@@ -16,7 +17,7 @@ module Fission
     # @param message [Carnivore::Message]
     # @return [Truthy, Falsey]
     def valid?(message)
-      m = unpack(message)
+      m = object_counter(:valid_unpack){ unpack(message) }
       if(m[:complete])
         if(block_given?)
           !m[:complete].include?(name) && yield(m)
@@ -166,8 +167,12 @@ module Fission
     def failure_wrap(message)
       abort 'Failure wrap requires block for execution' unless block_given?
       begin
-        payload = unpack(message)
-        yield payload.to_smash
+        payload = object_counter(:unpack) do
+          unpack(message)
+        end
+        object_counter(:execute) do
+          yield payload.to_smash
+        end
       rescue => e
         error "!!! Unexpected failure encountered -> #{e.class}: #{e}"
         debug "#{e.class}: #{e}\n#{(e.backtrace || []).join("\n")}"
