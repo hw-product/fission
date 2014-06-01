@@ -281,8 +281,8 @@ module Fission
       def check_running_procs
         @registry.each do |identifier, _proc|
           if(!locked?(identifier) && !_proc[:notified] && _proc[:source] && !_proc[:process].alive?)
-            payload = _proc[:payload] || {}
-            payload[:data] ||= {}
+            payload = _proc[:payload] || Smash.new
+            payload[:data] ||= Smash.new
             payload[:data].merge!(
               :process_notification => identifier
             )
