@@ -14,6 +14,7 @@ module Fission
     autoload :Smash, 'fission/utils/smash'
     autoload :Payload, 'fission/utils/payload'
     autoload :Specs, 'fission/utils/specs'
+    autoload :ObjectCounts, 'fission/utils/object_counts'
 
     # Payload transmission helpers
     module Transmission
@@ -62,25 +63,25 @@ module Fission
             if(message[:message]['Body'])
               message[:message]['Body'].to_smash
             else
-              message[:message]
+              message[:message].to_smash
             end
           when :http
             begin
               MultiJson.load(message[:message][:body]).to_smash
             rescue MultiJson::DecodeError
-              message[:message][:body]
+              message[:message][:body].to_smash
             end
           when :nsq
             begin
               MultiJson.load(message[:message].message).to_smash
             rescue MultiJson::DecodeError
-              message[:message].message
+              message[:message].message.to_smash
             end
           else
             message[:message].to_smash
           end
         else
-          message
+          message.to_smash
         end
       end
 
