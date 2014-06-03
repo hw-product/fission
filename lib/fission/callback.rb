@@ -180,21 +180,5 @@ module Fission
       end
     end
 
-    # Error processor for messages matching multiple callbacks
-    #
-    # @param message [Carnivore::Message]
-    # @return [TrueClass]
-    def multiple_callback(message)
-      failed(unpack(message), message,
-        'Multiple callbacks matched but multiple callbacks are disabled'
-      )
-      true
-    end
-
-    # @return [FalseClass] disable multiple callback matching by default
-    def multiple_callback?
-      false
-    end
-
   end
 end
