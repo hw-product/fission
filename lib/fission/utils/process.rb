@@ -91,6 +91,7 @@ module Fission
               true
             end
             if(opts[:pending])
+              @registry[identifier][:reference] = opts[:pending][:reference]
               start_pending_notifier(
                 identifier, opts[:pending][:source], opts[:pending][:interval]
               )
@@ -106,12 +107,11 @@ module Fission
       # @param registry_entry [Hash]
       # @return [Hash]
       def generate_process_status(identifier, registry_entry)
-        crashed = registry_entry[:process].crashed? rescue false
         Smash.new(
           :process_manager => Smash.new(
             :state => Smash.new(
               :running => registry_entry[:process].alive?,
-              :failed => crashed,
+              :failed => registry_entry[:process].exit_code.nil? && registry_entry[:process].exit_code != 0,
               :process_identifier => identifier,
               :reference_identifier => registry_entry[:reference],
               :elapsed_time => Time.now.to_i - registry_entry[:start_time]
@@ -128,11 +128,13 @@ module Fission
       # @return [Timer]
       def start_pending_notifier(identifier, source, interval)
         timer = every(interval) do
+          debug "Pending notification generation for identifier: #{identifier}"
           p_lock = lock(identifier)
           payload = Fission::Utils.new_payload(source,
             generate_process_status(identifier, p_lock[:registry_entry])
           )
           Fission::Utils.transmit(source, payload)
+          unlock(p_lock)
         end
         @registry[identifier][:pending_notifier] = timer
       end
