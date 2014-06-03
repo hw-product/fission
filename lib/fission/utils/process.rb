@@ -47,6 +47,7 @@ module Fission
       # @option :pending :interval [Numeric] seconds between notifications
       # @option :pending :source [Symbol] source location to transmit
       # @option :pending :reference [String] unique identifier
+      # @option :pending :data [Hash] data to be sent in notification payload
       # @yield process instance provided to block
       # @return [TrueClass]
       def process(identifier, *command)
@@ -92,6 +93,7 @@ module Fission
             end
             if(opts[:pending])
               @registry[identifier][:reference] = opts[:pending][:reference]
+              @registry[identifier][:pending_data] = opts[:pending][:data]
               start_pending_notifier(
                 identifier, opts[:pending][:source], opts[:pending][:interval]
               )
@@ -114,6 +116,7 @@ module Fission
               :failed => registry_entry[:process].exit_code.nil? && registry_entry[:process].exit_code != 0,
               :process_identifier => identifier,
               :reference_identifier => registry_entry[:reference],
+              :data => registry_entry[:pending_data],
               :elapsed_time => Time.now.to_i - registry_entry[:start_time]
             )
           )
