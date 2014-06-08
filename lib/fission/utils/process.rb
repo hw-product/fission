@@ -117,7 +117,7 @@ module Fission
               :process_identifier => identifier,
               :reference_identifier => registry_entry[:reference],
               :data => registry_entry[:pending_data],
-              :elapsed_time => Time.now.to_i - registry_entry[:start_time]
+              :elapsed_time => Time.now.to_f - registry_entry[:start_time]
             )
           )
         )
