@@ -101,7 +101,7 @@ module Fission
           repo_info
         rescue => e
           exception_log(e)
-          raise TranslationFailed.new(e.message)
+          raise Error::TranslationFailed.new(e.message)
         end
       end
 
