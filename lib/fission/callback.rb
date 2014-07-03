@@ -2,7 +2,7 @@ require 'fission'
 
 module Fission
   # Customized callback for fission
-  class Callback < Carnivore::Callback
+  class Callback < Jackal::Callback
 
     include Fission::Utils::ObjectCounts
     include Fission::Utils::Transmission
@@ -156,27 +156,6 @@ module Fission
           job.save
           true
         end
-      end
-    end
-
-    # Execute block and handle unexpected errors
-    #
-    # @param message [Carnivore::Message]
-    # @yield block to execute
-    # @yieldparam payload [Hash] unpacked payload
-    def failure_wrap(message)
-      abort 'Failure wrap requires block for execution' unless block_given?
-      begin
-        payload = object_counter(:unpack) do
-          unpack(message)
-        end
-        object_counter(:execute) do
-          yield payload.to_smash
-        end
-      rescue => e
-        error "!!! Unexpected failure encountered -> #{e.class}: #{e}"
-        debug "#{e.class}: #{e}\n#{(e.backtrace || []).join("\n")}"
-        failed(payload, message, e.message)
       end
     end
 

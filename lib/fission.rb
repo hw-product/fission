@@ -1,4 +1,5 @@
-require 'carnivore'
+require 'jackal'
+require 'fission/version'
 require 'fission/setup'
 
 # Hash processor framework
@@ -18,3 +19,9 @@ module Fission
 end
 
 autoload :Smash, 'fission/utils/smash'
+
+# Force fission customized methods into jackal
+module Jackal::Utils
+  extend Fission::Utils::Payload
+  extend Fission::Utils::MessageUnpack
+end

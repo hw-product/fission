@@ -1,14 +1,13 @@
+require 'fission'
 require 'carnivore/config'
+require 'fission/utils/specs/helpers'
 
+# Set fission specific testing mode on
 ENV['FISSION_TESTING_MODE'] = 'true'
 
-path = File.join(Dir.pwd, 'test')
+# Add path to test payloads
+Jackal::Utils::Spec.payload_storage(
+  File.join(File.dirname(__FILE__), 'payloads')
+)
 
-if(File.directory?(path))
-  if(File.exists?(spec_file = File.join(path, 'spec.rb')))
-    require spec_file
-  end
-  require 'fission/utils/specs/runner'
-else
-  raise "No test directory found: #{path}"
-end
+require 'jackal/utils/spec/loader'

@@ -1,4 +1,4 @@
-require 'carnivore'
+require 'fission'
 
 module Fission
 
