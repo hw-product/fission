@@ -18,11 +18,19 @@ module Fission
       # @config fission.github.access_token access token for client
       def github_client(custom_token=nil)
         require 'octokit'
-        Octokit.api_endpoint = Carnivore::Config.get(:fission, :github, :api_endpoint) ||
-          DEFAULT_API_ENDPOINT
-        Octokit.web_endpoint = Carnivore::Config.get(:fission, :github, :web_endpoint) ||
-          DEFAULT_WEB_ENDPOINT
-        token = Carnivore::Config.get(:fission, :github, :access_token) || custom_token
+        Octokit.api_endpoint = config.fetch(:github, :api_endpoint,
+          fission_config.fetch(:github, :api_endpoint,
+            DEFAULT_API_ENDPOINT
+          )
+        )
+        Octokit.web_endpoint = config.fetch(:github, :web_endpoint,
+          fission_config.fetch(:github, :web_endpoint,
+            DEFAULT_WEB_ENDPOINT
+          )
+        )
+        token = custom_token || config.fetch(:github, :access_token,
+          fission_config.get(:github, :access_token)
+        )
         if(token)
           Octokit::Client.new(:access_token => token)
         else
