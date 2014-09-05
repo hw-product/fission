@@ -11,8 +11,6 @@ unless(ENV['FISSION_TESTING_MODE'])
   Carnivore::Config.configure(cli.config)
 end
 
-Carnivore::Config.auto_symbolize(true)
-
 Celluloid.logger.level = Celluloid.logger.class.const_get(
   (Carnivore::Config.get(:verbosity) || :debug).to_s.upcase
 )
