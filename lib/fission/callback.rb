@@ -12,6 +12,24 @@ module Fission
     include Fission::Utils::Github
     include Fission::Utils::Inspector
 
+    # @return [Carnivore::Config] global configuration
+    def global_config
+      Carnivore::Config
+    end
+
+    # Fetch configuration for namespace
+    #
+    # @param key [String, Symbol]
+    # @return [Smash, NilClass]
+    def config_for(key)
+      global_config.get(key)
+    end
+
+    # @return [Smash] fission namespace configuration
+    def fission_config
+      config_for(:fission)
+    end
+
     # Validity of message
     #
     # @param message [Carnivore::Message]
