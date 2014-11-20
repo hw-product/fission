@@ -91,9 +91,9 @@ module Fission
               unlock(p_lock)
               true
             end
-            if(opts[:pending])
-              @registry[identifier][:reference] = opts[:pending][:reference]
-              @registry[identifier][:pending_data] = opts[:pending][:data]
+            @registry[identifier][:reference] = opts[:pending][:reference]
+            @registry[identifier][:pending_data] = opts[:pending][:data]
+            if(opts[:pending] && opts[:pending][:interval])
               start_pending_notifier(
                 identifier, opts[:pending][:source], opts[:pending][:interval]
               )
