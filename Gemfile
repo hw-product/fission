@@ -4,6 +4,7 @@ gem 'sleepy_penguin'
 gem 'carnivore-files', git: 'git@github.com:carnivore-rb/carnivore-files.git'
 gem 'carnivore-http'
 gem 'carnivore-actor'
+gem 'carnivore', git: 'git@github.com:carnivore-rb/carnivore.git', branch: 'develop'
 
 gem 'octokit'
 gem 'elecksee', '~> 1.0.20'
@@ -18,7 +19,7 @@ if(RUBY_PLATFORM == 'java')
 end
 
 %w(
-  assets callbacks code-fetcher data
+  assets webhook code-fetcher data
   finalizers github-release nellie package-builder
   rest-api router validator mail repository-generator
   repository-publisher github-comment nellie-webhook
