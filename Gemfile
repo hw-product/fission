@@ -4,7 +4,6 @@ gem 'sleepy_penguin'
 gem 'carnivore-files', git: 'git@github.com:carnivore-rb/carnivore-files.git'
 gem 'carnivore-http'
 gem 'carnivore-actor'
-gem 'carnivore', git: 'git@github.com:carnivore-rb/carnivore.git', branch: 'develop'
 
 gem 'octokit'
 gem 'elecksee', '~> 1.0.20'
