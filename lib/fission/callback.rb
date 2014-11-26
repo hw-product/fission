@@ -95,7 +95,6 @@ module Fission
     # @param message [Carnivore::Message]
     def job_completed(name, payload, message)
       payload[:complete].push(name.to_s).uniq!
-      async.store_payload(payload)
       completed(payload, message)
       if(name.to_s == payload[:job])
         call_finalizers(payload, message)
@@ -168,12 +167,12 @@ module Fission
     # @return [TrueClass, NilClass] true if saved
     def store_payload(payload)
       if(enabled?(:data))
-        job = Fission::Data::Job.find_by_message_id(payload[:message_id])
-        if(job)
-          job.payload = payload
-          job.save
-          true
-        end
+        Fission::Data::Job.create(
+          :message_id => payload[:message_id],
+          :payload => payload,
+          :account_id => payload.get(:data, :account, :id)
+        )
+        true
       end
     end
 
