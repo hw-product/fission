@@ -167,10 +167,10 @@ module Fission
     # @return [TrueClass, NilClass] true if saved
     def store_payload(payload)
       if(enabled?(:data))
-        Fission::Data::Job.create(
+        Fission::Data::Models::Job.create(
           :message_id => payload[:message_id],
           :payload => payload,
-          :account_id => payload.get(:data, :account, :id)
+          :account_id => payload.fetch(:data, :account, :id, 1)
         )
         true
       end
