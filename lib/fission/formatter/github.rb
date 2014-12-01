@@ -17,7 +17,7 @@ module Fission
           :url => [:data, :github, :repository, :url],
           :ref => [:data, :github, :ref],
           :private => [:data, :github, :repository, :private],
-          :tag => lambda{|data| data.get(:data, :github, :ref).to_s.split('/')[1] == 'tag' }
+          :tag => lambda{|data| data.get(:data, :github, :ref).to_s.split('/')[1] == 'tags' }
         },
         :create => {
           :commit_sha => lambda{|data|
