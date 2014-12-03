@@ -29,7 +29,8 @@ module Fission
           :job => job,
           :message_id => Celluloid.uuid,
           :data => payload,
-          :complete => []
+          :complete => [],
+          :status => 'active' # error/complete
         }.to_smash
       end
 
