@@ -114,14 +114,14 @@ module Fission
         begin
           finalizers = Carnivore::Config.get(:fission, :handlers, state)
           finalizers = [finalizers].flatten.compact
+          payload[:status] = state
+          payload[:frozen] = true
           unless(finalizers.empty?)
             [finalizers].flatten.compact.each do |endpoint|
               payload[:complete].delete_if do |component|
                 component.start_with?(endpoint)
               end
               payload[:job] = endpoint
-              payload[:status] = state
-              payload[:frozen] = true
               begin
                 transmit(endpoint, payload)
               rescue => e
