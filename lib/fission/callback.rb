@@ -120,6 +120,7 @@ module Fission
                 component.start_with?(endpoint)
               end
               payload[:job] = endpoint
+              payload[:status] = state
               payload[:frozen] = true
               begin
                 transmit(endpoint, payload)
