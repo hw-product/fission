@@ -6,7 +6,7 @@ gem 'carnivore-http'
 gem 'carnivore-actor'
 
 gem 'octokit'
-gem 'elecksee', '~> 1.0.20'
+gem 'elecksee', path: '/home/spox/Projects/chrisroberts/elecksee' #'~> 1.0.20'
 gem 'pg'
 gem 'reaper', git: 'git@github.com:heavywater/reaper.git'
 gem 'pry'
