@@ -23,9 +23,11 @@ module Fission
       def execute(message)
         payload = unpack(message)
         message.confirm!
-        if(disabled?(:data))
+        if(disabled?(:validator))
           info 'Currently configured to mock validation. Stubbing with dummy data'
-          payload[:data][:account] = {}
+          payload[:data][:account] = Carnivore::Config.fetch(
+            :fission, :validator, :stub, {}
+          )
           forward(payload)
         else
           info "#{message} is not validated. Forwarding to validator."
