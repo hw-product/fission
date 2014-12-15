@@ -53,13 +53,7 @@ module Fission
     def forward(payload)
       if(payload[:job])
         if(payload[:complete].include?(payload[:job]))
-          final_worker = Carnivore::Config.get(:fission, :handlers, :complete)
-          if(final_worker)
-            debug "Finalizing payload! Finalizer worker: #{final_worker} - payload: #{payload.inspect}"
-            transmit(final_worker, payload)
-          else
-            warn "No finalizer defined for payload! Payload complete: #{payload.inspect}"
-          end
+          info "Payload has reached completed state! (Message ID: #{payload[:message_id]})"
         else
           transmit(payload[:job], payload)
         end
