@@ -24,7 +24,10 @@ module Fission
       # @param worker [String, Symbol] source name to send payload to
       # @param payload [Hash, Object] argument list splatted to transmit
       def transmit(worker, *payload)
-        Celluloid::Logger.info "<#{self}> Transmitting payload to worker -> #{worker}"
+        if(payload.first.is_a?(Hash))
+          msg_id = payload.first[:message_id]
+        end
+        Celluloid::Logger.info "<#{self}> Transmitting payload to worker -> #{worker} (Message ID: #{msg_id || '<unknown>'})"
         src = [worker.to_sym, "fission_#{worker}".to_sym].map do |key|
           Carnivore::Supervisor.supervisor[key]
         end.compact.first
