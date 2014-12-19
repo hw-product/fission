@@ -173,3 +173,6 @@ module Fission
 
   end
 end
+
+# Remap Jackals to Fission
+Jackal::Callback = Fission::Callback

@@ -25,3 +25,6 @@ module Jackal::Utils
   extend Fission::Utils::Payload
   extend Fission::Utils::MessageUnpack
 end
+
+# Force load callbacks so jackals are auto built within fission
+require 'fission/callback'
