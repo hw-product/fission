@@ -3,6 +3,8 @@ require 'carnivore'
 module Carnivore
   class Source
 
+    include Fission::Utils::MessageUnpack
+
     # Error processor for messages matching multiple callbacks
     #
     # @param message [Carnivore::Message]
@@ -18,6 +20,28 @@ module Carnivore
     # @return [TrueClass, FalseClass] disable multiple callback matching by default
     def multiple_callback?
       original_args.fetch(:allow_multiple_matches, false)
+    end
+
+    # Orphan callback for message with no matching callbacks
+    #
+    # @param message [Carnivore::Message]
+    # @return [TrueClass]
+    # @note this callback will only act if the payload is being
+    #   routed via the router. If the job is still set as router
+    #   and the route is still populated, this will inject completed
+    #   and forward back to the router (allows no-op jobs in route)
+    def orphan_callback(message)
+      payload = unpack(message)
+      if(payload[:job] == 'router')
+        job_stub = payload.fetch(:data, :router, :route, []).first
+        if(job_stub)
+          warn "Stubbing job `(#{job_stub})` for message `(#{message})` due to callback match failure"
+          payload[:complete].push(job_stub).uniq!
+        end
+      end
+      warn "Forcing orphaned message back to router! (#{message})"
+      message.confirm!
+      Fission::Utils.transmit(:router, payload)
     end
 
   end
