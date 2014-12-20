@@ -12,6 +12,16 @@ module Fission
     include Fission::Utils::Github
     include Fission::Utils::Inspector
 
+    # Create new instance
+    #
+    # @return [self]
+    def initialize(*_)
+      super
+      @formatters = Jackal::Formatter.descendants.map do |klass|
+        klass.new
+      end
+    end
+
     # @return [Carnivore::Config] global configuration
     def global_config
       Carnivore::Config
@@ -89,9 +99,21 @@ module Fission
     # @param message [Carnivore::Message]
     def job_completed(name, payload, message)
       payload[:complete].push(name.to_s).uniq!
+      apply_formatters!(payload)
       completed(payload, message)
       if(name.to_s == payload[:job])
         call_finalizers(payload, message)
+      end
+    end
+
+    # Automatically apply formatters required based on
+    # current source and defined destinations
+    def apply_formatters!(payload)
+      formatters.each do |formatter|
+        route = payload.fetch(:data, :router, :route, []).map(&:to_sym)
+        if(formatter.source == service_name && route.include?(formatter.destination))
+          formatter.format(payload)
+        end
       end
     end
 
