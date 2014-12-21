@@ -11,6 +11,7 @@ module Fission
   autoload :Utils, 'fission/utils'
   autoload :Transports, 'fission/transports'
   autoload :Formatter, 'fission/formatter'
+  autoload :PayloadFormatter, 'fission/payload_formatter'
 
   module Validators
     autoload :Repository, 'fission/validators/repository'

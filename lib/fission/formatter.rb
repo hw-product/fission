@@ -1,5 +1,6 @@
 module Fission
   # Format payload data to common structure
+  # @note see PayloadFormatter for inter-service formatting
   class Formatter
 
     autoload :Github, 'fission/formatter/github'
