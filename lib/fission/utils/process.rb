@@ -7,7 +7,7 @@ require 'childprocess'
 module Fission
   module Utils
     # Helper class for running processes on the system
-    class Process
+    class Process < Jackal::Utils::Process
 
       # Environment variables that should be removed from process environment
       BLACKLISTED_ENV = ['GIT_DIR']
@@ -258,18 +258,6 @@ module Fission
             abort Error::ThresholdExceeded.new("Max process threshold reached (#{@max_processes} processes)")
           end
         end
-      end
-
-      # Temporary IO for logging
-      #
-      # @param args [String] argument list joined for filename
-      # @return [IO]
-      def create_io_tmp(*args)
-        path = File.join(@storage_directory, args.join('-'))
-        FileUtils.mkdir_p(File.dirname(path))
-        t_file = File.open(path, 'w+')
-        t_file.sync
-        t_file
       end
 
       private
