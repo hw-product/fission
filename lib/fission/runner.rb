@@ -3,6 +3,7 @@ $VERBOSE=nil
 require 'carnivore'
 require 'fission'
 require 'fission/monkey_patches/carnivore_source'
+require 'fission/monkey_patches/jackal_callback'
 
 unless(ENV['FISSION_TESTING_MODE'])
   cli = Fission::Cli.new
