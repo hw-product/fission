@@ -56,8 +56,14 @@ module Fission
       end
 
       # Return origin data for notifications
-      def origin
-        if(branding = Carnivore::Config.get(:fission, :branding))
+      #
+      # @param brand [String, Symbol] branding key
+      # @return [Smash]
+      def origin(brand = nil)
+        branding = [brand, :default].compact.detect do |key|
+          Carnivore::Config.get(:fission, :branding, key)
+        end
+        if(branding)
           DEFAULT_ORIGIN.merge(
             Hash[*branding.map{|k,v| [k.to_sym, v]}.flatten]
           )
