@@ -109,9 +109,18 @@ module Fission
     # Automatically apply formatters required based on
     # current source and defined job
     def apply_formatters!(payload)
+      route = payload.fetch(:data, :router, :route, []).map(&:to_sym)
       formatters.each do |formatter|
-        if(formatter.source == service_name && payload[:job].to_sym == formatter.destination)
-          formatter.format(payload)
+        begin
+          if(formatter.source == service_name && payload[:job].to_sym == formatter.destination)
+            debug "Direct destination matched formatter! (<#{formatter.class}>)"
+            formatter.format(payload)
+          elsif(route.include?(formatter.destination))
+            debug "Route destination matched formatter! (<#{formatter.class}>)"
+            formatter.format(payload)
+          end
+        rescue => e
+          error "Formatter failed <#{formatter.source}:#{formatter.destination}> #{e.class}: #{e}"
         end
       end
     end
