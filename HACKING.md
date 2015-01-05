@@ -23,6 +23,7 @@ This document outlines the basic steps necessary for starting work with fission-
   * Install prereqs for rbenv / ruby-build:
     * `apt-get install autoconf bison build-essential libssl-dev libyaml-dev libreadline6-dev zlib1g-dev libncurses5-dev libffi-dev libgdbm3 libgdbm-dev git`
   * Install postgres 9.3 (http://www.postgresql.org/download/linux/ubuntu/)
+  * After main install, ensure you grab the postgresql 9.3 dev libs (necessary header files for pg gem): `apt-get install postgresql-server-dev-9.3`
   * Update /etc/postgresql/9.3/main/pg_hba.conf to use md5 for local connections and restart postgres
   * Create fission user (with pw: fission-password): `su -c 'createuser -d -P fission' postgres`
   * Create fission db `createdb -U fission fission`
