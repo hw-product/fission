@@ -1,4 +1,4 @@
-require File.expand_path(File.join(File.dirname(__FILE__), 'fission_dependencies.rb'))
+require_relative 'fission_dependencies'
 source 'https://rubygems.org'
 
 gem 'sleepy_penguin'
