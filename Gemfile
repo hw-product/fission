@@ -21,7 +21,7 @@ end
 
 FissionDependencies::GEMS.each do |lib|
   local  = { path: "../#{lib}" }
-  remote = { git: "git@github.com:heavywater/#{lib}.git", branch: 'develop' }
+  remote = { git: "git@github.com:hw-product/#{lib}.git", branch: 'develop' }
   opts   = (ENV['FISSION_LOCALS'] == 'true') ? local : remote
 
   gem lib, opts
