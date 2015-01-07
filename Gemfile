@@ -1,4 +1,4 @@
-require './fission_dependencies'
+require File.expand_path(File.join(File.dirname(__FILE__), 'fission_dependencies.rb'))
 source 'https://rubygems.org'
 
 gem 'sleepy_penguin'
@@ -8,7 +8,7 @@ gem 'carnivore-actor'
 gem 'jackal', git: 'git@github.com:carnivore-rb/jackal.git', branch: 'develop'
 
 gem 'octokit'
-gem 'elecksee', '~> 1.0.22'
+gem 'elecksee'
 gem 'pg'
 gem 'reaper', git: 'git@github.com:heavywater/reaper.git'
 gem 'pry'
