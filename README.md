@@ -1,6 +1,6 @@
 # Fission
 
-Fission provides a set of base utilities and subclasses to drive the platform.  It allows one to specify (via a json configuration file) a pipeline of services to apply to one's infrastructure.  Pipeline components may have input and output specifiers in order to route the flow data between components.
+Fission provides a set of base utilities and subclasses to drive the platform.
 
 ## About
 
