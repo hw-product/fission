@@ -18,3 +18,6 @@ Send it something:
 ```
 $ curl --data @examples/payloads/github.json http://localhost:9876/github-commit/
 ```
+
+## Local Development
+See: https://github.com/hw-product/fission/blob/develop/HACKING.md
