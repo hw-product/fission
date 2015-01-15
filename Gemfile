@@ -1,4 +1,4 @@
-require_relative 'fission_dependencies'
+require File.expand_path('fission_dependencies', File.dirname(__FILE__))
 source 'https://rubygems.org'
 
 gem 'sleepy_penguin'
