@@ -11,9 +11,8 @@ Gem::Specification.new do |s|
   s.require_path = 'lib'
   s.add_dependency 'jackal'
   s.add_dependency 'celluloid', '~> 0.16.0'
-  s.add_dependency 'mixlib-cli'
+  s.add_dependency 'bogo-cli'
   s.add_dependency 'childprocess'
-  s.add_dependency 'hashie'
   s.executables << 'fission'
   s.executables << 'fission-test'
   s.files = Dir['{lib,bin}/**/**/*'] + %w(fission.gemspec README.md CHANGELOG.md)
