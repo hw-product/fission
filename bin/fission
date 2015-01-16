@@ -21,6 +21,3 @@ Bogo::Cli::Setup.define do
   end
 
 end
-
-
-require 'fission/runner'
