@@ -6,30 +6,38 @@ require 'fission/monkey_patches/jackal_config'
 require 'fission/monkey_patches/carnivore_source'
 require 'fission/monkey_patches/jackal_callback'
 
-unless(ENV['FISSION_TESTING_MODE'])
-  cli = Fission::Cli.new
-  cli.parse_options
-  cli.config[:config_path] ||= '/etc/fission/config.json'
-  Carnivore::Config.configure(cli.config)
-end
+module Fission
+  class Runner
+    class << self
 
-Celluloid.logger.level = Celluloid.logger.class.const_get(
-  (Carnivore::Config.get(:verbosity) || :debug).to_s.upcase
-)
+      # @todo set configs as immutable once available
+      def run!(opts)
+        unless(ENV['FISSION_TESTING_MODE'])
+          Carnivore.configure!(opts[:config])
+        else
+          Carnivore.configure!
+        end
 
-begin
-  require 'fission/transports'
-  # Build all registered transports (sources)
-  Fission::Transports.build!
-  # Load all configured workers and setup
-  Array(Carnivore::Config.get(:fission, :loaders, :workers)).flatten.compact.each do |lib|
-    require lib
+        Celluloid.logger.level = Celluloid.logger.class.const_get((opts[:verbosity] || :debug).to_s.upcase)
+
+        begin
+          require 'fission/transports'
+          # Build all registered transports (sources)
+          Fission::Transports.build!
+          # Load all configured workers and setup
+          Array(Carnivore::Config.get(:fission, :loaders, :workers)).flatten.compact.each do |lib|
+            require lib
+          end
+          Fission.setup!
+          # Start the daemon
+          Carnivore.start!
+        rescue => e
+          $stderr.puts 'Fission run failure. Exception encountered.'
+          $stderr.puts "#{e.class}: #{e}\n#{e.backtrace.join("\n")}"
+          exit -1
+        end
+
+      end
+    end
   end
-  Fission.setup!
-  # Start the daemon
-  Carnivore.start!
-rescue => e
-  $stderr.puts 'Fission run failure. Exception encountered.'
-  $stderr.puts "#{e.class}: #{e}\n#{e.backtrace.join("\n")}"
-  exit -1
 end
