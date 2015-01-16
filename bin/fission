@@ -4,4 +4,23 @@
 
 $VERBOSE=nil
 
+require 'bogo-cli'
+require 'fission'
+
+Bogo::Cli::Setup.define do
+
+  on :v, :version, 'Print version' do
+    puts "fission - Dynamic Pipeline - [Version: #{Fission::VERSION}]"
+    exit
+  end
+  on :c, :config=, 'Configuration file or directory'
+  on :V, :verbosity=, 'Log verbosity (debug info warn error)'
+  run do |opts, args|
+    Fission::Runner.run!(opts)
+    exit
+  end
+
+end
+
+
 require 'fission/runner'
