@@ -1,4 +1,4 @@
-require 'jackal'
+require 'jackal/callback'
 
 module Jackal
   class Callback
