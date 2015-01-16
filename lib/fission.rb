@@ -12,6 +12,7 @@ module Fission
   autoload :Transports, 'fission/transports'
   autoload :Formatter, 'fission/formatter'
   autoload :PayloadFormatter, 'fission/payload_formatter'
+  autoload :Runner, 'fission/runner'
 
   module Validators
     autoload :Repository, 'fission/validators/repository'
