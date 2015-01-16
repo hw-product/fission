@@ -1,4 +1,4 @@
-require 'jackal'
+require 'jackal/utils/config'
 
 module Jackal
   module Utils
@@ -6,12 +6,9 @@ module Jackal
 
       # @return [Smash] service configuration
       def config
-        Carnivore::Config.fetch(
-          *config_path,
-          Carnivore::Config.fetch(
-            :fission, service_name, Smash.new
-          )
-        )
+        Carnivore::Config.get(*config_path) ||
+          Carnivore::Config.get(:fission, service_name) ||
+          Smash.new
       end
 
     end
