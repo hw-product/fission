@@ -14,8 +14,6 @@ module Fission
       def run!(opts)
         unless(ENV['FISSION_TESTING_MODE'])
           Carnivore.configure!(opts[:config])
-        else
-          Carnivore.configure!
         end
 
         Celluloid.logger.level = Celluloid.logger.class.const_get((opts[:verbosity] || :debug).to_s.upcase)
