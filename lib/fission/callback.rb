@@ -65,7 +65,11 @@ module Fission
         if(payload[:complete].include?(payload[:job]))
           info "Payload has reached completed state! (Message ID: #{payload[:message_id]})"
         else
-          transmit(payload[:job], payload)
+          if(payload[:frozen])
+            info "Payload is frozen and will not be forwarded! (Message ID: #{payload[:message_id]})"
+          else
+            transmit(payload[:job], payload)
+          end
         end
       else
         abort ArgumentError.new('No job type provided in payload!')
