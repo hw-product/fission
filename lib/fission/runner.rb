@@ -10,10 +10,13 @@ module Fission
   class Runner
     class << self
 
-      # @todo set configs as immutable once available
+      # Run fission
+      #
+      # @param opts [Hash]
       def run!(opts)
         unless(ENV['FISSION_TESTING_MODE'])
           Carnivore.configure!(opts[:config])
+          Carnivore::Config.immutable!
         end
 
         Celluloid.logger.level = Celluloid.logger.class.const_get((opts[:verbosity] || :debug).to_s.upcase)
