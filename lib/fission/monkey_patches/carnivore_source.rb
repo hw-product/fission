@@ -39,9 +39,21 @@ module Carnivore
           payload[:complete].push(job_stub).uniq!
         end
       end
-      warn "Forcing orphaned message back to router! (#{message})"
       message.confirm!
-      Fission::Utils.transmit(:router, payload)
+      unless(payload[:frozen])
+        warn "Forcing orphaned message back to router! (#{message})"
+        begin
+          Fission::Utils.transmit(
+            Carnivore::Config.fetch(
+              :fission, :core, :orphan, :router
+            )
+          )
+        rescue => e
+          error "Failed to re-route orphaned message! (#{message})"
+        end
+      else
+        warn "Orphaned message is frozen. Dropping! (#{message})"
+      end
     end
 
   end
