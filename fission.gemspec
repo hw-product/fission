@@ -6,10 +6,10 @@ Gem::Specification.new do |s|
   s.summary = 'Fission Core'
   s.author = 'Heavywater'
   s.email = 'fission@hw-ops.com'
-  s.homepage = 'http://github.com/heavywater/fission'
+  s.homepage = 'http://github.com/hw-product/fission'
   s.description = 'Fission Core'
   s.require_path = 'lib'
-  s.add_dependency 'jackal', '~> 0.1.18'
+  s.add_dependency 'jackal', '>= 0.2.0', '< 1.0.0'
   s.executables << 'fission'
   s.executables << 'fission-test'
   s.files = Dir['{lib,bin}/**/**/*'] + %w(fission.gemspec README.md CHANGELOG.md)
