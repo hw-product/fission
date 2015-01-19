@@ -46,7 +46,8 @@ module Carnivore
           Fission::Utils.transmit(
             Carnivore::Config.fetch(
               :fission, :core, :orphan, :router
-            )
+            ),
+            payload
           )
         rescue => e
           error "Failed to re-route orphaned message! (#{message})"
