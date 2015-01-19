@@ -18,7 +18,7 @@ module Fission
     def initialize(*_)
       super
       @formatters = Fission::PayloadFormatter.descendants.map do |klass|
-        klass.new
+        klass.new(self)
       end
     end
 
