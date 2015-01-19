@@ -5,6 +5,8 @@ module Jackal
 
     class << self
 
+      include Bogo::AnimalStrings
+
       # Auto register class into fission
       #
       # @param klass [Class]
@@ -12,10 +14,7 @@ module Jackal
       def inherited(klass)
         framework, const = klass.name.split('::', 2)
         if(framework == 'Jackal')
-          const.map! do |string|
-            string.gsub(/(?<![A-Z])([A-Z])/, '_\1').sub(/^_/, '').downcase.to_sym
-          end
-          Fission.register(*const.push(klass))
+          Fission.register(snake(const).sub('::', '_'), klass)
           true
         else
           false
