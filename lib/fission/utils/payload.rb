@@ -25,9 +25,12 @@ module Fission
             end
           end
         end
+        message_id = Celluloid.uuid
         {
           :job => job,
-          :message_id => Celluloid.uuid,
+          :name => job,
+          :message_id => message_id,
+          :id => message_id,
           :data => payload,
           :complete => [],
           :status => 'active' # error/complete
