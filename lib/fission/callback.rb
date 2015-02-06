@@ -60,7 +60,7 @@ module Fission
     # Forward payload to worker defined by :job
     #
     # @param payload [Hash]
-    def forward(payload)
+    def forward(payload, source=nil)
       if(payload[:job])
         if(payload[:complete].include?(payload[:job]))
           info "Payload has reached completed state! (Message ID: #{payload[:message_id]})"
@@ -68,7 +68,10 @@ module Fission
           if(payload[:frozen])
             info "Payload is frozen and will not be forwarded! (Message ID: #{payload[:message_id]})"
           else
-            transmit(payload[:job], payload)
+            unless(source)
+              source = destination(:output, payload)
+            end
+            transmit(source, payload)
           end
         end
       else
@@ -92,7 +95,7 @@ module Fission
       payload[:complete].push(name).uniq!
       message.confirm!
       debug "This callback has reached completed state on payload: #{payload}"
-      forward(payload, source.name)
+      forward(payload)
     end
 
     # Set job as completed. Prevents further processing on attached
