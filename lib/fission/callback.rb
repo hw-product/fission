@@ -92,7 +92,7 @@ module Fission
       payload[:complete].push(name).uniq!
       message.confirm!
       debug "This callback has reached completed state on payload: #{payload}"
-      forward(payload)
+      forward(payload, source.name)
     end
 
     # Set job as completed. Prevents further processing on attached
@@ -202,6 +202,24 @@ module Fission
           :account_id => payload.fetch(:data, :account, :id, 1)
         )
         true
+      end
+    end
+
+    # Return name of destination endpoint. This is an override of the
+    # Jackal implementation to allow expected behavior of jackal
+    # services within Fission where intput/output sources do not exist
+    #
+    # @param direction [String, Symbol] direction of transmission (:input, :output, :error)
+    # @param payload [Smash]
+    # @return [Symbol]
+    # @note this will generally just provide the job name as
+    #   destination. if the router is in use and :input direction is
+    #   requested it will attempt to loop to current router action
+    def destination(direction, payload)
+      if(direction.to_sym == :input)
+        (payload.fetch(:data, :router, :route, []).first || payload[:job]).to_sym
+      else
+        payload[:job].to_sym
       end
     end
 
