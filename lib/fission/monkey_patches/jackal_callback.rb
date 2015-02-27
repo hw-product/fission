@@ -14,7 +14,7 @@ module Jackal
       def inherited(klass)
         framework, const = klass.name.split('::', 2)
         if(framework == 'Jackal')
-          Fission.register(snake(const).sub('::', '_'), klass)
+          Fission.register(*const.split('::').map{|x|snake(x)}.push(klass))
           true
         else
           false
