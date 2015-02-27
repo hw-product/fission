@@ -37,23 +37,6 @@ module Fission
         }.to_smash
       end
 
-      # Extract generic information from payload
-      #
-      # @param payload [Hash]
-      # @param key [String, Symbol] format type
-      # @param source [String, Symbol] source of data
-      # @return [Hash]
-      # @see Formatter
-      def format_payload(payload, key, source=nil)
-        begin
-          source = payload[:source] unless source
-          Formatter.format(key, source, payload)
-        rescue => e
-          debug "Aborting rescued exception -> #{e.class}: #{e}\n#{e.backtrace.join("\n")}"
-          abort e
-        end
-      end
-
     end
 
   end
