@@ -15,7 +15,7 @@ module Fission
       # @param opts [Hash]
       def run!(opts)
         unless(ENV['FISSION_TESTING_MODE'])
-          Carnivore.configure!(opts[:config])
+          Carnivore.configure!(opts[:config], :force)
           Carnivore::Config.immutable!
         end
 
