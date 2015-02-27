@@ -17,7 +17,9 @@ module Fission
     # @return [self]
     def initialize(*_)
       super
+      disabled_formatters = app_config.fetch(:formatters, :disabled, [])
       @formatters = Fission::Formatter.descendants.map do |klass|
+        next if disabled_formatters.include?(klass.to_s)
         klass.new(self)
       end
     end
