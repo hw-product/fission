@@ -60,32 +60,45 @@ module Fission
       # @param message [Carnivore::Message]
       # @return [Hash]
       def unpack(message)
-        if(message[:message])
-          case determine_style(message)
-          when :sqs
-            if(message[:message]['Body'])
-              message[:message]['Body'].to_smash
-            else
-              message[:message].to_smash
-            end
-          when :http
+        result = if(message[:message])
+                   case determine_style(message)
+                   when :sqs
+                     if(message[:message]['Body'])
+                       message[:message]['Body'].to_smash
+                     else
+                       message[:message].to_smash
+                     end
+                   when :http
+                     begin
+                       MultiJson.load(message[:message][:body]).to_smash
+                     rescue MultiJson::DecodeError
+                       message[:message][:body].to_smash
+                     end
+                   when :nsq
+                     begin
+                       MultiJson.load(message[:message].message).to_smash
+                     rescue MultiJson::DecodeError
+                       message[:message].message.to_smash
+                     end
+                   else
+                     message[:message].to_smash
+                   end
+                 else
+                   message.to_smash
+                 end
+        if(respond_to?(:formatters) && respond_to?(:service_name))
+          formatters.each do |formatter|
             begin
-              MultiJson.load(message[:message][:body]).to_smash
-            rescue MultiJson::DecodeError
-              message[:message][:body].to_smash
+              if(service_name.to_sym == formatter.destination)
+                debug "Service matched formatter for pre-format! (<#{formatter.class}>)"
+                formatter.format(result)
+              end
+            rescue => e
+              error "Formatter failed <#{formatter.source}:#{formatter.destination}> #{e.class}: #{e}"
             end
-          when :nsq
-            begin
-              MultiJson.load(message[:message].message).to_smash
-            rescue MultiJson::DecodeError
-              message[:message].message.to_smash
-            end
-          else
-            message[:message].to_smash
           end
-        else
-          message.to_smash
         end
+        result
       end
 
       # Detect message style based on structure
@@ -95,7 +108,7 @@ module Fission
       def determine_style(m)
         begin
           case m[:source].to_s
-          when 'Carnivore::Source::Http', 'Carnivore::Source::HttpEndpoint'
+          when m.start_with?('Carnivore::Source::Http')
             :http
           else
             m[:source].class.to_s.split('::').last.downcase.to_sym
