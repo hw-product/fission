@@ -119,7 +119,7 @@ module Fission
       route = payload.fetch(:data, :router, :route, []).map(&:to_sym)
       formatters.each do |formatter|
         begin
-          if(formatter.source == service_name && payload[:job].to_sym == formatter.destination)
+          if([service_name, '*'].include?(formatter.source) && payload[:job].to_sym == formatter.destination)
             debug "Direct destination matched formatter! (<#{formatter.class}>)"
             formatter.format(payload)
           elsif(route.include?(formatter.destination))
