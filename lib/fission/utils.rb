@@ -88,10 +88,12 @@ module Fission
                  end
         if(respond_to?(:formatters) && respond_to?(:service_name))
           formatters.each do |formatter|
+            next if result.fetch(:formatters, []).include?(formatter.class.name)
             begin
               if(service_name.to_sym == formatter.destination)
                 debug "Service matched formatter for pre-format! (<#{formatter.class}>)"
                 formatter.format(result)
+                result[:formatters].push(formatter.class.name)
               end
             rescue => e
               error "Formatter failed <#{formatter.source}:#{formatter.destination}> #{e.class}: #{e}"
