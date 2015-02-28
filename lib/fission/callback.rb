@@ -17,9 +17,18 @@ module Fission
     # @return [self]
     def initialize(*_)
       super
-      disabled_formatters = app_config.fetch(:formatters, :disabled, [])
+      enabled_formatters = config.fetch(:formatters, :enabled,
+        app_config.get(:formatters, :enabled)
+      )
+      disabled_formatters = (
+        config.fetch(:formatters, :disabled, []) +
+        app_config.fetch(:formatters, :disabled, [])
+      ).uniq
       @formatters = Fission::Formatter.descendants.map do |klass|
         next if disabled_formatters.include?(klass.to_s)
+        if(enabled_formatters)
+          next unless enabled_formatters.include?(klass.to_s)
+        end
         klass.new(self)
       end
     end
@@ -27,6 +36,14 @@ module Fission
     # @return [Carnivore::Config] global configuration
     def global_config
       Carnivore::Config
+    end
+
+    # @return [Fission::Assets::Store]
+    def asset_store
+      memoize(:asset_store) do
+        require 'fission-assets'
+        Fission::Assets::Store.new
+      end
     end
 
     # Fetch configuration for namespace
@@ -85,9 +102,9 @@ module Fission
     #
     # @return [Fission::Utils::Process]
     # @raise [NameError]
-    def process_manager
-      Celluloid::Actor[:process_manager] || abort(NameError.new('No process manager found!'))
-    end
+    # def process_manager
+    #   Celluloid::Actor[:process_manager] || abort(NameError.new('No process manager found!'))
+    # end
 
     # Set payload as completed for this callback
     #
@@ -120,13 +137,16 @@ module Fission
     def apply_formatters!(payload)
       route = payload.fetch(:data, :router, :route, []).map(&:to_sym)
       formatters.each do |formatter|
+        next if payload.fetch(:formatters, []).include?(formatter.class.name)
         begin
           if([service_name, '*'].include?(formatter.source) && payload[:job].to_sym == formatter.destination)
             debug "Direct destination matched formatter! (<#{formatter.class}>)"
             formatter.format(payload)
+            payload[:formatters].push(formatter.class.name)
           elsif(route.include?(formatter.destination))
             debug "Route destination matched formatter! (<#{formatter.class}>)"
             formatter.format(payload)
+            payload[:formatters].push(formatter.class.name)
           end
         rescue => e
           error "Formatter failed <#{formatter.source}:#{formatter.destination}> #{e.class}: #{e}"
