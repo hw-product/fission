@@ -11,6 +11,11 @@ module Jackal
           Smash.new
       end
 
+      # @return [Smash] application configuration
+      def app_config
+        Carnivore::Config.get(:fission)
+      end
+
     end
   end
 end
