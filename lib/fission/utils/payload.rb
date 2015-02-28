@@ -33,6 +33,7 @@ module Fission
           :id => message_id,
           :data => payload,
           :complete => [],
+          :formatters => [],
           :status => 'active' # error/complete
         }.to_smash
       end
