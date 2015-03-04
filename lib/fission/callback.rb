@@ -29,6 +29,7 @@ module Fission
         if(enabled_formatters)
           next unless enabled_formatters.include?(klass.to_s)
         end
+        debug "Enabling payload formatter: #{klass}"
         klass.new(self)
       end
     end
@@ -138,14 +139,17 @@ module Fission
       route = payload.fetch(:data, :router, :route, []).map(&:to_sym)
       formatters.each do |formatter|
         next if payload.fetch(:formatters, []).include?(formatter.class.name)
+        s_checksum = payload.checksum
         begin
           if([service_name, '*'].include?(formatter.source) && payload[:job].to_sym == formatter.destination)
-            debug "Direct destination matched formatter! (<#{formatter.class}>)"
+            debug "Direct destination matched formatter! (<#{formatter.class}> - #{payload[:id]})"
             formatter.format(payload)
-            payload[:formatters].push(formatter.class.name)
           elsif(route.include?(formatter.destination))
-            debug "Route destination matched formatter! (<#{formatter.class}>)"
+            debug "Route destination matched formatter! (<#{formatter.class}> - #{payload[:id]})"
             formatter.format(payload)
+          end
+          unless(s_checksum == payload.checksum)
+            info "Formatter modified payload and will not be applied again (<#{formatter.class}> - #{payload[:id]})"
             payload[:formatters].push(formatter.class.name)
           end
         rescue => e

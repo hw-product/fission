@@ -91,9 +91,13 @@ module Fission
             next if result.fetch(:formatters, []).include?(formatter.class.name)
             begin
               if(service_name.to_sym == formatter.destination)
-                debug "Service matched formatter for pre-format! (<#{formatter.class}>)"
+                debug "Service matched formatter for pre-format! (<#{formatter.class}> - #{message})"
+                s_checksum = result.checksum
                 formatter.format(result)
-                result[:formatters].push(formatter.class.name)
+                unless(s_checksum == result.checksum)
+                  info "Pre-formatter modified payload and will not be applied again after callback completion (<#{formatter.class}> - #{message})"
+                  result[:formatters].push(formatter.class.name)
+                end
               end
             rescue => e
               error "Formatter failed <#{formatter.source}:#{formatter.destination}> #{e.class}: #{e}"
