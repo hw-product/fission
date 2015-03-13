@@ -60,31 +60,35 @@ module Fission
       # @param message [Carnivore::Message]
       # @return [Hash]
       def unpack(message)
-        result = if(message[:message])
-                   case determine_style(message)
-                   when :sqs
-                     if(message[:message]['Body'])
-                       message[:message]['Body'].to_smash
+        result = if(message[:content])
+                   message[:content]
+                 else
+                   if(message[:message])
+                     case determine_style(message)
+                     when :sqs
+                       if(message[:message]['Body'])
+                         message[:message]['Body'].to_smash
+                       else
+                         message[:message].to_smash
+                       end
+                     when :http
+                       begin
+                         MultiJson.load(message[:message][:body]).to_smash
+                       rescue MultiJson::DecodeError
+                         message[:message][:body].to_smash
+                       end
+                     when :nsq
+                       begin
+                         MultiJson.load(message[:message].message).to_smash
+                       rescue MultiJson::DecodeError
+                         message[:message].message.to_smash
+                       end
                      else
                        message[:message].to_smash
                      end
-                   when :http
-                     begin
-                       MultiJson.load(message[:message][:body]).to_smash
-                     rescue MultiJson::DecodeError
-                       message[:message][:body].to_smash
-                     end
-                   when :nsq
-                     begin
-                       MultiJson.load(message[:message].message).to_smash
-                     rescue MultiJson::DecodeError
-                       message[:message].message.to_smash
-                     end
                    else
-                     message[:message].to_smash
+                     message.to_smash
                    end
-                 else
-                   message.to_smash
                  end
         if(respond_to?(:formatters) && respond_to?(:service_name))
           formatters.each do |formatter|
