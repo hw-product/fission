@@ -12,6 +12,9 @@ module Fission
     include Fission::Utils::Github
     include Fission::Utils::Inspector
 
+    # @return [Smash] user configuration information
+    attr_accessor :user_configuration
+
     # Create new instance
     #
     # @return [self]
@@ -58,6 +61,16 @@ module Fission
     # @return [Smash] fission namespace configuration
     def fission_config
       config_for(:fission)
+    end
+
+    # @return [Smash] service configuration
+    def config
+      result = super
+      if(user_configuration)
+        result.deep_merge(user_configuration)
+      else
+        result
+      end
     end
 
     # Validity of message
@@ -252,8 +265,41 @@ module Fission
       end
     end
 
+    # Extend jackal's failure wrapping to inject configuration into
+    # run state provided via payload if available
+    #
+    # @param message [Carnivore::Message]
+    # @return [Object]
+    def failure_wrap(message)
+      apply_user_config(message) do
+        super
+      end
+    end
+
+    # If payload contains account configuration overrides and an
+    # override hash is provided for this service, merge into
+    # configuration to allow implicit user configuration
+    #
+    # @param message [Carnivore::Message]
+    # @return [Object]
+    def apply_user_config(message)
+      payload = unpack(message)
+      begin
+        if(payload.get(:data, :account, :config))
+          #check config type. decrypt if String
+          if(unpacked_config[service_name])
+            user_configuration = unpacked_config[service_name]
+          end
+        end
+        yield
+      ensure
+        user_configuration = nil
+      end
+    end
+
   end
 end
 
 # Remap Jackals to Fission
+Jackal.send(:remove_const, Callback)
 Jackal::Callback = Fission::Callback
