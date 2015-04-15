@@ -41,17 +41,15 @@ module Fission
       # @option opts [String] :base_url
       # @return [String, NilClass]
       def job_url(payload, opts={})
-        if(enabled?(:data))
-          site = opts.fetch(:base_url,
-            Carnivore::Config.get(:fission, :branding, :https)
-          ) || 'http://labs.hw-ops.com'
-          begin
-            File.join(site, 'jobs', payload[:message_id])
-          rescue => e
-            debug "Failed to build job URL: #{e}"
-            debug "#{e.class}: #{e}\n#{e.backtrace.join("\n")}"
-            nil
-          end
+        site = opts.fetch(:base_url,
+          Carnivore::Config.get(:fission, :branding, :https)
+        ) || 'http://labs.hw-ops.com'
+        begin
+          File.join(site, 'jobs', payload[:message_id])
+        rescue => e
+          debug "Failed to build job URL: #{e}"
+          debug "#{e.class}: #{e}\n#{e.backtrace.join("\n")}"
+          nil
         end
       end
 
