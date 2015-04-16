@@ -288,8 +288,8 @@ module Fission
         if(payload.get(:data, :account, :config))
           unpacked_config = Fission::Utils::Cipher.decrypt(
             payload.get(:data, :account, :config),
-            :iv => app_config[:grouping],
-            :key => payload[:message_id]
+            :iv => payload[:message_id],
+            :key => app_config[:grouping]
           )
           if(unpacked_config[service_name])
             user_configuration = unpacked_config[service_name]
