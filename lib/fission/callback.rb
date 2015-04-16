@@ -4,6 +4,9 @@ module Fission
   # Customized callback for fission
   class Callback < Jackal::Callback
 
+    # Default secret used when grouping is unavailable (dev)
+    DEFAULT_SECRET = 'fission-default-secret'
+
     include Fission::Utils::ObjectCounts
     include Fission::Utils::Transmission
     include Fission::Utils::MessageUnpack
@@ -289,7 +292,7 @@ module Fission
           unpacked_config = Fission::Utils::Cipher.decrypt(
             payload.get(:data, :account, :config),
             :iv => payload[:message_id],
-            :key => app_config[:grouping]
+            :key => app_config.fetch(:grouping, DEFAULT_SECRET)
           )
           if(unpacked_config[service_name])
             user_configuration = unpacked_config[service_name]
