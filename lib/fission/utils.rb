@@ -5,6 +5,7 @@ module Fission
   # Utility modules
   module Utils
 
+    autoload :Cipher, 'fission/utils/cipher'
     autoload :Github, 'fission/utils/github'
     autoload :Dns, 'fission/utils/dns'
     autoload :NotificationData, 'fission/utils/notification_data'
