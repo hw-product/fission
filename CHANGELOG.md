@@ -1,3 +1,10 @@
+# v0.2.2
+* Add support for content unpack within payloads
+* Update job linking generation
+* Import cipher module from fission-data
+* Auto extract account configuration from payload if available
+* Clean up constant reset for callbacks
+
 # v0.2.0
 * Automatically push orphan messages to router
 * Add support for payload formatters (automatic)
