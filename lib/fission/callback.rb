@@ -308,5 +308,5 @@ module Fission
 end
 
 # Remap Jackals to Fission
-Jackal.send(:remove_const, Callback)
+Jackal.send(:remove_const, :Callback)
 Jackal::Callback = Fission::Callback
