@@ -294,13 +294,14 @@ module Fission
             :iv => payload[:message_id],
             :key => app_config.fetch(:grouping, DEFAULT_SECRET)
           )
+          unpacked_config = MultiJson.load(unpacked_config).to_smash
           if(unpacked_config[service_name])
-            user_configuration = unpacked_config[service_name]
+            self.user_configuration = unpacked_config[service_name]
           end
         end
         yield
       ensure
-        user_configuration = nil
+        self.user_configuration = nil
       end
     end
 
