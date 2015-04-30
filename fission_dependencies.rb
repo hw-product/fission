@@ -6,19 +6,11 @@ class FissionDependencies
     fission-assets
     fission-code-fetcher
     fission-data
-    fission-finalizers
-    fission-github-comment
-    fission-github-release
     fission-mail
     fission-nellie
-    fission-nellie-webhook
     fission-package-builder
-    fission-repository-generator
-    fission-repository-publisher
-    fission-rest-api
     fission-router
     fission-validator
-    fission-webhook
     fission-woodchuck
     fission-woodchuck-filter
   )
