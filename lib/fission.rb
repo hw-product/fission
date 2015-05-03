@@ -12,6 +12,16 @@ module Fission
   autoload :Transports, 'fission/transports'
   autoload :Formatter, 'fission/formatter'
   autoload :Runner, 'fission/runner'
+
+  # proxy to jackal
+  def self.service(*args)
+    Jackal.service(*args)
+  end
+
+  # proxy to jackal
+  def self.service_info
+    Jackal.service_info
+  end
 end
 
 autoload :Smash, 'fission/utils/smash'
