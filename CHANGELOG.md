@@ -1,3 +1,6 @@
+# v0.2.4
+* Add service registration support
+
 # v0.2.2
 * Add support for content unpack within payloads
 * Update job linking generation
