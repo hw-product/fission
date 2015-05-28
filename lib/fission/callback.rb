@@ -221,6 +221,7 @@ module Fission
       payload[:error] ||= {}
       payload[:error][:callback] = name
       payload[:error][:reason] = reason
+      apply_formatters!(payload)
       call_finalizers(payload, message, :error)
     end
 
