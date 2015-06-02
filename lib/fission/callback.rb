@@ -276,7 +276,11 @@ module Fission
     # @return [Object]
     def failure_wrap(message)
       apply_user_config(message) do
-        super
+        super do |payload|
+          result = yield payload
+          clean_working_directory(payload)
+          result
+        end
       end
     end
 
@@ -304,6 +308,37 @@ module Fission
       ensure
         self.user_configuration = nil
       end
+    end
+
+    # Generate a payload specific working directory
+    #
+    # @param payload [Smash]
+    # @return [String] path
+    def working_directory(payload)
+      path = File.join(
+        config.fetch(
+          :working_directory,
+          File.join('/tmp/fission', service_name)
+        ),
+        payload[:message_id]
+      )
+      FileUtils.mkdir_p(path)
+      path
+    end
+
+    # Remove working directory if it exists
+    #
+    # @param payload [Smash]
+    def clean_working_directory(payload)
+      FileUtils.rm_rf(
+        File.join(
+          config.fetch(
+            :working_directory,
+            File.join('/tmp/fission', service_name)
+          )
+        ),
+        payload[:message_id]
+      )
     end
 
   end
