@@ -11,6 +11,16 @@ module Fission
         'prerelease'
       ]
 
+      # Check if string matches any prerelease items
+      #
+      # @param string [String]
+      # @return [TrueClass, FalseClass]
+      def prerelease?(string)
+        !!PRERELEASE.detect do |item|
+          string.match(/\w#{Regexp.escape(item}}\w/)
+        end
+      end
+
     end
   end
 end
