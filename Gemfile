@@ -2,7 +2,6 @@ require File.expand_path('fission_dependencies', File.dirname(__FILE__))
 source 'https://rubygems.org'
 
 gem 'sleepy_penguin'
-gem 'carnivore-files', git: 'git@github.com:carnivore-rb/carnivore-files.git'
 gem 'carnivore-http'
 gem 'carnivore-actor'
 gem 'jackal', git: 'git@github.com:carnivore-rb/jackal.git', branch: 'develop'
