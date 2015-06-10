@@ -14,12 +14,21 @@ module Fission
       #
       # @param opts [Hash]
       def run!(opts)
-        unless(ENV['FISSION_TESTING_MODE'])
-          Carnivore.configure!(opts[:config], :force)
+
+        if(ENV['FISSION_TESTING_MODE'])
+          if(!opts[:config])
+            Carnivore.configure!(:verify)
+          else
+            Carnivore.configure!(opts[:config], :force)
+          end
+        else
+          Carnivore.configure!(opts[:config])
           Carnivore::Config.immutable!
         end
 
-        Celluloid.logger.level = Celluloid.logger.class.const_get((opts[:verbosity] || :debug).to_s.upcase)
+        Celluloid.logger.level = Celluloid.logger.class.const_get(
+          (opts[:verbosity] || Carnivore::Config[:verbosity] || :debug).to_s.upcase
+        )
 
         begin
           require 'fission/transports'
