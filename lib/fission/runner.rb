@@ -7,28 +7,17 @@ require 'fission/monkey_patches/carnivore_source'
 require 'fission/monkey_patches/jackal_callback'
 
 module Fission
-  class Runner
+  class Runner < Jackal::Loader
     class << self
 
       # Run fission
       #
       # @param opts [Hash]
       def run!(opts)
-
         if(ENV['FISSION_TESTING_MODE'])
-          if(!opts[:config])
-            Carnivore.configure!(:verify)
-          else
-            Carnivore.configure!(opts[:config], :force)
-          end
-        else
-          Carnivore.configure!(opts[:config])
-          Carnivore::Config.immutable!
+          ENV['JACKAL_TESTING_MODE'] = ENV['FISSION_TESTING_MODE']
         end
-
-        Celluloid.logger.level = Celluloid.logger.class.const_get(
-          (opts[:verbosity] || Carnivore::Config[:verbosity] || :debug).to_s.upcase
-        )
+        configure!(opts)
 
         begin
           require 'fission/transports'
