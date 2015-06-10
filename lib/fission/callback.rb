@@ -314,13 +314,13 @@ module Fission
     #
     # @param payload [Smash]
     # @return [String] path
-    def working_directory(payload)
+    def working_directory(payload=nil)
       path = File.join(
         config.fetch(
           :working_directory,
           File.join('/tmp/fission', service_name)
         ),
-        payload[:message_id]
+        payload ? payload[:message_id] : ''
       )
       FileUtils.mkdir_p(path)
       path
