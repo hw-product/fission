@@ -10,3 +10,7 @@ ENV.each do |key, value|
     ENV[jackal_key] = value
   end
 end
+
+require 'jackal/utils/spec/helpers'
+
+Jackal::Utils::Spec.system_runner = Fission::Runner
