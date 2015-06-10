@@ -27,7 +27,7 @@ module Fission
         Array(Carnivore::Config.get(:fission, :loaders, :sources)).flatten.compact.each do |lib|
           require lib
         end
-        sources = Carnivore::Config.get(:fission, :sources).to_smash # @todo this should be auto-typed
+        sources = Carnivore::Config.get(:fission, :sources)
         if(sources)
           Carnivore.configure do
             sources.each do |name, opts|
