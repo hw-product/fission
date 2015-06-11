@@ -20,6 +20,21 @@ OptionParser.new do |opts|
 end.parse!
 
 # ----------------------------------------------------------------------
+# Ensure dependencies are present in Gemfile
+
+gemfile = File.read('Gemfile')
+lines = ["gem 'carnivore-actor'", "gem 'minitest'", "gem 'pry'"]
+lines.select!{ |l| !gemfile[l] } # only append items not already present
+
+unless lines.empty?
+  File.open('Gemfile', 'a') do |f|
+    f << "\n"
+    lines.each { |l| f << (l + "\n") }
+  end
+end
+
+
+# ----------------------------------------------------------------------
 # Create test directory structure
 
 FileUtils.mkdir_p(TEST_DIRS)
