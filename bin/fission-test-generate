@@ -46,6 +46,7 @@ end
 CONF
 
 conf_file = File.join(Dir.pwd, TEST_DIRS, "#{@module_name}.rb")
+raise 'Config file already exists' if File.exists?(conf_file)
 File.write(conf_file, conf)
 
 # ----------------------------------------------------------------------
@@ -95,4 +96,5 @@ end
 SPEC
 
 spec_file = File.join(Dir.pwd, 'test/specs', "#{@service_name}_spec.rb")
+raise 'Spec file already exists' if File.exists?(spec_file)
 File.write(spec_file, spec)
