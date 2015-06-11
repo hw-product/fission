@@ -1,0 +1,98 @@
+#!/usr/bin/env ruby
+require 'fileutils'
+require 'optparse'
+
+TEST_DIRS = 'test/specs/config'
+
+OptionParser.new do |opts|
+  opts.banner = "Usage: fission-test-generate [options]"
+
+  opts.on("-sSNAME", "--service_name=SNAME", "Name of fission service to test (eg: Mail)") do |v|
+    @service_name = v.downcase
+    @service_class_name = @service_name.capitalize
+  end
+
+  opts.on("-mMNAME", "--module_name=MNAME", "Name of particular class to test (eg: Mandrill)") do |v|
+    @module_name = v.downcase
+    @module_class_name = @module_name.capitalize
+  end
+
+end.parse!
+
+# ----------------------------------------------------------------------
+# Create test directory structure
+
+FileUtils.mkdir_p(TEST_DIRS)
+
+# ----------------------------------------------------------------------
+# Write out fission config file
+
+conf = <<CONF
+Configuration.new do
+  fission do
+    sources do
+      #{@service_name}.type 'actor'
+      test.type 'spec'
+    end
+
+    workers.mail 1
+
+    loaders do
+      sources ['carnivore-actor']
+      workers ['fission-#{@service_name}/#{@module_name}']
+    end
+  end
+end
+CONF
+
+conf_file = File.join(Dir.pwd, TEST_DIRS, "#{@module_name}.rb")
+File.write(conf_file, conf)
+
+# ----------------------------------------------------------------------
+# Write out minitest (via fission-test) spec file scaffold
+
+spec = <<SPEC
+require 'fission-#{@service_name}'
+require 'pry'
+
+# To stub out an api call for your callback
+class Fission::#{@service_class_name}::#{@module_class_name}
+  attr_accessor :test_payload
+
+  #def api_call(args)
+  #  test_payload.set(:args, args)
+  #end
+end
+
+describe Fission::#{@service_class_name}::#{@module_class_name} do
+
+  before do
+    @runner = run_setup(:#{@module_name})
+    track_execution(Fission::#{@service_class_name}::#{@module_class_name})
+  end
+
+  after do
+    @runner.terminate
+  end
+
+  let(:actor) { Carnivore::Supervisor.supervisor[:#{@service_name}] }
+
+  it 'executes with valid payload' do
+    result = transmit_and_wait(actor, payload)
+    (!!result).must_equal true
+    callback_executed?(result).must_equal true
+  end
+
+  private
+
+  # payload to send for callback execution
+  def payload
+    h = {}
+    Jackal::Utils.new_payload(:test, h)
+  end
+
+end
+SPEC
+
+spec_file = File.join(Dir.pwd, 'test/specs', "#{@service_name}_spec.rb")
+File.write(spec_file, spec)
