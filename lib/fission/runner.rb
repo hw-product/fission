@@ -1,5 +1,3 @@
-$VERBOSE=nil
-
 require 'carnivore'
 require 'fission'
 require 'fission/monkey_patches/jackal_config'
@@ -14,6 +12,7 @@ module Fission
       #
       # @param opts [Hash]
       def run!(opts)
+        opts = process_opts(opts)
         if(ENV['FISSION_TESTING_MODE'])
           ENV['JACKAL_TESTING_MODE'] = ENV['FISSION_TESTING_MODE']
         end
