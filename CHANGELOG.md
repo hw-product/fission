@@ -1,3 +1,6 @@
+# v0.2.8
+* Fix: syntax error on prerelease string match
+
 # v0.2.6
 * Apply formatters prior to finalization deliveries
 * Add utility method for prerelease check
