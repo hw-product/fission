@@ -318,7 +318,7 @@ module Fission
       path = File.join(
         config.fetch(
           :working_directory,
-          File.join('/tmp/fission', service_name)
+          File.join('/tmp/fission', service_name.to_s)
         ),
         payload ? payload[:message_id] : ''
       )
