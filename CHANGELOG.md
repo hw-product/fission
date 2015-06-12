@@ -1,3 +1,6 @@
+# v0.2.10
+* Add validation on working path generation and removal
+
 # v0.2.8
 * Fix: syntax error on prerelease string match
 
