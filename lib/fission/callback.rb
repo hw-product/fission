@@ -335,9 +335,9 @@ module Fission
           config.fetch(
             :working_directory,
             File.join('/tmp/fission', service_name)
-          )
-        ),
-        payload[:message_id]
+          ),
+          payload[:message_id]
+        )
       )
     end
 
