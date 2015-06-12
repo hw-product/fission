@@ -1,3 +1,9 @@
+# v0.2.6
+* Apply formatters prior to finalization deliveries
+* Add utility method for prerelease check
+* Add common module for REST
+* Sync startup and configuration with jackal
+
 # v0.2.4
 * Add service registration support
 
