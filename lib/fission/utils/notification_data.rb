@@ -45,7 +45,7 @@ module Fission
           Carnivore::Config.get(:fission, :branding, :https)
         ) || 'http://labs.hw-ops.com'
         begin
-          File.join(site, 'jobs', payload[:message_id])
+          File.join(site, Carnivore::Config.fetch(:fission, :branding, :job_path, 'jobs'), payload[:message_id])
         rescue => e
           debug "Failed to build job URL: #{e}"
           debug "#{e.class}: #{e}\n#{e.backtrace.join("\n")}"
