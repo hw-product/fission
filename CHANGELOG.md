@@ -1,3 +1,6 @@
+# v0.2.12
+* Support customized URL pathing for jobs
+
 # v0.2.10
 * Add validation on working path generation and removal
 
