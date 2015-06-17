@@ -50,7 +50,7 @@ Configuration.new do
       test.type 'spec'
     end
 
-    workers.mail 1
+    workers.#{@service_name} 1
 
     loaders do
       sources ['carnivore-actor']
