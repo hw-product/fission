@@ -103,8 +103,7 @@ describe Fission::#{@service_class_name}::#{@module_class_name} do
 
   # payload to send for callback execution
   def payload
-    h = {}
-    Jackal::Utils.new_payload(:test, h)
+    Jackal::Utils.new_payload(:test, Smash.new)
   end
 
 end
