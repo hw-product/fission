@@ -1,3 +1,6 @@
+# v0.2.14
+* Adjust timing of payload formatter applications
+
 # v0.2.12
 * Support customized URL pathing for jobs
 
