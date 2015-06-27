@@ -97,6 +97,7 @@ module Fission
     #
     # @param payload [Hash]
     def forward(payload, source=nil)
+      apply_formatters!(payload)
       if(payload[:job])
         if(payload[:complete].include?(payload[:job]))
           info "Payload has reached completed state! (Message ID: #{payload[:message_id]})"
@@ -142,7 +143,6 @@ module Fission
     # @param message [Carnivore::Message]
     def job_completed(name, payload, message)
       payload[:complete].push(name.to_s).uniq!
-      apply_formatters!(payload)
       completed(payload, message)
       if(name.to_s == payload[:job])
         call_finalizers(payload, message)
@@ -188,6 +188,7 @@ module Fission
           finalizers = Carnivore::Config.get(:fission, :handlers, state)
           finalizers = [finalizers].flatten.compact
           payload[:status] = state
+          apply_formatters!(payload)
           payload[:frozen] = true
           unless(finalizers.empty?)
             [finalizers].flatten.compact.each do |endpoint|
@@ -221,7 +222,6 @@ module Fission
       payload[:error] ||= {}
       payload[:error][:callback] = name
       payload[:error][:reason] = reason
-      apply_formatters!(payload)
       call_finalizers(payload, message, :error)
     end
 
