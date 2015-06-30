@@ -8,8 +8,9 @@ OptionParser.new do |opts|
   opts.banner = "Usage: fission-test-generate [options]"
 
   opts.on("-sSNAME", "--service_name=SNAME", "Name of fission service to test (eg: Mail)") do |v|
-    @service_name = v.downcase
-    @service_class_name = @service_name.capitalize
+    @orig_service_name = v.downcase
+    @service_name = @orig_service_name.gsub(/-/, '_')
+    @service_class_name = @service_name.split('_').map(&:capitalize).join
   end
 
   opts.on("-mMNAME", "--module_name=MNAME", "Name of particular class to test (eg: Mandrill)") do |v|
@@ -21,7 +22,7 @@ end.parse!
 
 # ----------------------------------------------------------------------
 # Ensure dependencies are present in Gemfile
-
+raise 'Ensure Gemfile exists' unless File.exists?('Gemfile')
 gemfile = File.read('Gemfile')
 lines = ["gem 'carnivore-actor'", "gem 'minitest'", "gem 'pry'"]
 lines.select!{ |l| !gemfile[l] } # only append items not already present
@@ -54,7 +55,7 @@ Configuration.new do
 
     loaders do
       sources ['carnivore-actor']
-      workers ['fission-#{@service_name}/#{@module_name}']
+      workers ['fission-#{@orig_service_name}/#{@module_name}']
     end
   end
 end
@@ -68,7 +69,7 @@ File.write(conf_file, conf)
 # Write out minitest (via fission-test) spec file scaffold
 
 spec = <<SPEC
-require 'fission-#{@service_name}'
+require 'fission-#{@orig_service_name}'
 require 'pry'
 
 # To stub out an api call for your callback
@@ -109,6 +110,7 @@ describe Fission::#{@service_class_name}::#{@module_class_name} do
 end
 SPEC
 
-spec_file = File.join(Dir.pwd, 'test/specs', "#{@service_name}_spec.rb")
+filename = "#{@service_name}_spec.rb"
+spec_file = File.join(Dir.pwd, 'test/specs', filename)
 raise 'Spec file already exists' if File.exists?(spec_file)
 File.write(spec_file, spec)
