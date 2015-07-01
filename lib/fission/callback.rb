@@ -221,9 +221,12 @@ module Fission
     # @param message [Carnivore::Message]
     def failed(payload, message, reason='No message provided')
       message.confirm!
-      payload[:error] ||= {}
-      payload[:error][:callback] = name
-      payload[:error][:reason] = reason
+      payload.set(:error,
+        Smash.new(
+          :callback => name,
+          :reason => reason
+        )
+      )
       call_finalizers(payload, message, :error)
     end
 
@@ -331,18 +334,22 @@ module Fission
     #
     # @param payload [Smash]
     def clean_working_directory(payload)
-      unless(payload[:message_id].to_s.empty?)
-        dir_path = File.join(
-          config.fetch(
-            :working_directory,
-            File.join('/tmp/fission', service_name.to_s)
-          ),
-          payload[:message_id]
-        )
-        if(File.exists?(dir_path))
-          debug "Scrubbing working directory: #{dir_path}"
-          FileUtils.rm_rf(dir_path)
+      begin
+        unless(payload[:message_id].to_s.empty?)
+          dir_path = File.join(
+            config.fetch(
+              :working_directory,
+              File.join('/tmp/fission', service_name.to_s)
+            ),
+            payload[:message_id]
+          )
+          if(File.exists?(dir_path))
+            debug "Scrubbing working directory: #{dir_path}"
+            FileUtils.rm_rf(dir_path)
+          end
         end
+      rescue => e
+        warn "Failed to remove working directory for payload (#{payload.inspect.slice(0, 50)}...)"
       end
       payload
     end
