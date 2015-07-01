@@ -1,6 +1,5 @@
 require 'jackal'
 require 'fission/version'
-require 'fission/setup'
 
 # Hash processor framework
 module Fission
@@ -34,3 +33,5 @@ end
 
 # Force load callbacks so jackals are auto built within fission
 require 'fission/callback'
+
+require 'fission/setup'
