@@ -98,6 +98,7 @@ module Fission
     # @param payload [Hash]
     def forward(payload, source=nil)
       apply_formatters!(payload)
+      clean_working_directory(payload)
       if(payload[:job])
         if(payload[:complete].include?(payload[:job]))
           info "Payload has reached completed state! (Message ID: #{payload[:message_id]})"
@@ -181,6 +182,7 @@ module Fission
     # @param state [Symbol]
     # @note payload will be set as frozen and sent async to finalizers
     def call_finalizers(payload, message, state=:complete)
+      clean_working_directory(payload)
       if(payload[:frozen])
         error "Attempted finalization of frozen payload. This should not happen! #{message} - #{payload.inspect}"
       else
@@ -278,7 +280,6 @@ module Fission
       apply_user_config(message) do
         super do |payload|
           result = yield payload
-          clean_working_directory(payload)
           result
         end
       end
