@@ -17,7 +17,7 @@ module Fission
       # @return [TrueClass, FalseClass]
       def prerelease?(string)
         !!PRERELEASE.detect do |item|
-          string.match(/\w#{Regexp.escape(item)}\w/)
+          string.match(/\w#{Regexp.escape(item)}(\w|$)/)
         end
       end
 
