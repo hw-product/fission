@@ -1,3 +1,6 @@
+# v0.2.16
+* [fix] Force error data type when message is `failed`
+
 # v0.2.14
 * Adjust timing of payload formatter applications
 

@@ -1,4 +1,4 @@
 module Fission
   # Current library version
-  VERSION = Gem::Version.new('0.2.15')
+  VERSION = Gem::Version.new('0.2.16')
 end
