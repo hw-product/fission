@@ -1,3 +1,6 @@
+# v0.2.18
+* [fix] Allow prerelease strings to match when end of string
+
 # v0.2.16
 * [fix] Force error data type when message is `failed`
 
