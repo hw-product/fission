@@ -12,6 +12,5 @@ Gem::Specification.new do |s|
   s.add_dependency 'jackal', '>= 0.3.12', '< 1.0.0'
   s.executables << 'fission'
   s.executables << 'fission-test'
-  s.executables << 'fission-test-generate'
   s.files = Dir['{lib,bin}/**/**/*'] + %w(fission.gemspec README.md CHANGELOG.md)
 end
