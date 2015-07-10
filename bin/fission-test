@@ -2,4 +2,24 @@
 # -*- mode: ruby -*-
 # -*- encoding: utf-8 -*-
 
-require 'fission/utils/specs/loader'
+require 'bogo-cli'
+require 'fission'
+
+if ARGV.empty?
+  require 'fission/utils/specs/loader'
+else
+  Bogo::Cli::Setup.define do
+    global_opts = lambda do
+      on :s, 'service_name=', 'Service to test (Eg: Fission::Mail::Smtp - mail)'
+      on :m, 'module_name=',  'Module to test  (Eg: Fission::Mail::Smtp - smtp)'
+    end
+
+    command 'generate' do
+      description 'Generate test boilerplate for fission-test'
+      self.instance_exec(&global_opts)
+      run do |opts, args|
+        Fission::Utils::Specs::Generator.new(opts.to_h, args).execute!
+      end
+    end
+  end
+end
