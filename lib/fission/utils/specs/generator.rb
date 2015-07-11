@@ -6,7 +6,7 @@ module Fission
     module Specs
 
       class Generator < Jackal::Utils::Spec::Generator
-        def initialize(_, _)
+        def initialize(*_)
           super
 
           @callback_type   = 'fission'
