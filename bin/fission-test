@@ -10,8 +10,8 @@ if ARGV.empty?
 else
   Bogo::Cli::Setup.define do
     global_opts = lambda do
-      on :s, 'service-name=', 'Service to test (Eg: Fission::Mail::Smtp - mail)'
-      on :m, 'module-name=',  'Module to test  (Eg: Fission::Mail::Smtp - smtp)'
+      on :s, 'service-name=', 'Service to test (Eg: Fission::Mail::Smtp - mail)', :required => true
+      on :m, 'module-name=',  'Module to test  (Eg: Fission::Mail::Smtp - smtp)', :required => true
     end
 
     command 'generate' do
