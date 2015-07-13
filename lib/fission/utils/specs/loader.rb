@@ -9,9 +9,6 @@ Jackal::Utils::Spec.payload_storage(
   File.join(File.dirname(__FILE__), 'payloads')
 )
 
-if ARGV.first == 'generate'
-  require 'jackal/utils/spec/generator'
-else
-  require 'fission/utils/specs/helpers'
-  require 'jackal/utils/spec/loader'
-end
+require 'jackal/utils/spec/generator'
+require 'fission/utils/specs/helpers'
+require 'jackal/utils/spec/loader'
