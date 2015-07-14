@@ -16,6 +16,7 @@ module Fission
     autoload :Payload, 'fission/utils/payload'
     autoload :Specs, 'fission/utils/specs'
     autoload :ObjectCounts, 'fission/utils/object_counts'
+    autoload :Events, 'fission/utils/events'
 
     # Payload transmission helpers
     module Transmission

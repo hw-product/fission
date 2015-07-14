@@ -14,6 +14,7 @@ module Fission
     include Fission::Utils::NotificationData
     include Fission::Utils::Github
     include Fission::Utils::Inspector
+    include Fission::Utils::Events
 
     # @return [Smash] user configuration information
     attr_accessor :user_configuration
