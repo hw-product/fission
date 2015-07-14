@@ -1,11 +1,15 @@
-require 'erb'
 require 'fileutils'
 
 module Fission
   module Utils
     module Specs
 
+      # Test files generator
       class Generator < Jackal::Utils::Spec::Generator
+
+        # Create new test instance
+        #
+        # @return [self]
         def initialize(*_)
           super
 
@@ -13,6 +17,9 @@ module Fission
           @supervisor_name = @service_name
         end
 
+        # Configuration file content
+        #
+        # @return [String]
         def config_file_content
           <<-TEXT
 Configuration.new do
