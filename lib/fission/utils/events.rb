@@ -14,6 +14,7 @@ module Fission
         payload = new_payload(
           :event, :event => Smash.new(
             :type => type,
+            :stamp => Time.now.to_f,
             :data => data
           )
         )

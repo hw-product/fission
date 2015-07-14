@@ -283,7 +283,18 @@ module Fission
     def failure_wrap(message)
       apply_user_config(message) do
         super do |payload|
+          event!(:service_start,
+            :message_id => payload[:message_id],
+            :service_name => service_name,
+            :host => app_host
+          )
           result = yield payload
+          event!(:service_complete,
+            :message_id => payload[:message_id],
+            :service_name => service_name,
+            :callback_name => name,
+            :host => app_host
+          )
           result
         end
       end
