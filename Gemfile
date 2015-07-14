@@ -1,16 +1,12 @@
 require File.expand_path('fission_dependencies', File.dirname(__FILE__))
 source 'https://rubygems.org'
 
-gem 'sleepy_penguin'
-gem 'carnivore-files', git: 'git@github.com:carnivore-rb/carnivore-files.git'
-gem 'carnivore-http'
+gem 'carnivore-http', path: '/home/spox/Projects/carnivore-rb/carnivore-http'
 gem 'carnivore-actor'
-gem 'jackal', git: 'git@github.com:carnivore-rb/jackal.git', branch: 'develop'
 
 gem 'octokit'
 gem 'elecksee'
 gem 'pg'
-gem 'reaper', git: 'git@github.com:heavywater/reaper.git'
 gem 'pry'
 
 gem 'minitest'
@@ -18,6 +14,12 @@ gem 'minitest'
 if(RUBY_PLATFORM == 'java')
   gem 'jruby_sandbox'
 end
+
+gem 'jackal-code-fetcher'
+gem 'jackal-github'
+gem 'jackal-github-kit'
+gem 'jackal-slack'
+gem 'jackal-stacks'
 
 FissionDependencies::GEMS.each do |lib|
   local  = { path: "../#{lib}" }

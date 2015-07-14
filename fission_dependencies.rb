@@ -4,11 +4,13 @@
 class FissionDependencies
   GEMS = %w(
     fission-assets
-    fission-code-fetcher
     fission-data
     fission-mail
     fission-nellie
     fission-package-builder
+    fission-repository-generator
+    fission-repository-publisher
+    fission-rest-api
     fission-router
     fission-validator
     fission-woodchuck
