@@ -1,3 +1,7 @@
+# v0.2.20
+* [enhancement] Add test scaffold generator
+* [removal] Rest API module removed from utils
+
 # v0.2.18
 * [fix] Allow prerelease strings to match when end of string
 
