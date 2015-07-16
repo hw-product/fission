@@ -1,3 +1,7 @@
+# v0.2.22
+* [feature] event generation helpers
+* [enhancement] automatic event generation on start, complete, and finalize
+
 # v0.2.20
 * [enhancement] Add test scaffold generator
 * [removal] Rest API module removed from utils
