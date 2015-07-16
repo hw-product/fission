@@ -11,17 +11,16 @@ module Fission
       # @param data [Smash] optional data
       # @return [NilClass]
       def event!(type, data=Smash.new)
-        payload = new_payload(
-          :event, :event => Smash.new(
-            :type => type,
-            :stamp => Time.now.to_f,
-            :data => data
-          )
-        )
-        info "Sending event data - type: #{type} ID: #{payload[:message_id]}"
-        debug "Sending event data - type: #{type} ID: #{payload[:message_id]} data: #{data.inspect}"
         eventers_for(type).each do |endpoint|
-          debug "Sending event ID #{payload[:message_id]} to #{endpoint}"
+          payload = new_payload(
+            endpoint, :event => Smash.new(
+              :type => type,
+              :stamp => Time.now.to_f,
+              :data => data
+            )
+          )
+          info "Sending event #{type} to #{endpoint}"
+          debug "Sending event data - endpoint: #{endpoint} type: #{type} ID: #{payload[:message_id]} data: #{data.inspect}"
           transmit(endpoint, payload)
         end
       end
