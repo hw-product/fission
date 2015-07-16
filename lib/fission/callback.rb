@@ -208,6 +208,13 @@ module Fission
           else
             warn "Payload of #{message} reached completed state. No handler defined: #{payload.inspect}"
           end
+          event!(:job_finalize,
+            :state => state,
+            :message_id => payload[:message_id],
+            :service_name => service_name,
+            :callback_name => name,
+            :host => app_host
+          )
         rescue => e
           error "!!! Unexpected error encountered in finalizers! Consuming exception and killing payload for #{message}"
           error "!!! Exception encountered: #{e.class}: #{e}"
