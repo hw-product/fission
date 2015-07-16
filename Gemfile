@@ -1,7 +1,7 @@
 require File.expand_path('fission_dependencies', File.dirname(__FILE__))
 source 'https://rubygems.org'
 
-gem 'carnivore-http', path: '/home/spox/Projects/carnivore-rb/carnivore-http'
+gem 'carnivore-http'
 gem 'carnivore-actor'
 
 gem 'octokit'
