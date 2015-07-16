@@ -5,6 +5,7 @@ class FissionDependencies
   GEMS = %w(
     fission-assets
     fission-data
+    fission-eventer
     fission-mail
     fission-nellie
     fission-package-builder
