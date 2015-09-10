@@ -34,7 +34,7 @@ module Fission
           if(File.fnmatch(m_type, type.to_s))
             e_srcs
           end
-        end.flatten.compact.map(&:to_sym).uniq
+        end.flatten.compact.find_all{|e_src| e_src}.map(&:to_sym).uniq
       end
 
     end
