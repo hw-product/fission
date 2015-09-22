@@ -1,3 +1,6 @@
+# v0.3.0
+* Update to build off latest jackal
+
 # v0.2.22
 * [feature] event generation helpers
 * [enhancement] automatic event generation on start, complete, and finalize
