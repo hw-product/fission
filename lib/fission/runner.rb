@@ -30,9 +30,8 @@ module Fission
           # Start the daemon
           Carnivore.start!
         rescue => e
-          $stderr.puts 'Fission run failure. Exception encountered.'
-          $stderr.puts "#{e.class}: #{e}\n#{e.backtrace.join("\n")}"
-          exit -1
+          Carnivore::Logger.warn "Fission shutting down due to received exception: #{e.class}"
+          Carnivore::Logger.debug "#{e.class}: #{e}\n#{e.backtrace.join("\n")}"
         end
 
       end
