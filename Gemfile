@@ -1,11 +1,10 @@
-require File.expand_path('fission_dependencies', File.dirname(__FILE__))
 source 'https://rubygems.org'
 
 gem 'carnivore-http'
 gem 'carnivore-actor'
 
 gem 'octokit'
-gem 'elecksee'
+gem 'elecksee', :path => '/home/spox/Projects/chrisroberts/elecksee'
 gem 'pg'
 gem 'pry'
 
@@ -21,12 +20,35 @@ gem 'jackal-github-kit'
 gem 'jackal-slack'
 gem 'jackal-stacks'
 
-FissionDependencies::GEMS.each do |lib|
-  local  = { path: "../#{lib}" }
-  remote = { git: "git@github.com:hw-product/#{lib}.git", branch: 'develop' }
-  opts   = ENV['FISSION_LOCALS'] == 'true' ? local : remote
 
-  gem lib, opts
+fission = <<-EOF
+fission-assets
+fission-data
+fission-eventer
+fission-mail
+fission-nellie
+fission-package-builder
+fission-repository-generator
+fission-repository-publisher
+fission-rest-api
+fission-router
+fission-validator
+fission-woodchuck
+fission-woodchuck-filter
+EOF
+
+fission = fission.split("\n")
+
+if(ENV['FISSION_LOCALS'] == 'true')
+  fission.each do |lib|
+    gem lib, :path => "../#{lib}"
+  end
+else
+  source 'https://fission:8sYl7Bo0ql2OA9OPThUngg@gems.pkgd.io' do
+    fission.each do |lib|
+      gem lib
+    end
+  end
 end
 
 gemspec
