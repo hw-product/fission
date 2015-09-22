@@ -1,4 +1,4 @@
-require 'celluloid'
+require 'fission'
 require 'shellwords'
 require 'fileutils'
 require 'tempfile'
@@ -12,21 +12,14 @@ module Fission
       # Environment variables that should be removed from process environment
       BLACKLISTED_ENV = ['GIT_DIR']
 
-      include Celluloid
+      include Zoidberg::SoftShell
       include Carnivore::Utils::Logging
-
-      # @return [Mutex] single file please
-      attr_reader :guard
-      # @return [Celluloid::Condition] line forms here
-      attr_reader :lock_wait
 
       # Creates new Process actor
       def initialize
         @registry = Smash.new
         @locker = Smash.new
-        @guard = Mutex.new
         @base_env = ENV.to_hash
-        @lock_wait = Celluloid::Condition.new
         @max_processes = Carnivore::Config.get(:fission, :utils, :process_manger, :max_processes) || 5
         @storage_directory = Carnivore::Config.get(:fission, :utils, :process_manager, :storage) ||
           '/tmp/fission/process_manager'
@@ -177,27 +170,17 @@ module Fission
       def lock(identifier, wait=true)
         result = nil
         until(result)
-          if(guard.try_lock)
-            begin
-              if(@registry[identifier])
-                unless(@locker[identifier])
-                  @locker[identifier] = Celluloid.uuid
-                  result = Smash.new(
-                    :registry_entry => @registry[identifier],
-                    :process => @registry[identifier][:process],
-                    :lock_id => @locker[identifier]
-                  )
-                end
-              else
-                abort KeyError.new("Requested process not found (identifier: #{identifier}) -- current: #{@registry.keys.sort}")
-              end
-            ensure
-              guard.unlock
-              lock_wait.broadcast(:free_bird)
+          if(@registry[identifier])
+            unless(@locker[identifier])
+              @locker[identifier] = Zoidberg.uuid
+              result = Smash.new(
+                :registry_entry => @registry[identifier],
+                :process => @registry[identifier][:process],
+                :lock_id => @locker[identifier]
+              )
             end
           else
-            warn "Failed lock attempt on #{identifier}"
-            lock_wait.wait
+            abort KeyError.new("Requested process not found (identifier: #{identifier}) -- current: #{@registry.keys.sort}")
           end
         end
         result
@@ -211,25 +194,12 @@ module Fission
         if(lock_id.is_a?(Hash))
           lock_id = lock_id[:lock_id]
         end
-        result = false
-        until(result)
-          if(guard.try_lock)
-            begin
-              key = @locker.key(lock_id)
-              if(key)
-                @locker.delete(key)
-                result = true
-              else
-                abort KeyError.new("Provided lock id is not in use (#{lock_id})")
-              end
-            ensure
-              guard.unlock
-              lock_wait.broadcast(:free_bird)
-            end
-          else
-            warn "Failed unlock for lock id: #{lock_id}"
-            lock_wait.wait
-          end
+        key = @locker.key(lock_id)
+        if(key)
+          @locker.delete(key)
+          result = true
+        else
+          abort KeyError.new("Provided lock id is not in use (#{lock_id})")
         end
       end
 

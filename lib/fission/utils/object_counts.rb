@@ -21,7 +21,6 @@ module Fission
           diff.each do |k,v|
             warn "[#{name}] #{k}: #{'+' if v > 0}#{v}"
           end
-          warn "[#{name}] Actor count: #{Celluloid::Actor.all.size}"
           result
         else
           yield

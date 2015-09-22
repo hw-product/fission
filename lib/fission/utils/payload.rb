@@ -25,7 +25,7 @@ module Fission
             end
           end
         end
-        message_id = Celluloid.uuid
+        message_id = Zoidberg.uuid
         {
           :job => job,
           :name => job,

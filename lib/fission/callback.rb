@@ -118,14 +118,6 @@ module Fission
       end
     end
 
-    # Process manager
-    #
-    # @return [Fission::Utils::Process]
-    # @raise [NameError]
-    # def process_manager
-    #   Celluloid::Actor[:process_manager] || abort(NameError.new('No process manager found!'))
-    # end
-
     # Set payload as completed for this callback
     #
     # @param payload [Hash]
@@ -218,7 +210,7 @@ module Fission
         rescue => e
           error "!!! Unexpected error encountered in finalizers! Consuming exception and killing payload for #{message}"
           error "!!! Exception encountered: #{e.class}: #{e}"
-          debug "{e.class}: #{e}\n#{e.backtrace.join("\n")}"
+          debug "#{e.class}: #{e}\n#{e.backtrace.join("\n")}"
         end
       end
     end
