@@ -16,9 +16,6 @@ module Fission
     include Fission::Utils::Inspector
     include Fission::Utils::Events
 
-    # @return [Smash] user configuration information
-    attr_accessor :user_configuration
-
     # Create new instance
     #
     # @return [self]
@@ -39,6 +36,19 @@ module Fission
         debug "Enabling payload formatter: #{klass}"
         klass.new(self)
       end
+    end
+
+    # @return [Hash, NilClass]
+    def user_configuration
+      Thread.current[:user_configuration]
+    end
+
+    # Set custom user configuration
+    #
+    # @param val [Hash, NilClass]
+    # @return [Hash, NilClass]
+    def user_configuration=(val)
+      Thread.current[:user_configuration] = val
     end
 
     # @return [Carnivore::Config] global configuration
@@ -187,8 +197,10 @@ module Fission
           payload[:frozen] = true
           unless(finalizers.empty?)
             [finalizers].flatten.compact.each do |endpoint|
-              payload[:complete].delete_if do |component|
-                component.start_with?(endpoint)
+              if(payload[:complete])
+                payload[:complete].delete_if do |component|
+                  component.start_with?(endpoint)
+                end
               end
               payload[:job] = endpoint
               begin
