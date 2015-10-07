@@ -1,3 +1,7 @@
+# v0.3.2
+* Store configuration in thread data for safer deferrals
+* Add helpers to support remote command processing
+
 # v0.3.0
 * Update to build off latest jackal
 
