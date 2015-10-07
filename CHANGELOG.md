@@ -1,3 +1,6 @@
+# v0.3.4
+* Pass remote process timeout through if available
+
 # v0.3.2
 * Store configuration in thread data for safer deferrals
 * Add helpers to support remote command processing
