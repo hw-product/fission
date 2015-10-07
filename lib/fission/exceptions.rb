@@ -27,5 +27,9 @@ module Fission
 
     end
 
+    class RemoteProcessFailed < Error
+      attr_accessor :result
+    end
+
   end
 end
