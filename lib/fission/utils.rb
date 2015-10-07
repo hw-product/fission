@@ -17,6 +17,8 @@ module Fission
     autoload :Specs, 'fission/utils/specs'
     autoload :ObjectCounts, 'fission/utils/object_counts'
     autoload :Events, 'fission/utils/events'
+    autoload :RemoteProcess, 'fission/utils/remote_process'
+    autoload :RemoteProcessing, 'fission/utils/remote_process'
 
     # Payload transmission helpers
     module Transmission

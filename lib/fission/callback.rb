@@ -15,6 +15,7 @@ module Fission
     include Fission::Utils::Github
     include Fission::Utils::Inspector
     include Fission::Utils::Events
+    include Fission::Utils::RemoteProcessing
 
     # Create new instance
     #
