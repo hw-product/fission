@@ -66,7 +66,8 @@ module Fission
         output = opts.fetch(:stream, StringIO.new(''))
         code = server.api.server_execute(server, cmd,
           :stream => output,
-          :return_exit_code => true
+          :return_exit_code => true,
+          :timeout => opts.fetch(:timeout, 20)
         )
         output.rewind if output.respond_to?(:rewind)
         Result.new(code, output)
