@@ -24,6 +24,7 @@ module Fission
       # Result of execute
       Result = Struct.new('RemoteProcessResult', :exit_code, :output) do
 
+        # @return [TrueClass, FalseClass]
         def success?
           exit_code == 0
         end
@@ -53,6 +54,16 @@ module Fission
           )
         )
         @server.save
+        unless(opts[:no_wait])
+          Bogo::Retry::Linear.new(:wait_interval => 0.5, :max_attempts => 10) do
+            wait_for_network!
+          end
+        end
+      end
+
+      # @return [TrueClass]
+      def wait_for_network!
+        exec!('ping -c 1 www.google.com')
       end
 
       # Execute command on remote system
@@ -61,7 +72,7 @@ module Fission
       # @param opts [Hash]
       # @option opts [Hash] :environment
       # @option opts [IO] :stream
-      # @return [
+      # @return [Result]
       def exec(cmd, opts={})
         output = opts.fetch(:stream, StringIO.new(''))
         code = server.api.server_execute(server, cmd,
@@ -69,7 +80,9 @@ module Fission
           :return_exit_code => true,
           :timeout => opts.fetch(:timeout, 20)
         )
-        output.rewind if output.respond_to?(:rewind)
+        if(output.respond_to?(:rewind) && (!output.respond_to?(:tty?) || !output.tty?))
+          output.rewind
+        end
         Result.new(code, output)
       end
 
