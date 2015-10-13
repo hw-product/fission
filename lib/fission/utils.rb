@@ -38,7 +38,7 @@ module Fission
         unless(src)
           abort KeyError.new("Requested worker is not currently registered: #{worker}")
         end
-        src.async.transmit(*payload)
+        src.async(:locked).transmit(*payload)
       end
 
     end
