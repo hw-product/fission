@@ -1,3 +1,7 @@
+# v0.3.6
+* Wait for network availability on remote process
+* Use locked async on message transmission
+
 # v0.3.4
 * Pass remote process timeout through if available
 
