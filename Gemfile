@@ -1,10 +1,10 @@
 source 'https://rubygems.org'
 
+
 gem 'carnivore-http'
 gem 'carnivore-actor'
 
 gem 'octokit'
-gem 'elecksee', :path => '/home/spox/Projects/chrisroberts/elecksee'
 gem 'pg'
 gem 'pry'
 
