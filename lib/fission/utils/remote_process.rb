@@ -21,6 +21,10 @@ module Fission
     # Provide remote process support
     class RemoteProcess
 
+      class QueueStream < Queue
+        alias_method :write, :push
+      end
+
       # Result of execute
       Result = Struct.new('RemoteProcessResult', :exit_code, :output) do
 
@@ -71,10 +75,18 @@ module Fission
       # @param cmd [String] command
       # @param opts [Hash]
       # @option opts [Hash] :environment
+      # @option opts [String] :cwd
       # @option opts [IO] :stream
+      # @option opts [Integer] :timeout
       # @return [Result]
       def exec(cmd, opts={})
         output = opts.fetch(:stream, StringIO.new(''))
+        if(opts[:cwd])
+          wrap = StringIO.new("#!/bin/sh\ncd #{opts[:cwd]}\n#{cmd}")
+          push_file(wrap, '/tmp/.remote_process_wrap')
+          exec('chmod 755 /tmp/.remote_process_wrap')
+          cmd = '/tmp/.remote_process_wrap'
+        end
         code = server.api.server_execute(server, cmd,
           :stream => output,
           :return_exit_code => true,
