@@ -1,3 +1,7 @@
+# v0.3.8
+* Provide support for :cwd using remote process
+* Import QueueStream for easier event streaming
+
 # v0.3.6
 * Wait for network availability on remote process
 * Use locked async on message transmission
