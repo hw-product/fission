@@ -90,7 +90,8 @@ module Fission
         code = server.api.server_execute(server, cmd,
           :stream => output,
           :return_exit_code => true,
-          :timeout => opts.fetch(:timeout, 20)
+          :timeout => opts.fetch(:timeout, 20),
+          :environment => opts.fetch(:environment, {})
         )
         if(output.respond_to?(:rewind) && (!output.respond_to?(:tty?) || !output.tty?))
           output.rewind
