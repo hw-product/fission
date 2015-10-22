@@ -1,3 +1,7 @@
+# v0.3.10
+* Include :environment when passing through to remote
+* Update local bundle contents for development
+
 # v0.3.8
 * Provide support for :cwd using remote process
 * Import QueueStream for easier event streaming
