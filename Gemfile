@@ -1,8 +1,8 @@
 source 'https://rubygems.org'
 
-
 gem 'carnivore-http'
 gem 'carnivore-actor'
+gem 'carnivore-rabbitmq'
 
 gem 'octokit'
 gem 'pg'
@@ -18,7 +18,6 @@ gem 'jackal-code-fetcher'
 gem 'jackal-github'
 gem 'jackal-github-kit'
 gem 'jackal-slack'
-gem 'jackal-stacks'
 
 
 fission = <<-EOF
@@ -35,6 +34,7 @@ fission-router
 fission-validator
 fission-woodchuck
 fission-woodchuck-filter
+fission-stacks
 EOF
 
 fission = fission.split("\n")
