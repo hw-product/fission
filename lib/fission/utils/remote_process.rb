@@ -91,7 +91,10 @@ module Fission
           :stream => output,
           :return_exit_code => true,
           :timeout => opts.fetch(:timeout, 20),
-          :environment => opts.fetch(:environment, {})
+          :environment => Smash.new(
+            'HOME' => '/root',
+            'USER' => 'root'
+          ).merge(opts.fetch(:environment, {}))
         )
         if(output.respond_to?(:rewind) && (!output.respond_to?(:tty?) || !output.tty?))
           output.rewind
