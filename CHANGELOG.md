@@ -1,3 +1,6 @@
+# v0.3.12
+* Provide simple defaults on remote process exec
+
 # v0.3.10
 * Include :environment when passing through to remote
 * Update local bundle contents for development
