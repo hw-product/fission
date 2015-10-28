@@ -93,7 +93,7 @@ module Fission
     # @param message [Carnivore::Message]
     # @return [Truthy, Falsey]
     def valid?(message)
-      m = object_counter(:valid_unpack){ unpack(message) }
+      m = unpack(message)
       if(m[:complete])
         if(block_given?)
           !m[:complete].include?(name) && yield(m)
