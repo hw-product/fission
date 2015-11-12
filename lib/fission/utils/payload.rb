@@ -38,6 +38,22 @@ module Fission
         }.to_smash
       end
 
+      # Generate a common set of environment variables based on what
+      # is available within payload
+      #
+      # @param payload [Hash]
+      # @return [Hash]
+      def common_environment_variables(payload)
+        Smash.new.tap do |env|
+          if(cfi = payload.get(:data, :code_fetcher, :info))
+            cfi.each do |k,v|
+              key = "CODE_FETCHER_#{k.to_s.upcase}"
+              env[key] = v
+            end
+          end
+        end
+      end
+
     end
 
   end
