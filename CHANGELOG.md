@@ -1,3 +1,7 @@
+# v0.3.14
+* Refactor user configuration overlay
+* Provide helper to generate common ENV var hashes
+
 # v0.3.12
 * Provide simple defaults on remote process exec
 
