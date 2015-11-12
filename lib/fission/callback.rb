@@ -41,7 +41,7 @@ module Fission
 
     # @return [Hash, NilClass]
     def user_configuration
-      Thread.current[:user_configuration]
+      memoize(:user_configuration){ Smash.new }
     end
 
     # Set custom user configuration
@@ -49,7 +49,11 @@ module Fission
     # @param val [Hash, NilClass]
     # @return [Hash, NilClass]
     def user_configuration=(val)
-      Thread.current[:user_configuration] = val
+      unmemoize(:user_configuration)
+      if(val)
+        memoize(:user_configuration){ val }
+      end
+      val
     end
 
     # @return [Carnivore::Config] global configuration
