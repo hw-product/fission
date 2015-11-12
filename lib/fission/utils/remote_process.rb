@@ -21,6 +21,11 @@ module Fission
     # Provide remote process support
     class RemoteProcess
 
+      # Default image when none provided
+      DEFAULT_IMAGE = 'fission-default'
+
+      # Simple wrapper to use a queue for storing output information
+      # which can be pulled on demand
       class QueueStream < Queue
         alias_method :write, :push
       end
@@ -42,6 +47,88 @@ module Fission
       # @return [Miasma::Models::Compute::Server] remote instance
       attr_reader :server
 
+      class << self
+
+        def build(opts={})
+          args = Smash.new
+          args[:base_image] = generate_target(opts.fetch(:target, {}))
+          args[:dependencies] = generate_dependencies(opts[:dependencies])
+          args[:repositories] = generate_repositories(opts.get(:setup, :repositories))
+          args[:setup_commands] = generate_setup(opts.get(:setup, :commands))
+          args[:image] = generate_image_name(args)
+          create_or_start(opts.to_smash.merge(args))
+        end
+
+        def create_or_start(opts)
+          api = Miasma.api(opts[:api].merge(:type => :compute))
+          if(api.image_exists?(args[:image]))
+            self.new(opts)
+          else
+            template_node = self.new(
+              opts.merge(
+                :image => opts[:base_image]
+              )
+            )
+            configure_template_node(template_node, opts)
+            api.image_create(template_node, opts[:image])
+            template_node.destroy
+            create_or_start(opts)
+          end
+        end
+
+        def configure_template_node(node, opts)
+          # copy cookbook pack
+          # install chef
+          # write dna.json
+          # delete/cleanup
+          # done
+        end
+
+        # Generate a unique name via builder hash
+        #
+        # @param opts [Hash]
+        # @return [String]
+        def generate_image_name(opts={})
+          opts = opts.to_smash.dup
+          base = opts.delete(:base_image)
+          opts.all?{|o| o.nil? || o.empty?} ? base : opts.checksum
+        end
+
+        # Generate list of package dependencies
+        #
+        # @param opts [Hash]
+        # @return [Array<String>]
+        def generate_dependencies(opts={})
+          case opts
+          when Array
+            opts
+          when Hash
+            opts.fetch(:build, [])
+          else
+            []
+          end
+        end
+
+        # Generate base target image name
+        #
+        # @param opts [Hash]
+        # @return [String]
+        def generate_target(opts={})
+          parts = [
+            opts[:platform],
+            opts[:version].to_s.tr('.', ''),
+            opts[:arch]
+          ]
+          parts.delete_if{|i| i.nil? || i.blank? }
+          target = parts.join('_')
+          if(target.blank?)
+            target = DEFAULT_IMAGE
+          end
+          target
+        end
+
+      end
+
       # Create remote endpoint for running commands
       #
       # @param opts [Hash] setup information
@@ -54,7 +141,7 @@ module Fission
           :image_id => opts[:image],
           :flavor_id => opts[:flavor],
           :custom => Smash.new(
-            :ephemeral => true
+            :ephemeral => opts.fetch(:ephemeral, true)
           )
         )
         @server.save
