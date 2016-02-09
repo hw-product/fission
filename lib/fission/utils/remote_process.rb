@@ -135,7 +135,7 @@ module Fission
       # @return [self]
       def initialize(opts={})
         opts = opts.to_smash
-        api = Miasma.api(opts[:api].merge(:type => :compute))
+        api = Miasma.api(opts.fetch(:api, {}).merge(:type => :compute))
         @server = api.servers.build(
           :name => "fission-#{Carnivore.uuid}",
           :image_id => opts[:image],
