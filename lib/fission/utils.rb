@@ -94,6 +94,12 @@ module Fission
                      message.to_smash
                    end
                  end
+        # Support receiving jobs from jackal services
+        unless(result[:message_id])
+          stub_payload = new_payload(result[:name], {})
+          stub_payload[:message_id] = result[:id]
+          result = stub_payload.deep_merge(result)
+        end
         if(respond_to?(:formatters) && respond_to?(:service_name))
           formatters.each do |formatter|
             next if result.fetch(:formatters, []).include?(formatter.class.name)
