@@ -135,6 +135,9 @@ module Fission
       # @return [self]
       def initialize(opts={})
         opts = opts.to_smash
+        unless(opts[:api])
+          raise ArgumentError.new 'API credentials are required for remote process!'
+        end
         api = Miasma.api(opts.fetch(:api, {}).merge(:type => :compute))
         @server = api.servers.build(
           :name => "fission-#{Carnivore.uuid}",
