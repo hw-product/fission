@@ -4,6 +4,7 @@ gem 'carnivore-http'
 gem 'carnivore-actor'
 gem 'carnivore-rabbitmq'
 
+
 gem 'octokit'
 gem 'pg'
 gem 'pry'
@@ -44,10 +45,8 @@ if(ENV['FISSION_LOCALS'] == 'true')
     gem lib, :path => "../#{lib}"
   end
 else
-  source 'https://fission:8sYl7Bo0ql2OA9OPThUngg@gems.pkgd.io' do
-    fission.each do |lib|
-      gem lib
-    end
+  fission.each do |lib|
+    gem lib, :git => "git@github.com:hw-product/#{lib}.git", :branch => 'develop'
   end
 end
 
