@@ -97,15 +97,17 @@ module Fission
     # @param message [Carnivore::Message]
     # @return [Truthy, Falsey]
     def valid?(message)
-      m = unpack(message)
-      if(m[:complete])
-        if(block_given?)
-          !m[:complete].include?(name) && yield(m)
+      apply_user_config(message) do
+        m = unpack(message)
+        if(m[:complete])
+          if(block_given?)
+            !m[:complete].include?(name) && yield(m)
+          else
+            !m[:complete].include?(name)
+          end
         else
-          !m[:complete].include?(name)
+          block_given? ? yield(m) : true
         end
-      else
-        block_given? ? yield(m) : true
       end
     end
 
