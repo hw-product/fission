@@ -36,7 +36,7 @@ module Fission
         end
         debug "Enabling payload formatter: #{klass}"
         klass.new(self)
-      end
+      end.compact
     end
 
     # @return [Hash, NilClass]
