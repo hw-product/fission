@@ -6,12 +6,12 @@ module Fission
       # Default information for origin of messages
       # @config fission.branding overloads for origin data
       DEFAULT_ORIGIN = {
-        :name => 'd2o',
-        :dns => 'd2o.hw-ops.com',
-        :email => 'd2o@hw-ops.com',
-        :application => 'heavywater',
-        :http => 'http://www.hw-ops.com',
-        :https => 'https://www.hw-ops.com'
+        :name => 'fission',
+        :dns => 'fission.example.com',
+        :email => 'fission@example.com',
+        :application => 'fission',
+        :http => 'http://fission.example.com',
+        :https => 'https://fission.example.com'
       }
 
       # Set data in payload for consumption by fission-github-status
@@ -27,7 +27,7 @@ module Fission
           Smash.new(
             :state => state.to_s,
             :description => opts.fetch(:description,
-              "#{Carnivore::Config.get(:fission, :branding, :name) || 'heavywater'} job summary"),
+              "#{Carnivore::Config.get(:fission, :branding, :name) || 'fission'} job summary"),
             :target_url => opts.fetch(:target_url, job_url(payload))
           )
         )
@@ -43,7 +43,7 @@ module Fission
       def job_url(payload, opts={})
         site = opts.fetch(:base_url,
           Carnivore::Config.get(:fission, :branding, :https)
-        ) || 'http://labs.hw-ops.com'
+        ) || 'http://fission.example.com'
         begin
           File.join(site, Carnivore::Config.fetch(:fission, :branding, :job_path, 'jobs'), payload[:message_id])
         rescue => e
